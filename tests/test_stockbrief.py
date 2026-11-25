@@ -247,6 +247,16 @@ class APITests(unittest.IsolatedAsyncioTestCase):
                 context = (await client.get("/api/market-context/INFY?filing_date=" + imported["date"])).json()
             self.assertEqual(context["relative_return_pp"], 3)
 
+    async def test_cooperative_simulation_is_bounded_and_does_not_modify_inbox(self):
+        before = (await self.client.get("/api/inbox")).json()
+        response = await self.client.post("/api/edge/simulate", json={"count":24,"scenario":"worker_outage"})
+        self.assertEqual(response.status_code, 200)
+        run = response.json()["runs"]["cooperative"]
+        self.assertEqual(run["completed"], 24)
+        self.assertGreater(run["lease_retries"], 0)
+        self.assertEqual((await self.client.get("/api/inbox")).json(), before)
+        self.assertEqual((await self.client.post("/api/edge/simulate", json={"count":61})).status_code, 422)
+
     async def test_edge_lab_actual_model_and_local_config(self):
         config = await self.client.post("/api/edge/config", json={"watchlist":["INFY"],"policy":"adaptive"})
         self.assertEqual(config.status_code, 200)

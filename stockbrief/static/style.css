@@ -435,3 +435,10 @@ footer {
 .edge-metrics { margin: 12px 0; }
 #legacy-lab { margin-top: 12px; }
 #edge-history details { margin: 8px 0; overflow-wrap: anywhere; }
+
+#cooperative-panel { margin-bottom: 18px; }
+.sim-bars { display: grid; gap: 8px; margin: 14px 0; }
+.sim-bars label { display: grid; gap: 4px; }
+.sim-bars meter { width: 100%; height: 14px; accent-color: var(--teal); }
+#sim-playback { margin-top: 16px; border-top: 1px solid var(--edge); padding-top: 12px; }
+#sim-clock { width: 100%; }

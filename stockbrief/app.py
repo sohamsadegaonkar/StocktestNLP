@@ -14,6 +14,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from .corpus import LABELS, TICKERS
 from .display import display_png
 from .edge import benchmark
+from .edge_simulation import experiment
 from .evaluation import evaluate, host_metrics
 from .fixtures import Document
 from .hosted import COOKIE_AGE, COOKIE_NAME, HostedWorkspaces, WorkspaceLimit, public_https_origin, workspace_session
@@ -27,6 +28,13 @@ from .store import Inbox
 
 STATIC = Path(__file__).resolve().parent / "static"
 MAX_REQUEST = MAX_UPLOAD + 256 * 1024
+
+
+class EdgeSimulationRequest(BaseModel):
+    count: int = 24
+    burst: StrictBool = True
+    latency_ms: int = 30
+    scenario: Literal["normal", "worker_outage", "source_outage", "combined"] = "combined"
 
 
 class EdgeConfig(BaseModel):
@@ -151,6 +159,14 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
         if live is None:
             raise HTTPException(404, "Edge scheduler is local-only.")
         return live.edge
+
+    @app.post("/api/edge/simulate")
+    def edge_simulate(config: EdgeSimulationRequest):
+        local_edge()
+        try:
+            return experiment(config.count, config.burst, config.latency_ms, config.scenario)
+        except ValueError as error:
+            raise HTTPException(422, str(error)) from error
 
     @app.get("/api/edge/status")
     def edge_status():

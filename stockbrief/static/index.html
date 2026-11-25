@@ -154,6 +154,30 @@
     </section>
 
     <section id="view-lab" aria-label="Edge lab view" hidden>
+      <section id="cooperative-panel" class="card form-card" hidden>
+        <div class="section-head"><h2>Cooperative edge network</h2><span class="chip subtle">Simulation</span></div>
+        <p class="muted">Compare one virtual computer with three virtual devices. Same synthetic financial workload, assumed compute speeds, configurable network delay and failure recovery. No hardware or network setup.</p>
+        <form id="sim-config">
+          <div class="field-grid">
+            <label>Announcements <input id="sim-count" type="number" min="6" max="60" value="24" required></label>
+            <label>One-way network delay (ms) <input id="sim-delay" type="number" min="0" max="300" value="30" required></label>
+            <label>Arrival pattern <select id="sim-burst"><option value="burst">News burst</option><option value="stream">Streaming arrivals</option></select></label>
+            <label>Failure scenario <select id="sim-scenario"><option value="combined">Source outage + worker loss</option><option value="normal">Normal</option><option value="worker_outage">Worker loss</option><option value="source_outage">Source outage</option></select></label>
+          </div>
+          <div class="actions"><button id="sim-run" type="submit" class="button primary">Run controlled simulation</button></div>
+        </form>
+        <p id="sim-status" class="form-status" role="status"></p>
+        <div id="sim-results"></div>
+        <section id="sim-playback" hidden>
+          <h3>Virtual network playback</h3>
+          <label>Architecture <select id="sim-architecture"><option value="cooperative">Cooperative edge</option><option value="adaptive">Single adaptive</option><option value="fifo">Single FIFO</option></select></label>
+          <label>Virtual clock <input id="sim-clock" type="range" min="0" max="0" step="10" value="0"></label>
+          <p id="sim-time" class="small muted"></p>
+          <div class="actions"><button id="sim-play" type="button" class="button">Play</button><button id="sim-reset" type="button" class="button">Rewind</button></div>
+          <div id="sim-nodes" class="stats edge-metrics"></div>
+          <div id="sim-events"></div>
+        </section>
+      </section>
       <section id="sentinel-panel" class="card form-card" hidden>
         <div class="section-head"><h2>Trader Edge Sentinel</h2><button id="edge-refresh" class="button" type="button">Refresh status</button></div>
         <p class="muted">Local durable financial event queue · no portfolio or watchlist data sent to the feed provider.</p>

@@ -33,7 +33,8 @@ latency, energy estimates or cloud speed claims. Benchmark is synchronous,
 local-only, isolated from live refresh; it does not create inbox records.
 The legacy simulated link/display remain secondary. No broker integration,
 network listener changes, peer authentication, real second-device execution
-or new training; those are next milestones.
+or new training. Cooperative execution is simulated only by user decision.
+See [cooperative simulation](EDGE_SIMULATION.md).
 
 Run `python -m unittest tests.test_edge tests.test_live_feed -v` and full CI.
 Actual model benchmark available on the Edge Lab screen after startup.

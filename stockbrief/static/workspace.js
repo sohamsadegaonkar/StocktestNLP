@@ -111,6 +111,7 @@ function presentView() {
   $("#hero-actions").hidden = current !== "inbox";
   $("#hero-process").hidden = current !== "inbox";
   document.title = viewText[current][0] + " · StockBrief Edge";
+  if (current !== "lab") stopSimulation();
   if (current === "lab" && state?.live_feed_available) loadEdge();
 }
 
@@ -457,6 +458,95 @@ setInterval(() => {
   if (liveEnabled && !document.hidden && !$("#view-inbox").hidden && Date.now() - liveStarted >= 120000) pollLive();
 }, 5000);
 
+let simReport;
+let simTimer;
+function stopSimulation() {
+  if (simTimer !== undefined) clearInterval(simTimer);
+  simTimer = undefined;
+  $("#sim-play").textContent = "Play";
+}
+function simFrame() {
+  if (!simReport) return;
+  const run = simReport.runs[$("#sim-architecture").value];
+  const t = Number($("#sim-clock").value);
+  const down = window => window && window[0] <= t && t < window[1];
+  const completed = run.results.filter(r => r.completed_ms <= t).length;
+  const events = run.trace.filter(e => e.time_ms <= t);
+  const received = events.filter(e => e.event === "received").length;
+  $("#sim-time").textContent = t + " ms virtual time · " + completed + "/" + run.total + " completed · " +
+    received + " received · source " + (down(run.source_outage) ? "offline" : "online (simulated)");
+  const nodes = $("#sim-nodes"); nodes.replaceChildren();
+  for (const node of run.nodes) {
+    const card = element("article");
+    const active = run.attempts.find(a => a.node === node.name && a.start_ms <= t && (a.end_ms === null || t < a.end_ms));
+    const count = run.results.filter(r => r.node === node.name && r.completed_ms <= t).length;
+    const state = node.name === "worker" && down(run.worker_outage) ? "Offline" : active ? "Job " + active.job : "Idle";
+    card.append(element("p", node.name + " · " + node.speed + "×", "eyebrow"),
+      element("strong", state), element("span", count + " completed"));
+    nodes.append(card);
+  }
+  const panel = $("#sim-events");
+  panel.replaceChildren(element("h3", "Latest simulated events"));
+  if (events.length) panel.append(table("Virtual event trace", ["Time (ms)", "Event", "Job", "Device"],
+    events.slice(-8).reverse().map(e => [String(e.time_ms), e.event.replaceAll("_"," "), String(e.job ?? "—"), e.node || "—"])));
+}
+function simSelect() {
+  stopSimulation();
+  if (!simReport) return;
+  $("#sim-clock").max = simReport.runs[$("#sim-architecture").value].end_ms;
+  $("#sim-clock").value = 0;
+  simFrame();
+}
+$("#sim-architecture").addEventListener("change", simSelect);
+$("#sim-clock").addEventListener("input", () => { stopSimulation(); simFrame(); });
+$("#sim-reset").addEventListener("click", simSelect);
+$("#sim-play").addEventListener("click", () => {
+  if (simTimer !== undefined) { stopSimulation(); return; }
+  if (!simReport) return;
+  const clock = $("#sim-clock");
+  if (Number(clock.value) >= Number(clock.max)) clock.value = 0;
+  $("#sim-play").textContent = "Pause";
+  simTimer = setInterval(() => {
+    clock.value = Math.min(Number(clock.max), Number(clock.value) + Math.max(10, Math.ceil(Number(clock.max)/100/10)*10));
+    simFrame();
+    if (Number(clock.value) >= Number(clock.max)) stopSimulation();
+  }, 100);
+});
+$("#sim-config").addEventListener("submit", async event => {
+  event.preventDefault(); stopSimulation();
+  const button = $("#sim-run");
+  button.disabled = true;
+  status($("#sim-status"), "Running virtual workload…");
+  try {
+    const data = await api("/api/edge/simulate", {method:"POST", headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({count:Number($("#sim-count").value), latency_ms:Number($("#sim-delay").value),
+        burst:$("#sim-burst").value === "burst",scenario:$("#sim-scenario").value})});
+    simReport = data;
+    const target = $("#sim-results");
+    const runs = Object.values(data.runs);
+    const ms = n => n === null ? "Unavailable" : n + " ms";
+    target.replaceChildren(element("h3","Simulated architecture comparison"), element("p",data.scope,"small muted"),
+      table("Virtual performance — same work", ["Architecture","First relevant","All relevant","p95 latency","Makespan","Completed"],
+        runs.map(r => [r.architecture,ms(r.first_relevant_ms),ms(r.all_relevant_ms),ms(r.p95_latency_ms),ms(r.makespan_ms),r.completed+"/"+r.total])),
+      table("Virtual reliability and network costs", ["Architecture","Duplicate packets","Lease retries","Stale results rejected","Assumed bytes"],
+        runs.map(r => [r.architecture,r.duplicates,r.lease_retries,r.stale_results,r.modeled_network_bytes])));
+    const bars = element("div", undefined, "sim-bars");
+    bars.append(element("h3", "Virtual time to first relevant brief"));
+    const maximum = Math.max(1,...runs.map(r => r.first_relevant_ms || 0));
+    for (const r of runs) {
+      const label = element("label",r.architecture+" · "+ms(r.first_relevant_ms));
+      const meter = element("meter"); meter.min=0; meter.max=maximum; meter.value=r.first_relevant_ms ?? maximum;
+      meter.setAttribute("aria-label",label.textContent); label.append(meter); bars.append(label);
+    }
+    const download = element("button","Export complete simulation trace","button");
+    download.type="button"; download.addEventListener("click",()=>downloadJson("edge-network-simulation.json",data));
+    target.append(bars,download);
+    $("#sim-playback").hidden=false;
+    simSelect();
+    status($("#sim-status"),"Simulation complete. Move the virtual clock or play the trace.");
+  } catch(error) { status($("#sim-status"),error.message,true); }
+  finally { button.disabled=false; }
+});
 let edgeBusy = false;
 let edgeConfigLoaded = false;
 function renderEdge(result, syncConfig = false) {
@@ -550,6 +640,7 @@ $("#edge-benchmark").addEventListener("click", () => edgeAction("benchmark"));
 function renderState() {
   $("#live-feed-panel").hidden = !state.live_feed_available;
   $("#sentinel-panel").hidden = !state.live_feed_available;
+  $("#cooperative-panel").hidden = !state.live_feed_available;
   if (state.live_feed_available && !edgeConfigLoaded && !$("#view-lab").hidden) loadEdge();
   const hosted = state.mode === "hosted";
   $("#workspace-scope").textContent = hosted ? "Private browser workspace" : "Local workspace";
