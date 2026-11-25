@@ -8,6 +8,7 @@ import sqlite3
 from unicodedata import normalize
 
 from .fixtures import Document, REPLAY, SEED
+from .edge import SCHEMA as EDGE_SCHEMA
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS disclosures (
@@ -60,7 +61,7 @@ class Inbox:
         try:
             if initialize:
                 db.execute("PRAGMA journal_mode=WAL")
-                db.executescript(SCHEMA)
+                db.executescript(SCHEMA + EDGE_SCHEMA)
             db.execute("BEGIN IMMEDIATE" if write else "BEGIN")
             yield db
             db.commit()

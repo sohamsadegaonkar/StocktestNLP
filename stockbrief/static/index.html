@@ -154,6 +154,22 @@
     </section>
 
     <section id="view-lab" aria-label="Edge lab view" hidden>
+      <section id="sentinel-panel" class="card form-card" hidden>
+        <div class="section-head"><h2>Trader Edge Sentinel</h2><button id="edge-refresh" class="button" type="button">Refresh status</button></div>
+        <p class="muted">Local durable financial event queue · no portfolio or watchlist data sent to the feed provider.</p>
+        <form id="edge-config">
+          <fieldset><legend>Private priority watchlist</legend><div id="edge-symbols" class="edge-symbols"></div></fieldset>
+          <label>Scheduling policy <select id="edge-policy"><option value="adaptive">Adaptive relevance + age</option><option value="fifo">FIFO baseline</option></select></label>
+          <div class="actions"><button class="button" type="submit">Save local settings</button></div>
+        </form>
+        <div id="edge-metrics" class="stats edge-metrics"></div>
+        <div class="actions"><button id="edge-drain" class="button primary" type="button">Process saved queue offline</button>
+          <button id="edge-benchmark" class="button" type="button">Compare FIFO vs adaptive</button></div>
+        <p id="edge-status" class="form-status" role="status"></p>
+        <div id="edge-queue"></div><div id="edge-history"></div><div id="edge-results"></div>
+        <p class="small muted">Resource gate limits each batch to 1–5 jobs based on host CPU load and available RAM. An active inference is not interrupted. Relevance is not a buy/sell signal.</p>
+      </section>
+      <details class="card form-card" id="legacy-lab" open><summary>Legacy simulated source replay (secondary experiment)</summary>
       <div class="stats">
         <article><p class="eyebrow">Source link</p><strong data-stat="link">—</strong><span>Simulated inbound feed</span></article>
         <article><p class="eyebrow">Pending packets</p><strong data-stat="pending">—</strong><span>Delivery resumes on reconnect</span></article>
@@ -179,6 +195,7 @@
           <p id="edge-scope" class="small muted">Document analysis continues when the simulated source link is disconnected.</p>
         </article>
       </div>
+      </details>
     </section>
 
     <section id="view-evaluation" aria-label="Evaluation view" hidden>

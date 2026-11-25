@@ -2,7 +2,7 @@ const $ = (selector) => document.querySelector(selector);
 const viewText = {
   inbox: ["Disclosure workspace", "Find the event, its stage, and the source passage behind each company announcement."],
   analyze: ["Analyze a disclosure", "Classify a company filing and inspect the passages used in the result."],
-  lab: ["Edge lab", "Queue, resend, and deduplicate disclosures on a simulated source link."],
+  lab: ["Edge lab", "Measure local financial inference, adaptive scheduling and persistent event recovery."],
   evaluation: ["Evaluation", "Compare event classification, review decisions, and inference latency."],
 };
 const originNames = {
@@ -111,6 +111,7 @@ function presentView() {
   $("#hero-actions").hidden = current !== "inbox";
   $("#hero-process").hidden = current !== "inbox";
   document.title = viewText[current][0] + " · StockBrief Edge";
+  if (current === "lab" && state?.live_feed_available) loadEdge();
 }
 
 function addOptions(select, entries) {
@@ -433,8 +434,9 @@ async function pollLive() {
       return;
     }
     const summary = "Imported " + result.imported + " · " + result.duplicates + " already seen · " +
-      result.pending + " pending in recent window · " + result.errors + " processing warnings";
-    status(note, (result.state === "unavailable" ? "Feed unavailable; saved briefs retained." : summary) +
+      result.pending + " pending in local queue · " + result.errors + " processing warnings" +
+      (result.capacity_deferred ? " · " + result.capacity_deferred + " deferred at capacity" : "");
+    status(note, (result.state === "unavailable" ? "Feed unavailable; saved briefs retained. " + summary : summary) +
       " · Last successful check: " + (result.last_success || "none") +
       (result.throttled ? " · Cached refresh status" : ""), result.state === "unavailable");
     if (result.imported || result.throttled) await refresh();
@@ -455,8 +457,94 @@ setInterval(() => {
   if (liveEnabled && !document.hidden && !$("#view-inbox").hidden && Date.now() - liveStarted >= 120000) pollLive();
 }, 5000);
 
+let edgeBusy = false;
+let edgeConfigLoaded = false;
+function renderEdge(result, syncConfig = false) {
+  if (syncConfig || !edgeConfigLoaded) {
+    $("#edge-policy").value = result.policy;
+    const symbols = $("#edge-symbols");
+    symbols.replaceChildren();
+    for (const ticker of result.supported) {
+      const label = element("label", undefined, "edge-option");
+      const check = element("input");
+      check.type = "checkbox"; check.value = ticker; check.checked = result.watchlist.includes(ticker);
+      label.append(check, document.createTextNode(ticker)); symbols.append(label);
+    }
+    edgeConfigLoaded = true;
+  }
+  const metrics = $("#edge-metrics");
+  metrics.replaceChildren();
+  for (const [name, value] of [["Pending", result.pending], ["Failed retained", result.failed], ["Capacity", result.capacity]]) {
+    const card = element("article");
+    card.append(element("p", name, "eyebrow"), element("strong", String(value)));
+    metrics.append(card);
+  }
+  const queue = $("#edge-queue");
+  queue.replaceChildren(element("h3", "Next jobs"));
+  if (result.queue.length) queue.append(table("Current queue order", ["Issuer", "Published", "Priority", "Wait"], result.queue.map(r =>
+    [r.ticker, r.published_at, String(r.priority), r.age_seconds + " s"])));
+  else queue.append(element("p", "No pending received announcements.", "small muted"));
+  const history = $("#edge-history");
+  history.replaceChildren(element("h3", "Recent actual processing"));
+  if (result.recent.length) {
+    history.append(table("Local processing history", ["Issuer", "Queue wait", "Processing", "Revision"], result.recent.map(r =>
+      [r.ticker, r.wait_ms + " ms", r.processing_ms + " ms", r.delta.state.replaceAll("_", " ")])));
+    for (const r of result.recent.filter(r => r.delta.state === "linked_excerpt_changed")) {
+      const delta = r.delta;
+      const section = element("details");
+      section.append(element("summary", r.ticker + " · Same-link excerpt changed"), element("p", delta.note, "small muted"));
+      section.append(element("p", "Removed figures: " + (delta.removed_figures.join(", ") || "None detected")),
+        element("p", "Added figures: " + (delta.added_figures.join(", ") || "None detected")));
+      for (const change of delta.changes) section.append(element("p", "Before: " + change.before), element("p", "After: " + change.after));
+      history.append(section);
+    }
+  } else history.append(element("p", "No live jobs processed yet.", "small muted"));
+}
+async function loadEdge(syncConfig = false) {
+  try { renderEdge(await api("/api/edge/status"), syncConfig); }
+  catch (error) { status($("#edge-status"), error.message, true); }
+}
+async function edgeAction(action, payload) {
+  if (edgeBusy) return;
+  edgeBusy = true;
+  const controls = [...$("#sentinel-panel").querySelectorAll("button")];
+  controls.forEach(button => button.disabled = true);
+  status($("#edge-status"), "Running local " + action + "…");
+  try {
+    const result = await api("/api/edge/" + action, {method:"POST",
+      ...(payload ? {headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)} : {})});
+    if (action === "benchmark") {
+      const target = $("#edge-results");
+      const rows = Object.entries(result.runs).flatMap(([policy,runs]) => runs.map((r,i) =>
+        [policy + " " + (i+1), r.first_relevant_ms + " ms", r.all_relevant_ms + " ms", r.total_ms + " ms"]));
+      target.replaceChildren(element("h3", "Measured scheduling experiment"), element("p", result.scope, "small muted"),
+        table("Actual host model runs", ["Policy / run", "First relevant", "All relevant", "Total"], rows),
+        element("p", "Equivalent category outputs: " + (result.same_categories ? "Yes" : "No")));
+      const download = element("button", "Download benchmark evidence", "button");
+      download.type = "button"; download.addEventListener("click", () => downloadJson("edge-scheduling.json", result));
+      target.append(download);
+    } else if (action === "drain") {
+      if (result.state === "busy") { status($("#edge-status"), "Processor busy; retry."); return; }
+      await refresh();
+    }
+    await loadEdge(action === "config");
+    status($("#edge-status"), action === "drain" ? "Processed " + result.imported + " · pending " + result.pending +
+      " · batch budget " + result.budget.max_jobs + " · CPU " + result.budget.cpu_percent + "%" : "Complete.");
+  } catch (error) { status($("#edge-status"), error.message, true); }
+  finally { edgeBusy = false; controls.forEach(button => button.disabled = false); }
+}
+$("#edge-refresh").addEventListener("click", () => loadEdge());
+$("#edge-config").addEventListener("submit", event => {
+  event.preventDefault();
+  edgeAction("config", {watchlist: [...$("#edge-symbols").querySelectorAll("input:checked")].map(i => i.value), policy: $("#edge-policy").value});
+});
+$("#edge-drain").addEventListener("click", () => edgeAction("drain"));
+$("#edge-benchmark").addEventListener("click", () => edgeAction("benchmark"));
+
 function renderState() {
   $("#live-feed-panel").hidden = !state.live_feed_available;
+  $("#sentinel-panel").hidden = !state.live_feed_available;
+  if (state.live_feed_available && !edgeConfigLoaded && !$("#view-lab").hidden) loadEdge();
   const hosted = state.mode === "hosted";
   $("#workspace-scope").textContent = hosted ? "Private browser workspace" : "Local workspace";
   $("#storage-note").hidden = !hosted || state.storage !== "sqlite";

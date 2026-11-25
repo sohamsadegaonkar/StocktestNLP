@@ -427,3 +427,11 @@ footer {
 .intelligence-panel button { margin-top: 10px; }
 
 #live-feed-panel .market-status { overflow-wrap: anywhere; }
+
+#sentinel-panel { margin-bottom: 18px; }
+.edge-symbols { display: flex; flex-wrap: wrap; gap: 10px; }
+.edge-option { display: flex; flex-direction: row; align-items: center; gap: 5px; }
+.edge-option input { width: auto; }
+.edge-metrics { margin: 12px 0; }
+#legacy-lab { margin-top: 12px; }
+#edge-history details { margin: 8px 0; overflow-wrap: anywhere; }

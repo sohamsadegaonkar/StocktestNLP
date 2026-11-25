@@ -13,6 +13,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from .corpus import LABELS, TICKERS
 from .display import display_png
+from .edge import benchmark
 from .evaluation import evaluate, host_metrics
 from .fixtures import Document
 from .hosted import COOKIE_AGE, COOKIE_NAME, HostedWorkspaces, WorkspaceLimit, public_https_origin, workspace_session
@@ -26,6 +27,11 @@ from .store import Inbox
 
 STATIC = Path(__file__).resolve().parent / "static"
 MAX_REQUEST = MAX_UPLOAD + 256 * 1024
+
+
+class EdgeConfig(BaseModel):
+    watchlist: list[str]
+    policy: Literal["fifo", "adaptive"]
 
 
 class LinkRequest(BaseModel):
@@ -140,6 +146,37 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
         if live is None:
             raise HTTPException(404, "Live feed is available only in local mode.")
         return live.refresh()
+
+    def local_edge():
+        if live is None:
+            raise HTTPException(404, "Edge scheduler is local-only.")
+        return live.edge
+
+    @app.get("/api/edge/status")
+    def edge_status():
+        return local_edge().status()
+
+    @app.post("/api/edge/config")
+    def edge_config(config: EdgeConfig):
+        try:
+            return local_edge().configure(config.watchlist, config.policy)
+        except ValueError as error:
+            raise HTTPException(422, str(error)) from error
+
+    @app.post("/api/edge/drain")
+    def edge_drain():
+        local_edge()
+        return live.drain_offline()
+
+    @app.post("/api/edge/benchmark")
+    def edge_benchmark():
+        local_edge()
+        if not live.lock.acquire(blocking=False):
+            raise HTTPException(409, "The edge processor is busy.")
+        try:
+            return benchmark(model)
+        finally:
+            live.lock.release()
 
     @app.get("/api/disclosures/{entry_id}")
     def get_disclosure(entry_id: int, inbox=inbox_dependency):

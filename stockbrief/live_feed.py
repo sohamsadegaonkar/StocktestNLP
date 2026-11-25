@@ -12,6 +12,7 @@ from xml.etree import ElementTree as ET
 import httpx
 
 from .inputs import MAX_TEXT, MAX_UPLOAD, make_document, read_upload
+from .edge import EdgeQueue
 
 RSS_URL = "https://nsearchives.nseindia.com/content/RSS/Online_announcements.xml"
 IST = timezone(timedelta(hours=5, minutes=30))
@@ -135,12 +136,40 @@ def fetch_bytes(url, limit):
 class LiveFeed:
     def __init__(self, inbox, *, attachments=False, fetch=fetch_bytes):
         self.inbox = inbox
+        self.edge = EdgeQueue(inbox)
         self.attachments = attachments
         self.fetch = fetch
         self.lock = Lock()
         self.next_check = 0
         self.last = None
         self.last_success = None
+
+    def prepare(self, row, *, allow_network=False):
+        pages, scope, warnings = (row["description"],), "rss_excerpt", 0
+        if allow_network and self.attachments and row["link"]:
+            try:
+                extracted, _ = read_upload("filing.pdf", self.fetch(row["link"], MAX_UPLOAD))
+                if not 12 <= sum(len(page.strip()) for page in extracted) <= MAX_TEXT:
+                    raise ValueError("Extracted PDF text exceeds analysis bounds.")
+                pages, scope = extracted, "pdf_text"
+            except (httpx.HTTPError, ValueError):
+                warnings += 1
+        document = make_document(
+            row["ticker"], row["issuer"] + " — NSE announcement", pages,
+            "NSE corporate announcements", datetime.fromisoformat(row["published_at"]).date().isoformat(),
+            row["link"] or RSS_URL, "nse-pdf" if scope == "pdf_text" else "nse-rss",
+        )
+        return replace(document, published_at=row["published_at"],
+                       retrieved_at=datetime.fromtimestamp(row["received"], timezone.utc).isoformat(),
+                       source_scope=scope), warnings
+
+    def drain_offline(self):
+        if not self.lock.acquire(blocking=False):
+            return {"state": "busy"}
+        try:
+            return {"state": "processed", **self.edge.drain(self.prepare)}
+        finally:
+            self.lock.release()
 
     def refresh(self):
         if not self.lock.acquire(blocking=False):
@@ -161,39 +190,14 @@ class LiveFeed:
                 result["last_success"] = self.last_success
                 result["latest_supported_at"] = rows[0].published.isoformat() if rows else None
                 result["outside_window"] = max(0, len(rows) - WINDOW)
-                unseen = []
-                for row in rows[:WINDOW]:
-                    if self.inbox.live_seen(row.key):
-                        result["duplicates"] += 1
-                    else:
-                        unseen.append(row)
-                result["pending"] = max(0, len(unseen) - BATCH)
-                for row in reversed(unseen[:BATCH]):
-                    pages, scope = (row.description,), "rss_excerpt"
-                    if self.attachments and row.url:
-                        try:
-                            extracted, _ = read_upload("filing.pdf", self.fetch(row.url, MAX_UPLOAD))
-                            if not 12 <= sum(len(page.strip()) for page in extracted) <= MAX_TEXT:
-                                raise ValueError("Extracted PDF text exceeds analysis bounds.")
-                            pages, scope = extracted, "pdf_text"
-                        except (httpx.HTTPError, ValueError):
-                            result["errors"] += 1
-                    try:
-                        document = make_document(
-                            row.ticker, row.issuer + " — NSE announcement", pages,
-                            "NSE corporate announcements", row.published.date().isoformat(),
-                            row.url or RSS_URL, "nse-pdf" if scope == "pdf_text" else "nse-rss",
-                        )
-                        document = replace(document, published_at=row.published.isoformat(),
-                                           retrieved_at=datetime.now(timezone.utc).isoformat(), source_scope=scope)
-                        _, duplicate = self.inbox.record_live(row.key, document)
-                    except ValueError:
-                        result["errors"] += 1
-                        continue
-                    result["duplicates"] += int(duplicate)
-                    result["imported"] += int(not duplicate)
-                    if not duplicate:
-                        result["pdf" if scope == "pdf_text" else "rss_only"] += 1
+                counts = self.edge.enqueue(rows[:WINDOW])
+                result.update(counts)
+            # Previously received jobs can still be analyzed when the feed is unavailable.
+            processed = self.edge.drain(lambda row: self.prepare(row, allow_network=result["state"] == "available"))
+            for key in ("imported", "duplicates", "errors", "rss_only", "pdf"):
+                result[key] += processed[key]
+            result["pending"] = processed["pending"]
+            result["budget"] = processed["budget"]
             self.last = result
             self.next_check = monotonic() + POLL_SECONDS
             return result
