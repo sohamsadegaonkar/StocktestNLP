@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102234">
+  <title>StockBrief Edge</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script type="module" src="/static/workspace.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to workspace</a>
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i></span>
+      <div><strong>StockBrief Edge</strong><span>Disclosure workspace</span></div>
+    </div>
+    <nav aria-label="Workspace">
+      <a href="#inbox" data-view="inbox"><span aria-hidden="true">≡</span>Inbox</a>
+      <a href="#analyze" data-view="analyze"><span aria-hidden="true">＋</span>Analyze</a>
+      <a href="#lab" data-view="lab"><span aria-hidden="true">◫</span>Edge lab</a>
+      <a href="#evaluation" data-view="evaluation"><span aria-hidden="true">▥</span>Evaluation</a>
+    </nav>
+    <div class="side-status"><strong><span class="dot"></span> Local inference</strong><span>Historical replay</span></div>
+  </aside>
+  <main id="main" tabindex="-1">
+    <header class="page-head">
+      <div>
+        <p class="eyebrow">NSE disclosure research</p>
+        <h1 id="view-title">Disclosure workspace</h1>
+        <p id="view-description">Review company announcements with the source beside each brief.</p>
+      </div>
+      <a id="analyze-shortcut" href="#analyze" class="button primary">Analyze locally <span aria-hidden="true">↗</span></a>
+    </header>
+    <p id="global-error" class="message error" role="alert" hidden></p>
+
+    <section id="view-inbox" aria-label="Inbox view">
+      <div class="stats">
+        <article><p class="eyebrow">Disclosures</p><strong data-stat="count">—</strong><span>Available on this device</span></article>
+        <article><p class="eyebrow">Source link</p><strong data-stat="link">—</strong><span>Simulated inbound feed</span></article>
+        <article><p class="eyebrow">Pending packets</p><strong data-stat="pending">—</strong><span>Waiting for delivery</span></article>
+      </div>
+      <div class="inbox-grid">
+        <section class="list-pane" aria-labelledby="list-heading">
+          <div class="section-head"><h2 id="list-heading">Disclosure inbox</h2><span id="filter-count"></span></div>
+          <div class="filters">
+            <label><span>Ticker</span><select id="filter-ticker"><option value="">All tickers</option></select></label>
+            <label><span>Category</span><select id="filter-category"><option value="">All categories</option></select></label>
+          </div>
+          <ul id="disclosure-list" class="document-list" aria-label="Disclosures"></ul>
+        </section>
+        <section id="disclosure-detail" class="detail card" aria-label="Selected disclosure" tabindex="-1"></section>
+      </div>
+    </section>
+
+    <section id="view-analyze" aria-label="Analyze view" hidden>
+      <div class="work-grid">
+        <article class="card form-card">
+          <div class="section-head"><h2>Import a disclosure</h2><button type="button" id="load-example" class="button">Load example</button></div>
+          <p class="muted">Paste English text or upload a text-based PDF or UTF-8 TXT file. Limit 5 MB and 30 PDF pages.</p>
+          <form id="analysis-form">
+            <div class="field-grid">
+              <label>Ticker <select name="ticker" id="form-ticker" required><option value="">Select ticker</option></select></label>
+              <label>Disclosure date <input type="date" name="disclosure_date"></label>
+            </div>
+            <label>Title <input name="title" maxlength="140" placeholder="e.g. Outcome of board meeting"></label>
+            <details>
+              <summary>Source details</summary>
+              <div class="form-stack">
+                <label>Publisher <input name="source" maxlength="100" placeholder="Company, exchange, or regulator"></label>
+                <label>Original URL <input type="url" name="url" maxlength="1000" placeholder="https://"></label>
+              </div>
+            </details>
+            <label>Disclosure text <textarea name="text" rows="7" maxlength="90000" placeholder="Paste the announcement text here"></textarea></label>
+            <label>Or choose a file <input type="file" name="file" accept=".pdf,.txt"></label>
+            <div class="actions"><button type="submit" class="button primary">Analyze locally</button><p id="analysis-status" class="form-status" role="status"></p></div>
+          </form>
+        </article>
+        <article id="analysis-result" class="card detail">
+          <h2>Analysis result</h2><p class="muted">The category, stage, and source excerpts will appear here.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="view-lab" aria-label="Edge lab view" hidden>
+      <div class="stats">
+        <article><p class="eyebrow">Source link</p><strong data-stat="link">—</strong><span>Simulated inbound feed</span></article>
+        <article><p class="eyebrow">Pending packets</p><strong data-stat="pending">—</strong><span>Delivery resumes on reconnect</span></article>
+        <article><p class="eyebrow">Duplicates suppressed</p><strong data-stat="duplicates">—</strong><span>Exact retransmissions</span></article>
+      </div>
+      <div class="work-grid">
+        <article class="card form-card">
+          <h2>Replay a source outage</h2>
+          <p class="muted">Disconnect the source link, advance two packets, and open Analyze to test local inference. Reconnect to deliver the queued disclosure and drop its retransmission.</p>
+          <label class="replay-progress">Packets advanced <progress id="replay-progress" max="4" value="0"></progress></label>
+          <p id="replay-count" class="mono"></p>
+          <div class="actions">
+            <button id="toggle-link" class="button" type="button" disabled>Disconnect link</button>
+            <button id="step-replay" class="button primary" type="button" disabled>Advance one packet</button>
+            <button id="reset-replay" class="button" type="button" disabled>Reset replay</button>
+          </div>
+          <p id="replay-status" class="form-status" role="status"></p>
+        </article>
+        <article class="card form-card">
+          <h2>Virtual display</h2>
+          <p class="muted">128 × 64 pixels · 1 bit per pixel</p>
+          <div class="display-cradle"><img id="virtual-display" src="/api/display.png" width="256" height="128" alt="Virtual device status display"></div>
+          <p class="small muted">The source link is simulated. Inference and SQLite writes run on this computer.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="view-evaluation" aria-label="Evaluation view" hidden>
+      <div class="card form-card evaluation">
+        <div class="section-head"><h2>Model comparison</h2><button id="run-evaluation" class="button primary" type="button">Run benchmark</button></div>
+        <p class="muted">Compare event labels, abstention, and host latency on a small authored holdout, with source-backed cases reported independently.</p>
+        <p id="evaluation-status" class="form-status" role="status"></p>
+        <div id="evaluation-results"></div>
+      </div>
+    </section>
+
+    <footer>Historical and synthetic replay data. Research and education use.</footer>
+  </main>
+</body>
+</html>

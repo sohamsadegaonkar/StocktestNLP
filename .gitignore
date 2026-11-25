@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.py[co]
+.runtime/
+*.sqlite*
+models/
+.DS_Store
