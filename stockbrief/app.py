@@ -17,6 +17,7 @@ from .evaluation import evaluate, host_metrics
 from .fixtures import Document
 from .hosted import COOKIE_AGE, COOKIE_NAME, HostedWorkspaces, WorkspaceLimit, public_https_origin, workspace_session
 from .inputs import MAX_UPLOAD, make_document, read_upload
+from .live_feed import LiveFeed
 from .market import INSTRUMENTS, MarketData
 from .intelligence import build_intelligence
 from .market_context import disclosure_context
@@ -78,6 +79,8 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
     hosted_imports = BoundedSemaphore(2)
     market = MarketData() if workspaces is None and os.getenv("STOCKBRIEF_DISABLE_MARKET") != "1" else None
 
+    live = LiveFeed(local_inbox, attachments=os.getenv("STOCKBRIEF_NSE_ATTACHMENTS") == "1") if workspaces is None else None
+
     def get_inbox(request: Request):
         if workspaces is None:
             return local_inbox
@@ -127,8 +130,15 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
         return {
             **inbox.state(), "labels": labels,
             "tickers": TICKERS, "transformer": transformer.name if transformer else None,
+            "live_feed_available": live is not None,
             "mode": mode, "storage": storage,
         }
+
+    @app.post("/api/live/refresh")
+    def live_refresh():
+        if live is None:
+            raise HTTPException(404, "Live feed is available only in local mode.")
+        return live.refresh()
 
     @app.get("/api/disclosures/{entry_id}")
     def get_disclosure(entry_id: int, inbox=inbox_dependency):

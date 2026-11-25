@@ -17,6 +17,10 @@ CREATE TABLE IF NOT EXISTS disclosures (
     payload TEXT NOT NULL,
     brief TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS live_receipts (
+    feed_key TEXT PRIMARY KEY,
+    disclosure_id INTEGER NOT NULL REFERENCES disclosures(id)
+);
 CREATE TABLE IF NOT EXISTS replay (
     id INTEGER PRIMARY KEY CHECK (id = 1),
     connected INTEGER NOT NULL,
@@ -34,6 +38,8 @@ def fingerprint(document: Document) -> str:
     text = re.sub(r"\s+", " ", normalize("NFKC", text)).strip()
     has_source = document.source != "Local import"
     fields = [document.ticker, document.source.casefold() if has_source else "", document.date if has_source else "", text]
+    if document.origin in {"nse-rss", "nse-pdf"}:
+        fields.extend((document.origin, document.url, document.published_at))
     return sha256(json.dumps(fields, ensure_ascii=False).encode()).hexdigest()
 
 
@@ -92,6 +98,22 @@ class Inbox:
     def record(self, document):
         with self.transaction(write=True) as db:
             return self._record(db, document)
+
+    def live_seen(self, feed_key):
+        with self.transaction() as db:
+            return db.execute("SELECT 1 FROM live_receipts WHERE feed_key = ?", (feed_key,)).fetchone() is not None
+
+    def record_live(self, feed_key, document):
+        with self.transaction(write=True) as db:
+            row = db.execute(
+                "SELECT d.* FROM disclosures d JOIN live_receipts r ON d.id = r.disclosure_id WHERE r.feed_key = ?",
+                (feed_key,),
+            ).fetchone()
+            if row:
+                return self._entry(row), True
+            entry, duplicate = self._record(db, document)
+            db.execute("INSERT INTO live_receipts VALUES (?, ?)", (feed_key, entry["id"]))
+            return entry, duplicate
 
     def document(self, entry_id):
         with self.transaction() as db:

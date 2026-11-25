@@ -147,6 +147,8 @@ def build_intelligence(entry: dict) -> dict:
         "version": VERSION, "entry_id": entry["id"], "ticker": entry["ticker"],
         "title": entry["title"], "source": entry["source"], "date": entry["date"],
         "url": entry["url"], "origin": entry["origin"],
+        "published_at": entry.get("published_at", ""), "retrieved_at": entry.get("retrieved_at", ""),
+        "source_scope": entry.get("source_scope", ""),
         "model": brief.get("model"), "model_version": brief.get("model_version"),
         "state": "identified" if supported else "needs_review",
         "events": events,
@@ -160,6 +162,8 @@ def build_intelligence(entry: dict) -> dict:
                 if entry["origin"] == "historical" else
                 ["Synthetic replay data is not real news."] if entry["origin"] == "synthetic" else []
             ),
+            *(["Only the published RSS excerpt was analyzed; the complete filing may contain additional information."]
+              if entry.get("source_scope") == "rss_excerpt" else []),
             *(["The model reached its chunk limit; later text may not have been analyzed."]
               if brief.get("chunk_limit_reached") else []),
         ],

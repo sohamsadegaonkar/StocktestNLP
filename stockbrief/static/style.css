@@ -425,3 +425,5 @@ footer {
 .intelligence-event p, .intelligence-panel li { font-size: 13px; line-height: 1.5; }
 .intelligence-panel ul { padding-inline-start: 20px; margin: 5px 0 10px; }
 .intelligence-panel button { margin-top: 10px; }
+
+#live-feed-panel .market-status { overflow-wrap: anywhere; }

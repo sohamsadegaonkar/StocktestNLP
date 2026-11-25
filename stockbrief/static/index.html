@@ -55,6 +55,17 @@
         <article><p class="eyebrow">Source link · simulated</p><strong data-stat="link">—</strong><a href="#lab">View edge lab <span aria-hidden="true">→</span></a></article>
         <article><p class="eyebrow">Pending packets</p><strong data-stat="pending">—</strong><span>Waiting for delivery</span></article>
       </div>
+      <section class="card market-card" id="live-feed-panel" hidden aria-labelledby="live-feed-heading">
+        <div class="market-header">
+          <div><h2 id="live-feed-heading">Live NSE announcements</h2>
+            <p class="market-source">Official RSS · five tracked issuers · local research only</p></div>
+          <div class="actions">
+            <button type="button" class="button primary" id="live-toggle">Start auto refresh</button>
+            <button type="button" class="button" id="live-refresh">Fetch now</button>
+          </div>
+        </div>
+        <p class="market-status" id="live-status" role="status">Not checked yet. Refreshes every two minutes while the inbox is visible when enabled.</p>
+      </section>
       <section class="card market-card" id="market-panel" aria-labelledby="market-heading">
         <div class="market-header">
           <div>

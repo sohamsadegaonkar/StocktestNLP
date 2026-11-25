@@ -8,6 +8,8 @@ const viewText = {
 const originNames = {
   historical: "Historical paraphrase",
   synthetic: "Synthetic scenario",
+  "nse-rss": "NSE RSS excerpt",
+  "nse-pdf": "NSE filing PDF text",
   text: "Text import",
   pdf: "PDF import",
 };
@@ -234,6 +236,44 @@ function intelligencePanel(entry) {
   return panel;
 }
 
+function marketContextPanel(entry) {
+  const panel = element("section", undefined, "intelligence-panel");
+  panel.append(element("h3", "Observed market context"));
+  const note = element("p", "Checking completed trading sessions…", "small muted");
+  note.setAttribute("role", "status");
+  panel.append(note);
+  const signed = (n, unit) => n == null ? "Unavailable" : (n > 0 ? "+" : "") + n.toFixed(2) + unit;
+  api("/api/market-context/" + encodeURIComponent(entry.ticker) + "?filing_date=" + encodeURIComponent(entry.date))
+    .then(result => {
+      const metrics = element("dl");
+      metrics.append(detailField("Company return", signed(result.symbol_return_pct, "%")),
+        detailField("Nifty 50 return", signed(result.benchmark_return_pct, "%")),
+        detailField("Relative return", signed(result.relative_return_pp, " pp")));
+      note.textContent = result.before && result.after
+        ? dateLabel(result.before.date) + " to " + dateLabel(result.after.date) + " · " + result.state
+        : result.state + " · " + (result.reason || "No matching sessions").replaceAll("_", " ");
+      panel.append(metrics);
+      if (result.before && result.after) {
+        panel.append(element("p", "Company closes: ₹" + result.before.close + " → ₹" + result.after.close, "small"));
+        const chart = $("#market-symbol");
+        if (chart && !$("#market-panel").hidden) {
+          const button = element("button", "Show issuer price chart", "button");
+          button.type = "button";
+          button.addEventListener("click", () => {
+            chart.value = entry.ticker;
+            chart.dispatchEvent(new Event("change"));
+            $("#market-panel").scrollIntoView({block: "start"});
+          });
+          panel.append(button);
+        }
+      }
+      const list = element("ul");
+      result.limitations.forEach(item => list.append(element("li", item)));
+      panel.append(element("p", "Upstox · source checked " + (result.symbol_checked_at || "unavailable"), "small muted"), list);
+    }).catch(error => status(note, error.message, true));
+  return panel;
+}
+
 function detail(entry, pane) {
   const brief = entry.brief;
   const heading = element("div", undefined, "chips");
@@ -248,6 +288,10 @@ function detail(entry, pane) {
   if (brief.chunk_limit_reached) {
     pane.append(element("p", "The analysis reached its 240-chunk limit. Later text may need a separate review.", "small muted"));
   }
+  if (entry.published_at) pane.append(element("p", "Published " + entry.published_at +
+    " · retrieved " + entry.retrieved_at, "small muted"));
+  if (entry.source_scope === "rss_excerpt") pane.append(element("p",
+    "RSS excerpt only — the full filing was not analyzed.", "small muted"));
   pane.append(intelligencePanel(entry));
   if (brief.events?.length > 1) {
     for (const event of brief.events) {
@@ -259,6 +303,8 @@ function detail(entry, pane) {
   } else {
     eventDetails(entry, brief, pane, false);
   }
+
+  if (entry.origin.startsWith("nse-") && entry.date) pane.append(marketContextPanel(entry));
 
   const sourceActions = element("div", undefined, "actions source-actions");
   if (entry.url) sourceActions.append(sourceLink(entry.url, "Open original source →"));
@@ -369,7 +415,48 @@ function renderInbox(focusId) {
   saveInboxView();
 }
 
+let liveEnabled = false;
+let liveBusy = false;
+let liveStarted = 0;
+async function pollLive() {
+  if (!state?.live_feed_available || liveBusy || analysisBusy || replayBusy || workspaceBusy) return;
+  liveBusy = true;
+  liveStarted = Date.now();
+  const button = $("#live-refresh");
+  const note = $("#live-status");
+  button.disabled = true;
+  status(note, "Checking NSE RSS…");
+  try {
+    const result = await api("/api/live/refresh", {method: "POST"});
+    if (result.state === "busy") {
+      status(note, "Another refresh is running.");
+      return;
+    }
+    const summary = "Imported " + result.imported + " · " + result.duplicates + " already seen · " +
+      result.pending + " pending in recent window · " + result.errors + " processing warnings";
+    status(note, (result.state === "unavailable" ? "Feed unavailable; saved briefs retained." : summary) +
+      " · Last successful check: " + (result.last_success || "none") +
+      (result.throttled ? " · Cached refresh status" : ""), result.state === "unavailable");
+    if (result.imported || result.throttled) await refresh();
+  } catch (error) {
+    status(note, error.message, true);
+  } finally {
+    liveBusy = false;
+    button.disabled = false;
+  }
+}
+$("#live-refresh").addEventListener("click", pollLive);
+$("#live-toggle").addEventListener("click", () => {
+  liveEnabled = !liveEnabled;
+  $("#live-toggle").textContent = liveEnabled ? "Stop auto refresh" : "Start auto refresh";
+  if (liveEnabled) pollLive();
+});
+setInterval(() => {
+  if (liveEnabled && !document.hidden && !$("#view-inbox").hidden && Date.now() - liveStarted >= 120000) pollLive();
+}, 5000);
+
 function renderState() {
+  $("#live-feed-panel").hidden = !state.live_feed_available;
   const hosted = state.mode === "hosted";
   $("#workspace-scope").textContent = hosted ? "Private browser workspace" : "Local workspace";
   $("#storage-note").hidden = !hosted || state.storage !== "sqlite";

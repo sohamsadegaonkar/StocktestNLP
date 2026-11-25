@@ -205,6 +205,15 @@ class APITests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(raw[quote["page"] - 1][quote["start"]:quote["end"]], quote["text"])
         self.assertEqual((await self.client.get("/api/disclosures/999/intelligence")).status_code, 404)
 
+    async def test_live_refresh_routes_to_local_feed(self):
+        from unittest.mock import patch
+        with patch("stockbrief.live_feed.LiveFeed.refresh", return_value={"state": "available", "imported": 0}):
+            result = await self.client.post("/api/live/refresh")
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.json()["state"], "available")
+        denied = await self.client.post("/api/live/refresh", headers={"Origin": "https://example.org"})
+        self.assertEqual(denied.status_code, 403)
+
     async def test_bad_and_cross_origin_requests_are_rejected(self):
         responses = [
             (await self.client.post("/api/analyze", data={"ticker": "NONE", "text": "Something happened at a board meeting."}), 422),
