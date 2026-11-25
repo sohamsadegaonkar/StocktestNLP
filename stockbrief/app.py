@@ -1,5 +1,6 @@
 """HTTP interface for local and hosted research workspaces."""
 import os
+from datetime import date
 from pathlib import Path
 from threading import BoundedSemaphore
 from typing import Literal
@@ -17,6 +18,7 @@ from .fixtures import Document
 from .hosted import COOKIE_AGE, COOKIE_NAME, HostedWorkspaces, WorkspaceLimit, public_https_origin, workspace_session
 from .inputs import MAX_UPLOAD, make_document, read_upload
 from .market import INSTRUMENTS, MarketData
+from .market_context import disclosure_context
 from .semantic import load_semantic, model_directory
 from .store import Inbox
 
@@ -214,6 +216,14 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
         if request.headers.get("sec-fetch-site") == "cross-site":
             raise HTTPException(403, "Open the dashboard to view market charts.")
         return market.chart(symbol, period)
+
+    @app.get("/api/market-context/{symbol}")
+    def market_context(symbol: str, filing_date: date, request: Request):
+        if market is None or symbol not in INSTRUMENTS or symbol == "NIFTY50":
+            raise HTTPException(404, "Disclosure market context unavailable.")
+        if request.headers.get("sec-fetch-site") == "cross-site":
+            raise HTTPException(403, "Open the dashboard to view market context.")
+        return disclosure_context(market.chart(symbol, "1M"), market.chart("NIFTY50", "1M"), filing_date)
 
     @app.get("/api/health")
     def health():
