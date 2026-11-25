@@ -1,0 +1,122 @@
+{
+  "dataset_version": "nse-domain-events-v1",
+  "source": "Official NSE India Corporate Announcements (https://www.nseindia.com/companies-listing/corporate-filings-announcements)",
+  "license_notes": "Public exchange regulatory disclosures filed under SEBI (LODR) Regulations, 2015. Dataset stores official metadata (doc_id, URL, issuer, ISO date) with permitted short factual excerpts, headline-only notices, failed PDF extraction samples, and clearly labeled original annotation paraphrases. No user uploads are included. Repo benchmark fixtures (corpus.py, semantic_data.py, fixtures.py, test_semantic.py) remain untouched and excluded.",
+  "deduplication": {
+    "input_count": 465,
+    "deduped_count": 447,
+    "exact_duplicates_removed": 15,
+    "near_duplicates_removed": 3
+  },
+  "unseen_heldout_issuers": [
+    "ABB",
+    "ACLGATI",
+    "ADANIPORTS",
+    "ALKEM",
+    "BANARBEADS",
+    "BEL",
+    "DIXON",
+    "DMART",
+    "DRREDDY",
+    "EICHERMOT",
+    "INDHOTEL",
+    "IRCTC",
+    "M&M",
+    "NATCOPHARM",
+    "PHOENIXLTD",
+    "TECHM",
+    "TITAN",
+    "TVSMOTOR",
+    "VOLTAS"
+  ],
+  "unseen_heldout_docs": 69,
+  "splits": {
+    "train": {
+      "count": 244,
+      "issuers": 160,
+      "date_min": "2025-07-01",
+      "date_max": "2026-04-16",
+      "labels": {
+        "regulatory": 22,
+        "deal": 26,
+        "governance": 25,
+        "corporate_action": 30,
+        "routine": 28,
+        "pricing": 31,
+        "review": 23,
+        "operations": 31,
+        "earnings": 28
+      },
+      "multilabel": 7,
+      "mixed_pricing_earnings": 4,
+      "rumor_denials": 10,
+      "scheduled_stage": 17,
+      "failed_pdf": 8,
+      "headline_only": 8
+    },
+    "calibration": {
+      "count": 85,
+      "issuers": 51,
+      "date_min": "2025-07-29",
+      "date_max": "2026-09-11",
+      "labels": {
+        "deal": 9,
+        "earnings": 10,
+        "review": 8,
+        "pricing": 11,
+        "corporate_action": 10,
+        "regulatory": 8,
+        "operations": 10,
+        "routine": 10,
+        "governance": 9
+      },
+      "multilabel": 2,
+      "mixed_pricing_earnings": 1,
+      "rumor_denials": 5,
+      "scheduled_stage": 5,
+      "failed_pdf": 3,
+      "headline_only": 3
+    },
+    "test": {
+      "count": 118,
+      "issuers": 48,
+      "date_min": "2025-07-01",
+      "date_max": "2026-11-19",
+      "labels": {
+        "deal": 17,
+        "regulatory": 19,
+        "review": 17,
+        "corporate_action": 10,
+        "earnings": 12,
+        "governance": 15,
+        "pricing": 12,
+        "routine": 9,
+        "operations": 7
+      },
+      "multilabel": 5,
+      "mixed_pricing_earnings": 4,
+      "rumor_denials": 7,
+      "scheduled_stage": 3,
+      "failed_pdf": 5,
+      "headline_only": 9
+    }
+  },
+  "files": {
+    "curated": {
+      "path": "training\\data\\nse_announcements.jsonl",
+      "sha256": "394ed1017c7328d0b72b3f34ad70db6cc107bc770bc23b16e9f12979911350cd"
+    },
+    "train": {
+      "path": "training\\data\\train.jsonl",
+      "sha256": "666dcd2f7775ad1aa60fb52e6d49174cc45c18e5ef3845c2eb530dffcc8a381e"
+    },
+    "calibration": {
+      "path": "training\\data\\calibration.jsonl",
+      "sha256": "44261df9543e5760dcbbd2721efa88dcbcab17fc3e060bf9b6c668ffec61f41a"
+    },
+    "test": {
+      "path": "training\\data\\test.jsonl",
+      "sha256": "3b4a68b23833837a7ce16a40d82d9d707f07f37ee0066ff2337ac356afdb3bad"
+    }
+  }
+}
