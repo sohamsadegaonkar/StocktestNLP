@@ -8,7 +8,7 @@ NSE watchlist researchers often need to decide which announcements to open and v
 
 ## Run locally
 
-Requires Python 3.11 or 3.12. First-time dependency installation needs internet. After setup the default workflow runs without cloud credentials or external assets.
+Requires Python 3.11 or 3.12. Install dependencies and download the verified semantic model once while online. The Analyze workflow runs on CPU from local model files after setup.
 
 ### Windows PowerShell
 
@@ -17,6 +17,7 @@ Open PowerShell in the repository folder:
 ~~~powershell
 py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m stockbrief fetch-semantic
 .\.venv\Scripts\python.exe -m stockbrief serve
 ~~~
 
@@ -25,6 +26,7 @@ py -3.12 -m venv .venv
 ~~~bash
 python3 -m venv .venv
 ./.venv/bin/python -m pip install -r requirements.txt
+./.venv/bin/python -m stockbrief fetch-semantic
 ./.venv/bin/python -m stockbrief serve
 ~~~
 
@@ -49,7 +51,9 @@ An internet connection is needed to fetch candles. The chart calls the provider 
 
 ## Models
 
-The default pipeline fits word and character TF-IDF with logistic regression on 84 original disclosures. It evaluates document context and individual chunks, routes ambiguous outputs to review, and extracts page-level evidence. Event stage and figures are separate deterministic rules with provenance. The stage label reflects the text of that disclosure and is not updated from later events.
+The default pipeline encodes disclosure passages with **BGE-small-en-v1.5 INT8** via ONNX Runtime on CPU and fits a supervised classification head on 122 labeled examples. It groups supported passages into event cards by category so mixed disclosures can show multiple categories. It routes unclear inputs to review with source excerpts. The app extracts stated stages, figures, and dates with their original wording.
+
+The one-time download verifies a pinned copy of the roughly 34 MB encoder and its tokenizer. The model files are saved under `models/semantic`. Resubmitting saved text can refresh its analysis using the current model and the existing inbox entry.
 
 The optional transformer runs quantized MobileBERT MNLI through ONNX Runtime on CPU. It scores seven event hypotheses against up to the first six chunks as a second opinion. The downloader uses a pinned model revision and the app verifies the weights against the published SHA-256 before loading them. The served comparator reads only local model files.
 
@@ -69,15 +73,16 @@ python -m unittest discover -v
 python -m stockbrief evaluate --cpus 1  # Linux affinity; omit --cpus elsewhere
 ~~~
 
-The benchmark writes JSON with model metrics, the confusion matrix, four source-backed checks, process RSS, and latency. See the [default test run](docs/evaluation.json) and the [one-CPU MobileBERT test run](docs/transformer-evaluation.json).
+The benchmark writes JSON with model metrics, the confusion matrix, four source-backed checks, process RSS, and latency. See the [semantic model run](docs/semantic-evaluation.json) and the [earlier MobileBERT run](docs/transformer-evaluation.json).
 
 | Model | Macro F1 | Coverage | Ambiguous cases sent to review |
 | --- | ---: | ---: | ---: |
 | Keyword baseline | 0.881 | 75.0% | 4 of 4 |
 | TF-IDF + logistic regression | 0.933 | 93.8% | 2 of 4 |
 | MobileBERT INT8 | 0.516 | 40.6% | 4 of 4 |
+| BGE-small INT8 + supervised classifier | 1.000 | 87.5% | 4 of 4 |
 
-This 32-case authored holdout favors the lighter model as the default for category coverage and macro F1. MobileBERT gives a second reading when a user wants to cross-check the category. These are small-sample host measurements. The edge device and its source link remain simulated.
+BGE had the highest macro F1 on the 32 authored holdout cases and also classified eight additional pricing and review fixtures correctly. The original holdout contains 28 substantive and four review cases. The small authored suite measures project behavior, and a larger independent filing sample would be needed to estimate accuracy in wider use. The edge device and its source link are simulated.
 
 In GitHub Actions, run **Checks** with the **transformer** input enabled to install the pinned weights, exercise the local second-opinion API, and save the evaluation JSON in the workflow artifact.
 
@@ -87,7 +92,7 @@ The hosted workspace serves the frontend and API from the same HTTPS origin. It 
 
 Hosted inference runs on the server. The link outage and 128 × 64 display simulate edge behavior. The default local mode runs inference on your own machine and continues working when the machine loses Internet access.
 
-To host a separate instance, install the base requirements, set `STOCKBRIEF_PUBLIC_ORIGIN` to the canonical HTTPS URL, and start `python -m stockbrief serve --hosted`. The server uses `PORT` when provided. On Render it can use the platform's `RENDER_EXTERNAL_URL`.
+To host a separate instance, install the base requirements, download the BGE model with `python -m stockbrief fetch-semantic`, set `STOCKBRIEF_PUBLIC_ORIGIN` to the canonical HTTPS URL, and start `python -m stockbrief serve --hosted`. The server uses `PORT` when provided. On Render it can use the platform's `RENDER_EXTERNAL_URL`.
 
 The [Render Blueprint](render.yaml) defines a Free web service with an HTTP health check at `/api/health`.
 

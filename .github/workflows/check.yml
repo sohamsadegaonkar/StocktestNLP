@@ -24,6 +24,7 @@ jobs:
           python-version: '3.12'
           cache: pip
       - run: python -m pip install -r requirements.txt
+      - run: python -m stockbrief fetch-semantic
       - run: python -m unittest discover -v
       - run: node --check stockbrief/static/workspace.js
       - name: Evaluate the default classifier

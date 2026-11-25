@@ -10,7 +10,7 @@
 
 ## Explain the engineering
 
-- **ML** Word and character TF-IDF produce sparse vectors. Multiclass logistic regression learns event labels from the authors’ examples. A keyword matcher establishes a simple baseline.
+- **ML** A quantized BGE transformer turns a passage into a vector representing its meaning. A supervised classifier learns event labels from those vectors. Word and character TF-IDF and keyword matching are benchmark baselines.
 - **NLP** Page-aware segmentation preserves character offsets. Document and chunk scores determine the category and strongest supporting evidence. Rules extract disclosed amounts and guard basic stage distinctions such as signed, completed, denied, and subject to approvals.
 - **Edge** CPU inference, file parsing, and the SQLite inbox all run locally. The link simulation controls delivery of inbound packets only. No cloud API is used for a brief and no edge kit is needed for demonstration.
 - **AI comparison** Optional INT8 MobileBERT evaluates whether a source chunk entails each plain-language event description. It supports an independent second opinion and a repeatable comparison once the model artifacts are installed.

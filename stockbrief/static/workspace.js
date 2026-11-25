@@ -145,21 +145,11 @@ function downloadJson(name, payload) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-function detail(entry, pane) {
-  const brief = entry.brief;
-  const heading = element("div", undefined, "chips");
-  heading.append(element("span", entry.ticker, "chip"), element("span", originNames[entry.origin] || "Local import", "chip subtle"));
-  if (brief.category === "review") heading.append(element("span", "Needs review", "chip review"));
-  const meta = [entry.source, dateLabel(entry.date)].filter(Boolean).join(" · ");
+function eventDetails(entry, brief, pane, separateCard) {
   const facts = element("dl");
-  facts.append(detailField("Event category", brief.category_name), detailField("Disclosure stage", brief.stage));
-  pane.replaceChildren(heading, element("h2", entry.title), element("p", meta, "source-meta"), facts);
-  if (brief.category === "review") {
-    pane.append(element("p", "Leading candidate: " + brief.candidate_name + ". Read the excerpt before using the label.", "small muted"));
-  }
-  if (brief.chunk_limit_reached) {
-    pane.append(element("p", "The analysis reached its 240-chunk limit. Later text may need a separate review.", "small muted"));
-  }
+  if (!separateCard) facts.append(detailField("Event category", brief.category_name));
+  facts.append(detailField("Disclosure stage", brief.stage));
+  pane.append(facts);
 
   const evidenceList = element("div", undefined, "evidence-list");
   evidenceList.append(element("h3", "Source evidence", "eyebrow"));
@@ -172,16 +162,43 @@ function detail(entry, pane) {
   }
   pane.append(evidenceList);
 
-  if (brief.figures.length) {
+  for (const [label, values] of [["Figures in the source text", brief.figures], ["Dates and periods", brief.dates]]) {
+    if (!values?.length) continue;
     const figures = element("div", undefined, "amounts");
     const chips = element("div", undefined, "chips");
-    const figuresByValue = new Map(brief.figures.map((figure) => [figure.value, figure]));
+    const figuresByValue = new Map(values.map((figure) => [figure.value, figure]));
     for (const figure of figuresByValue.values()) {
       const locator = entry.origin === "historical" ? "Excerpt " : "Page ";
       chips.append(element("span", figure.value + " · " + locator + figure.page, "chip subtle"));
     }
-    figures.append(element("h3", "Figures in the source text", "eyebrow"), chips);
+    figures.append(element("h3", label, "eyebrow"), chips);
     pane.append(figures);
+  }
+}
+
+function detail(entry, pane) {
+  const brief = entry.brief;
+  const heading = element("div", undefined, "chips");
+  heading.append(element("span", entry.ticker, "chip"), element("span", originNames[entry.origin] || "Local import", "chip subtle"));
+  if (brief.category === "review") heading.append(element("span", "Needs review", "chip review"));
+  const meta = [entry.source, dateLabel(entry.date)].filter(Boolean).join(" · ");
+  pane.replaceChildren(heading, element("h2", entry.title), element("p", meta, "source-meta"));
+  if (brief.category === "review") {
+    const note = brief.review_message ?? ("Leading candidate: " + brief.candidate_name + ". Review the source excerpts.");
+    pane.append(element("p", note, "small muted"));
+  }
+  if (brief.chunk_limit_reached) {
+    pane.append(element("p", "The analysis reached its 240-chunk limit. Later text may need a separate review.", "small muted"));
+  }
+  if (brief.events?.length > 1) {
+    for (const event of brief.events) {
+      const card = element("section", undefined, "event-card");
+      card.append(element("h3", event.category_name));
+      eventDetails(entry, event, card, true);
+      pane.append(card);
+    }
+  } else {
+    eventDetails(entry, brief, pane, false);
   }
 
   const sourceActions = element("div", undefined, "actions source-actions");
@@ -241,8 +258,10 @@ function renderInbox(focusId) {
   const category = $("#filter-category").value;
   const query = $("#filter-search").value.trim().toLowerCase();
   const entries = state.disclosures.filter((entry) => {
-    const searchable = [entry.ticker, state.tickers[entry.ticker], entry.title, entry.source, entry.brief.category_name, entry.brief.stage];
-    return (!ticker || entry.ticker === ticker) && (!category || entry.brief.category === category) &&
+    const events = entry.brief.events?.length ? entry.brief.events : [entry.brief];
+    const searchable = [entry.ticker, state.tickers[entry.ticker], entry.title, entry.source,
+      ...events.flatMap((event) => [event.category_name, event.stage])];
+    return (!ticker || entry.ticker === ticker) && (!category || events.some((event) => event.category === category)) &&
       (!query || searchable.some((value) => value?.toLowerCase().includes(query)));
   });
   $("#filter-count").textContent = entries.length + " of " + state.disclosures.length;
@@ -257,7 +276,9 @@ function renderInbox(focusId) {
     row.setAttribute("aria-pressed", String(entry.id === selection));
     const meta = element("span", undefined, "row-meta");
     meta.append(element("span", entry.ticker, "row-ticker"), element("span", dateLabel(entry.date) || "Undated", "row-date"));
-    const event = entry.brief.category_name + (entry.brief.stage === "Unclear" ? "" : " · " + entry.brief.stage);
+    const event = entry.brief.events?.length > 1
+      ? entry.brief.events.map((item) => item.category_name).join(" · ")
+      : entry.brief.category_name + (entry.brief.stage === "Unclear" ? "" : " · " + entry.brief.stage);
     row.append(meta, element("strong", entry.title), element("span", event, "row-event"));
     row.addEventListener("click", () => {
       selection = entry.id;

@@ -127,6 +127,10 @@ class HostedWorkspaces:
     def _add(state, prepared):
         for entry in state["disclosures"]:
             if entry["fingerprint"] == prepared["fingerprint"]:
+                version = prepared["brief"].get("model_version")
+                same_pages = tuple(prepared["pages"]) == tuple(entry["pages"])
+                if version and version != entry["brief"].get("model_version") and same_pages:
+                    entry["brief"] = prepared["brief"]
                 return entry, True
         entry = {"id": state["next_id"], **prepared}
         state["next_id"] += 1

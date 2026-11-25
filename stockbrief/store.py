@@ -72,7 +72,14 @@ class Inbox:
         key = fingerprint(document)
         row = db.execute("SELECT * FROM disclosures WHERE fingerprint = ?", (key,)).fetchone()
         if row:
-            return self._entry(row), True
+            entry = self._entry(row)
+            version = getattr(self.model, "version", None)
+            if version and entry["brief"].get("model_version") != version:
+                payload = json.loads(row["payload"])
+                payload["pages"] = tuple(payload["pages"])
+                entry["brief"] = self.model.analyze(Document(**payload))
+                db.execute("UPDATE disclosures SET brief = ? WHERE id = ?", (json.dumps(entry["brief"]), row["id"]))
+            return entry, True
         brief = self.model.analyze(document)
         result = db.execute(
             "INSERT INTO disclosures(fingerprint, origin, payload, brief) VALUES (?, ?, ?, ?)",

@@ -12,6 +12,7 @@ LABELS = {
 TICKERS = {
     "INFY": "Infosys",
     "HDFCBANK": "HDFC Bank",
+    "TMPV": "Tata Motors Passenger Vehicles",
     "TATAMOTORS": "Tata Motors (legacy ticker)",
     "RELIANCE": "Reliance Industries",
     "TCS": "Tata Consultancy Services",

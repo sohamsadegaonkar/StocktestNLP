@@ -60,6 +60,11 @@ STAGES = {
         ("Approved", r"\bapprov\w+\b"),
     ),
     "earnings": (("Reported", r"\b(?:report\w+|publish\w+|approved|results show)\b"),),
+    "pricing": (
+        ("Denied", r"\b(?:denied|no price (?:increase|hike)|will not (?:raise|increase|cut) prices)\b"),
+        ("Announced", r"\b(?:announc\w+|price revision|will (?:raise|increase|cut|reduce) prices|"
+                      r"introduced|launched|is increasing|is reducing)\b"),
+    ),
     "governance": (
         ("Resignation", r"\b(?:resign\w+|steps? down|step[p]?ed down|cease to hold office)\b"),
         ("Appointment", r"\b(?:appoint\w+|named|nominated)\b"),
@@ -84,12 +89,12 @@ class Chunk:
     text: str
 
 
-def chunks_for(pages: tuple[str, ...]) -> list[Chunk]:
+def chunks_for(pages: tuple[str, ...], pattern=PATTERN) -> list[Chunk]:
     found = []
     for page_number, page in enumerate(pages, start=1):
         start = 0
         boundaries = []
-        for boundary in PATTERN.finditer(page):
+        for boundary in pattern.finditer(page):
             if not ABBREVIATION.search(page[max(0, boundary.start() - 8):boundary.start()]):
                 boundaries.append((boundary.start(), boundary.end()))
         boundaries.append((len(page), len(page)))
@@ -136,6 +141,8 @@ def stage_for(label: str, candidates: list[Chunk]) -> tuple[str, dict | None]:
 
 
 class EventModel:
+    name = MODEL
+
     def __init__(self):
         samples = [(text, label) for label, texts in TRAIN.items() for text in texts]
         texts, targets = zip(*samples)

@@ -17,7 +17,7 @@ from .fixtures import Document
 from .hosted import COOKIE_AGE, COOKIE_NAME, HostedWorkspaces, WorkspaceLimit, public_https_origin, workspace_session
 from .inputs import MAX_UPLOAD, make_document, read_upload
 from .market import INSTRUMENTS, MarketData
-from .nlp import MODEL, EventModel
+from .semantic import load_semantic, model_directory
 from .store import Inbox
 
 STATIC = Path(__file__).resolve().parent / "static"
@@ -55,10 +55,12 @@ class RequestLimit:
         return await self.app(scope, buffered, send)
 
 
-def create_app(path: Path | None = None, transformer=None, *, public_origin=None, database_url=None):
+def create_app(path: Path | None = None, transformer=None, *, public_origin=None, database_url=None, model=None):
     if database_url and public_origin is None:
         raise ValueError("A PostgreSQL URL requires hosted mode.")
-    model = EventModel()
+    if model is None:
+        model = load_semantic(model_directory())
+    labels = {**getattr(model, "labels", LABELS), "review": "Needs review"}
     workspaces = None
     if public_origin is None:
         local_inbox = Inbox(path or Path(".runtime/stockbrief.sqlite"), model)
@@ -120,7 +122,7 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
     @app.get("/api/inbox")
     def list_inbox(inbox=inbox_dependency):
         return {
-            **inbox.state(), "labels": {**LABELS, "review": "Needs review"},
+            **inbox.state(), "labels": labels,
             "tickers": TICKERS, "transformer": transformer.name if transformer else None,
             "mode": mode, "storage": storage,
         }
@@ -219,8 +221,8 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
             healthy = workspaces.healthy()
             return JSONResponse({
                 "status": "ok" if healthy else "unavailable", "mode": mode,
-                "model": MODEL, "inference": "server", "source": "simulated", "storage": storage,
+                "model": model.name, "inference": "server", "source": "simulated", "storage": storage,
             }, status_code=200 if healthy else 503)
-        return {"status": "ok", "model": MODEL, "inference": "local", "source": "simulated", **host_metrics()}
+        return {"status": "ok", "model": model.name, "inference": "local", "source": "simulated", **host_metrics()}
 
     return app

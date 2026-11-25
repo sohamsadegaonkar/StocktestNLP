@@ -8,3 +8,5 @@ Pillow>=11,<14
 python-multipart>=0.0.22,<1
 psutil>=6,<8
 httpx>=0.27,<1
+onnxruntime>=1.19,<2
+tokenizers>=0.20,<1

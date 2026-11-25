@@ -7,12 +7,13 @@ import sys
 
 def main():
     parser = argparse.ArgumentParser(description="StockBrief Edge disclosure workspace")
-    parser.add_argument("command", choices=("serve", "evaluate", "fetch-model"), nargs="?", default="serve")
+    parser.add_argument("command", choices=("serve", "evaluate", "fetch-model", "fetch-semantic"), nargs="?", default="serve")
     parser.add_argument("--port", type=int, help="Server port (default 5050 locally, PORT in hosted mode)")
     parser.add_argument("--db", type=Path, help="SQLite database path")
     parser.add_argument("--hosted", action="store_true", help="Serve private browser workspaces on a configured HTTPS origin")
     parser.add_argument("--cpus", type=int, help="Limit Linux CPU affinity to this many available CPUs")
     parser.add_argument("--transformer", type=Path, help="Path to local transformer files for evaluation or download")
+    parser.add_argument("--semantic-model", type=Path, help="BGE model directory (default models/semantic)")
     args = parser.parse_args()
     if args.cpus:
         if args.cpus < 1 or not hasattr(os, "sched_getaffinity"):
@@ -25,6 +26,14 @@ def main():
         parser.error("--cpus must be positive")
 
     try:
+        if args.command == "fetch-semantic":
+            from .semantic import fetch_semantic, model_directory
+
+            folder = model_directory(args.semantic_model)
+            fetch_semantic(folder)
+            print(f"Verified BGE semantic model in {folder}")
+            return
+
         if args.command == "fetch-model":
             from .transformer import fetch_model
 
@@ -34,9 +43,11 @@ def main():
 
         from threadpoolctl import threadpool_limits
 
+        from .semantic import load_semantic, model_directory
         from .transformer import Transformer
 
         with threadpool_limits(limits=1):
+            model = load_semantic(model_directory(args.semantic_model))
             comparator = Transformer(args.transformer) if args.transformer else None
             if args.command == "serve":
                 import uvicorn
@@ -54,15 +65,14 @@ def main():
                     if port is None:
                         port = int(os.environ.get("PORT", "10000"))
                 uvicorn.run(
-                    create_app(args.db, transformer=comparator, public_origin=origin, database_url=database_url),
+                    create_app(args.db, transformer=comparator, public_origin=origin, database_url=database_url, model=model),
                     host="0.0.0.0" if args.hosted else "127.0.0.1",
                     port=port if port is not None else 5050,
                 )
             else:
                 from .evaluation import evaluate
-                from .nlp import EventModel
 
-                print(json.dumps(evaluate(EventModel(), comparator), ensure_ascii=False, indent=2))
+                print(json.dumps(evaluate(model, comparator), ensure_ascii=False, indent=2))
     except (ImportError, ValueError, OSError, RuntimeError) as error:
         print(f"StockBrief Edge: {error}", file=sys.stderr)
         raise SystemExit(2) from error

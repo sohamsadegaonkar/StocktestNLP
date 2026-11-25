@@ -6,7 +6,7 @@ services:
     region: singapore
     branch: main
     autoDeployTrigger: 'off'
-    buildCommand: python -m pip install -r requirements.txt
+    buildCommand: python -m pip install -r requirements.txt && python -m stockbrief fetch-semantic
     startCommand: python -m stockbrief serve --hosted
     healthCheckPath: /api/health
     envVars:
