@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#102234">
+  <meta name="description" content="Analyze NSE company disclosures, trace classifications to the source, and replay an interrupted market feed.">
   <title>StockBrief Edge</title>
   <link rel="stylesheet" href="/static/style.css">
   <script type="module" src="/static/workspace.js"></script>
@@ -11,45 +12,59 @@
 <body>
   <a class="skip-link" href="#main">Skip to workspace</a>
   <aside class="sidebar">
-    <div class="brand">
+    <a class="brand" href="#inbox" aria-label="StockBrief Edge inbox">
       <span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i></span>
       <div><strong>StockBrief Edge</strong><span>Disclosure workspace</span></div>
-    </div>
+    </a>
     <nav aria-label="Workspace">
       <a href="#inbox" data-view="inbox"><span aria-hidden="true">≡</span>Inbox</a>
       <a href="#analyze" data-view="analyze"><span aria-hidden="true">＋</span>Analyze</a>
       <a href="#lab" data-view="lab"><span aria-hidden="true">◫</span>Edge lab</a>
       <a href="#evaluation" data-view="evaluation"><span aria-hidden="true">▥</span>Evaluation</a>
     </nav>
-    <div class="side-status"><strong><span class="dot"></span> Local inference</strong><span>Historical replay</span></div>
+    <div class="side-status"><strong><span class="dot"></span> <span id="workspace-scope">Research workspace</span></strong><span>Historical and simulated disclosures</span></div>
   </aside>
   <main id="main" tabindex="-1">
-    <header class="page-head">
+    <header class="page-head" data-current="inbox">
       <div>
-        <p class="eyebrow">NSE disclosure research</p>
+        <p class="eyebrow">NSE disclosures</p>
         <h1 id="view-title">Disclosure workspace</h1>
-        <p id="view-description">Review company announcements with the source beside each brief.</p>
+        <p id="view-description">Find the event, its stage, and the source passage behind each company announcement.</p>
+        <div id="hero-actions" class="actions hero-actions">
+          <a id="analyze-shortcut" href="#analyze" class="button primary">Analyze a disclosure <span aria-hidden="true">→</span></a>
+          <a href="#lab" class="button hero-secondary">Open edge lab</a>
+        </div>
       </div>
-      <a id="analyze-shortcut" href="#analyze" class="button primary">Analyze locally <span aria-hidden="true">↗</span></a>
+      <div id="hero-process" class="hero-process" aria-hidden="true">
+        <div class="hero-sheet"><i></i><i></i><i></i><i></i></div>
+        <span class="hero-arrow">→</span>
+        <div class="hero-sheet hero-brief"><i></i><i></i><i></i><i></i></div>
+      </div>
     </header>
-    <p id="global-error" class="message error" role="alert" hidden></p>
+    <div id="global-error" class="message error" hidden>
+      <p id="global-error-text" role="alert"></p>
+      <button id="retry-workspace" class="button" type="button">Retry workspace</button>
+    </div>
+    <noscript><p class="message error">Enable JavaScript to use the workspace.</p></noscript>
+    <p id="storage-note" class="storage-note" hidden>Temporary hosting can clear saved disclosures. Download any briefs you need to keep.</p>
 
     <section id="view-inbox" aria-label="Inbox view">
       <div class="stats">
-        <article><p class="eyebrow">Disclosures</p><strong data-stat="count">—</strong><span>Available on this device</span></article>
-        <article><p class="eyebrow">Source link</p><strong data-stat="link">—</strong><span>Simulated inbound feed</span></article>
+        <article><p class="eyebrow">Saved disclosures</p><strong data-stat="count">—</strong><span>In your workspace</span></article>
+        <article><p class="eyebrow">Source link · simulated</p><strong data-stat="link">—</strong><a href="#lab">View edge lab <span aria-hidden="true">→</span></a></article>
         <article><p class="eyebrow">Pending packets</p><strong data-stat="pending">—</strong><span>Waiting for delivery</span></article>
       </div>
       <div class="inbox-grid">
         <section class="list-pane" aria-labelledby="list-heading">
-          <div class="section-head"><h2 id="list-heading">Disclosure inbox</h2><span id="filter-count"></span></div>
+          <div class="section-head"><h2 id="list-heading">Disclosure inbox</h2><span id="filter-count" aria-live="polite"></span></div>
           <div class="filters">
+            <label class="search-filter"><span>Search disclosures</span><input id="filter-search" type="search" placeholder="Company, title, or source" autocomplete="off"></label>
             <label><span>Ticker</span><select id="filter-ticker"><option value="">All tickers</option></select></label>
             <label><span>Category</span><select id="filter-category"><option value="">All categories</option></select></label>
           </div>
-          <ul id="disclosure-list" class="document-list" aria-label="Disclosures"></ul>
+          <ul id="disclosure-list" class="document-list" aria-label="Disclosures"><li class="list-state">Loading disclosures…</li></ul>
         </section>
-        <section id="disclosure-detail" class="detail card" aria-label="Selected disclosure" tabindex="-1"></section>
+        <section id="disclosure-detail" class="detail card" aria-label="Selected disclosure" tabindex="-1"><p class="muted">Loading source evidence…</p></section>
       </div>
     </section>
 
@@ -57,7 +72,7 @@
       <div class="work-grid">
         <article class="card form-card">
           <div class="section-head"><h2>Import a disclosure</h2><button type="button" id="load-example" class="button">Load example</button></div>
-          <p class="muted">Paste English text or upload a text-based PDF or UTF-8 TXT file. Limit 5 MB and 30 PDF pages.</p>
+          <p class="muted">Paste an English announcement or upload a text-based PDF or TXT file.</p>
           <form id="analysis-form">
             <div class="field-grid">
               <label>Ticker <select name="ticker" id="form-ticker" required><option value="">Select ticker</option></select></label>
@@ -71,13 +86,20 @@
                 <label>Original URL <input type="url" name="url" maxlength="1000" placeholder="https://"></label>
               </div>
             </details>
-            <label>Disclosure text <textarea name="text" rows="7" maxlength="90000" placeholder="Paste the announcement text here"></textarea></label>
-            <label>Or choose a file <input type="file" name="file" accept=".pdf,.txt"></label>
-            <div class="actions"><button type="submit" class="button primary">Analyze locally</button><p id="analysis-status" class="form-status" role="status"></p></div>
+            <fieldset class="import-method">
+              <legend>Input format</legend>
+              <div class="input-choice">
+                <label><input type="radio" name="method" value="text" checked> Paste text</label>
+                <label><input type="radio" name="method" value="file"> Upload file</label>
+              </div>
+            </fieldset>
+            <label id="paste-field">Disclosure text <textarea name="text" rows="7" maxlength="90000" placeholder="Paste the announcement text here" required></textarea></label>
+            <label id="upload-field" hidden>Choose a disclosure file <input type="file" name="file" accept=".pdf,.txt" disabled><span class="small muted">Text-based PDF or UTF-8 TXT. Up to 5 MB and 30 PDF pages.</span></label>
+            <div class="actions"><button type="submit" class="button primary" disabled>Analyze disclosure</button><p id="analysis-status" class="form-status" role="status"></p></div>
           </form>
         </article>
-        <article id="analysis-result" class="card detail">
-          <h2>Analysis result</h2><p class="muted">The category, stage, and source excerpts will appear here.</p>
+        <article id="analysis-result" class="card detail" tabindex="-1">
+          <h2>Analysis result</h2><p class="muted">Your result will include the event category, disclosure stage, and supporting source excerpts.</p>
         </article>
       </div>
     </section>
@@ -91,7 +113,7 @@
       <div class="work-grid">
         <article class="card form-card">
           <h2>Replay a source outage</h2>
-          <p class="muted">Disconnect the source link, advance two packets, and open Analyze to test local inference. Reconnect to deliver the queued disclosure and drop its retransmission.</p>
+          <p class="muted">Disconnect the source link and advance two packets. Then reconnect to deliver the disclosure and drop its retransmission.</p>
           <label class="replay-progress">Packets advanced <progress id="replay-progress" max="4" value="0"></progress></label>
           <p id="replay-count" class="mono"></p>
           <div class="actions">
@@ -104,8 +126,8 @@
         <article class="card form-card">
           <h2>Virtual display</h2>
           <p class="muted">128 × 64 pixels · 1 bit per pixel</p>
-          <div class="display-cradle"><img id="virtual-display" src="/api/display.png" width="256" height="128" alt="Virtual device status display"></div>
-          <p class="small muted">The source link is simulated. Inference and SQLite writes run on this computer.</p>
+          <div class="display-cradle"><img id="virtual-display" width="256" height="128" alt="Virtual device status display" hidden></div>
+          <p id="edge-scope" class="small muted">Document analysis continues when the simulated source link is disconnected.</p>
         </article>
       </div>
     </section>
@@ -115,11 +137,11 @@
         <div class="section-head"><h2>Model comparison</h2><button id="run-evaluation" class="button primary" type="button">Run benchmark</button></div>
         <p class="muted">Compare event labels, abstention, and host latency on a small authored holdout, with source-backed cases reported independently.</p>
         <p id="evaluation-status" class="form-status" role="status"></p>
-        <div id="evaluation-results"></div>
+        <div id="evaluation-results" class="evaluation-results"></div>
       </div>
     </section>
 
-    <footer>Historical and synthetic replay data. Research and education use.</footer>
+    <footer><span>Research and education use. Historical and synthetic replay data.</span><button id="clear-workspace" class="text-button" type="button" hidden>Clear this browser workspace</button><span id="workspace-status" role="status" class="form-status"></span></footer>
   </main>
 </body>
 </html>

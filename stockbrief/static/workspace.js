@@ -1,9 +1,9 @@
 const $ = (selector) => document.querySelector(selector);
 const viewText = {
-  inbox: ["Disclosure workspace", "Review company announcements with the source beside each brief."],
-  analyze: ["Analyze a disclosure", "Classify a filing and find its supporting evidence on this device."],
-  lab: ["Edge lab", "Test local inference while the simulated source link is interrupted."],
-  evaluation: ["Evaluation", "Check the model’s event labels, review decisions, and host performance."],
+  inbox: ["Disclosure workspace", "Find the event, its stage, and the source passage behind each company announcement."],
+  analyze: ["Analyze a disclosure", "Classify a company filing and inspect the passages used in the result."],
+  lab: ["Edge lab", "Queue, resend, and deduplicate disclosures on a simulated source link."],
+  evaluation: ["Evaluation", "Compare event classification, review decisions, and inference latency."],
 };
 const originNames = {
   historical: "Historical paraphrase",
@@ -14,7 +14,37 @@ const originNames = {
 let state;
 let selection;
 let replayBusy = false;
+let analysisBusy = false;
+let workspaceBusy = false;
 let displayRevision = 0;
+let detailEntry;
+
+const inboxControls = ["filter-search", "filter-ticker", "filter-category"];
+const inboxStorageKey = "stockbrief-inbox-view";
+
+function restoreInboxView() {
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(inboxStorageKey));
+    if (!saved) return;
+    selection = saved.selection;
+    inboxControls.forEach((id) => {
+      const input = $("#" + id);
+      input.value = typeof saved[id] === "string" ? saved[id] : "";
+      if (input.tagName === "SELECT" && input.selectedIndex < 0) input.selectedIndex = 0;
+    });
+  } catch {
+    // Session storage is optional in private or restricted browser contexts.
+  }
+}
+
+function saveInboxView() {
+  const values = Object.fromEntries(inboxControls.map((id) => [id, $("#" + id).value]));
+  try {
+    sessionStorage.setItem(inboxStorageKey, JSON.stringify({...values, selection}));
+  } catch {
+    // Inbox navigation remains usable without session storage.
+  }
+}
 
 function element(tag, text, className) {
   const node = document.createElement(tag);
@@ -25,7 +55,8 @@ function element(tag, text, className) {
 
 function dateLabel(raw) {
   if (!raw) return "";
-  return new Intl.DateTimeFormat("en-IN", {dateStyle: "medium", timeZone: "UTC"}).format(new Date(raw));
+  const date = new Date(raw);
+  return Number.isNaN(date.getTime()) ? raw : new Intl.DateTimeFormat("en-IN", {dateStyle: "medium", timeZone: "UTC"}).format(date);
 }
 
 function percent(value) {
@@ -38,13 +69,17 @@ function status(target, message, isError = false) {
 }
 
 function globalError(error) {
-  const target = $("#global-error");
-  target.hidden = !error;
-  target.textContent = error?.message || "";
+  $("#global-error").hidden = !error;
+  $("#global-error-text").textContent = error?.message || "";
 }
 
 async function api(url, options) {
-  const response = await fetch(url, options);
+  let response;
+  try {
+    response = await fetch(url, options);
+  } catch {
+    throw new Error("Could not connect to the workspace. Check your connection and try again.");
+  }
   if (!response.ok) {
     const fallback = "Request failed (" + response.status + ").";
     let message = fallback;
@@ -56,7 +91,7 @@ async function api(url, options) {
     }
     throw new Error(message);
   }
-  return response.json();
+  return response.status === 204 ? null : response.json();
 }
 
 function presentView() {
@@ -70,7 +105,9 @@ function presentView() {
   }
   $("#view-title").textContent = viewText[current][0];
   $("#view-description").textContent = viewText[current][1];
-  $("#analyze-shortcut").hidden = current !== "inbox";
+  $(".page-head").dataset.current = current;
+  $("#hero-actions").hidden = current !== "inbox";
+  $("#hero-process").hidden = current !== "inbox";
   document.title = viewText[current][0] + " · StockBrief Edge";
 }
 
@@ -94,6 +131,18 @@ function detailField(title, value) {
   const pair = element("div");
   pair.append(element("dt", title), element("dd", value));
   return pair;
+}
+
+function downloadJson(name, payload) {
+  const file = new Blob([JSON.stringify(payload, null, 2) + "\n"], {type: "application/json"});
+  const url = URL.createObjectURL(file);
+  const link = element("a");
+  link.href = url;
+  link.download = name;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 function detail(entry, pane) {
@@ -135,7 +184,13 @@ function detail(entry, pane) {
     pane.append(figures);
   }
 
-  if (entry.url) pane.append(sourceLink(entry.url, "Open original source ↗"));
+  const sourceActions = element("div", undefined, "actions source-actions");
+  if (entry.url) sourceActions.append(sourceLink(entry.url, "Open original source →"));
+  const download = element("button", "Download brief", "button");
+  download.type = "button";
+  download.addEventListener("click", () => downloadJson("stockbrief-" + entry.id + ".json", entry));
+  sourceActions.append(download);
+  pane.append(sourceActions);
   const source = element("details");
   source.append(element("summary", entry.origin === "historical" ? "Read historical fixture text" : "Read extracted document text"));
   source.addEventListener("toggle", async () => {
@@ -166,7 +221,7 @@ function detail(entry, pane) {
     result.setAttribute("role", "status");
     run.addEventListener("click", async () => {
       run.disabled = true;
-      status(result, "Running the local transformer…");
+      status(result, "Running the transformer…");
       try {
         const prediction = await api("/api/disclosures/" + entry.id + "/second-opinion");
         status(result, prediction.name + " · " + prediction.model + " · First six chunks");
@@ -184,8 +239,13 @@ function renderInbox(focusId) {
   if (!state) return;
   const ticker = $("#filter-ticker").value;
   const category = $("#filter-category").value;
-  const entries = state.disclosures.filter((d) => (!ticker || d.ticker === ticker) && (!category || d.brief.category === category));
-  $("#filter-count").textContent = entries.length + " shown";
+  const query = $("#filter-search").value.trim().toLowerCase();
+  const entries = state.disclosures.filter((entry) => {
+    const searchable = [entry.ticker, state.tickers[entry.ticker], entry.title, entry.source, entry.brief.category_name, entry.brief.stage];
+    return (!ticker || entry.ticker === ticker) && (!category || entry.brief.category === category) &&
+      (!query || searchable.some((value) => value?.toLowerCase().includes(query)));
+  });
+  $("#filter-count").textContent = entries.length + " of " + state.disclosures.length;
   if (!entries.some((entry) => entry.id === selection)) selection = entries[0]?.id;
   const rows = $("#disclosure-list");
   const pane = $("#disclosure-detail");
@@ -195,9 +255,10 @@ function renderInbox(focusId) {
     row.type = "button";
     row.dataset.id = entry.id;
     row.setAttribute("aria-pressed", String(entry.id === selection));
-    const issuer = [entry.ticker, dateLabel(entry.date)].filter(Boolean).join(" · ");
+    const meta = element("span", undefined, "row-meta");
+    meta.append(element("span", entry.ticker, "row-ticker"), element("span", dateLabel(entry.date) || "Undated", "row-date"));
     const event = entry.brief.category_name + (entry.brief.stage === "Unclear" ? "" : " · " + entry.brief.stage);
-    row.append(element("span", issuer), element("strong", entry.title), element("span", event));
+    row.append(meta, element("strong", entry.title), element("span", event, "row-event"));
     row.addEventListener("click", () => {
       selection = entry.id;
       renderInbox(entry.id);
@@ -209,36 +270,61 @@ function renderInbox(focusId) {
   }
   if (focusId) rows.querySelector('[data-id="' + focusId + '"]')?.focus();
   const selected = entries.find((entry) => entry.id === selection);
-  if (selected) detail(selected, pane);
-  else {
-    rows.append(element("li", "No disclosures match these filters.", "muted"));
-    pane.replaceChildren(element("h2", "No disclosure selected"), element("p", "Adjust the inbox filters to find a disclosure.", "muted"));
+  if (selected) {
+    if (detailEntry !== selected) detail(selected, pane);
+  } else {
+    const empty = element("li", "No disclosures match these filters.", "list-state");
+    const clear = element("button", "Clear filters", "button");
+    clear.type = "button";
+    clear.addEventListener("click", () => {
+      inboxControls.forEach((id) => { $("#" + id).value = ""; });
+      renderInbox();
+      $("#filter-search").focus();
+    });
+    empty.append(clear);
+    rows.append(empty);
+    pane.replaceChildren(element("h2", "No disclosure selected"), element("p", "Change the filters to review a disclosure and its source evidence.", "muted"));
   }
+  detailEntry = selected;
+  saveInboxView();
 }
 
 function renderState() {
+  const hosted = state.mode === "hosted";
+  $("#workspace-scope").textContent = hosted ? "Private browser workspace" : "Local workspace";
+  $("#storage-note").hidden = !hosted || state.storage !== "sqlite";
+  $("#clear-workspace").hidden = !hosted;
+  $("#clear-workspace").disabled = workspaceBusy || replayBusy || analysisBusy;
+  $("#edge-scope").textContent = hosted
+    ? "While the source link is disconnected, the website can still analyze documents on the server."
+    : "While the source link is disconnected, the workspace can still analyze documents on this computer.";
   const stats = {count: state.disclosures.length, link: state.connected ? "Connected" : "Disconnected", pending: state.pending, duplicates: state.duplicates};
   for (const item of document.querySelectorAll("[data-stat]")) item.textContent = stats[item.dataset.stat];
+  for (const item of document.querySelectorAll('[data-stat="link"]')) item.dataset.online = String(state.connected);
   const progress = $("#replay-progress");
   progress.max = state.total_packets;
   progress.value = state.cursor;
   $("#replay-count").textContent = state.cursor + " of " + state.total_packets + " packets advanced";
   $("#toggle-link").textContent = state.connected ? "Disconnect link" : "Reconnect link";
-  $("#toggle-link").disabled = replayBusy;
-  $("#step-replay").disabled = replayBusy || state.cursor >= state.total_packets;
-  $("#reset-replay").disabled = replayBusy || (!state.cursor && state.connected);
-  $("#virtual-display").src = "/api/display.png?v=" + (++displayRevision);
+  $("#toggle-link").disabled = replayBusy || workspaceBusy;
+  $("#step-replay").disabled = replayBusy || workspaceBusy || state.cursor >= state.total_packets;
+  $("#reset-replay").disabled = replayBusy || workspaceBusy || (!state.cursor && state.connected);
+  $("#analysis-form [type=submit]").disabled = analysisBusy || workspaceBusy;
+  $("#virtual-display").src = "/api/display.png?v=" + displayRevision;
   $("#virtual-display").alt = "Virtual status display. Source link " + stats.link.toLowerCase() + ", " + state.pending + " pending packets.";
+  $("#virtual-display").hidden = false;
   renderInbox();
 }
 
 async function refresh() {
   const previous = state;
   state = await api("/api/inbox");
+  displayRevision += 1;
   if (!previous) {
     addOptions($("#filter-ticker"), state.tickers);
     addOptions($("#filter-category"), state.labels);
     addOptions($("#form-ticker"), state.tickers);
+    restoreInboxView();
   }
   renderState();
 }
@@ -254,9 +340,9 @@ async function replay(action, payload) {
       ...(payload ? {headers: {"Content-Type": "application/json"}, body: JSON.stringify(payload)} : {}),
     });
     await refresh();
-    if (action === "reset") status(note, "Replay reset. Local imports are still in the inbox.");
-    else if (!result.connected) status(note, "Source link disconnected. Local analysis is available.");
-    else status(note, "Source link connected. " + result.pending + " pending packets.");
+    if (action === "reset") status(note, "Replay reset. Imported disclosures are still in the inbox.");
+    else if (!result.connected) status(note, `${result.pending} pending. Document analysis is available.`);
+    else status(note, `${result.pending} pending. ${result.duplicates} duplicate packets suppressed.`);
   } catch (error) {
     status(note, error.message, true);
   } finally {
@@ -290,6 +376,8 @@ function table(caption, headings, rows, rowHeaders = false) {
   }
   output.append(head, body);
   const wrap = element("div", undefined, "table-wrap");
+  wrap.tabIndex = 0;
+  wrap.setAttribute("aria-label", caption);
   wrap.append(output);
   return wrap;
 }
@@ -299,7 +387,24 @@ function evaluation(report) {
   const data = report.dataset;
   const layout = $("#evaluation-results");
   layout.replaceChildren();
-  layout.append(element("p", data.train + " training · " + data.calibration + " calibration · " + data.test + " held out. " + data.scope + ".", "small muted"));
+  const context = element("div", undefined, "actions report-context");
+  const download = element("button", "Download report", "button");
+  download.type = "button";
+  download.addEventListener("click", () => downloadJson("stockbrief-benchmark.json", report));
+  context.append(element("p", data.train + " training · " + data.calibration + " calibration · " + data.test + " held out. " + data.scope + ".", "small muted"), download);
+  layout.append(context);
+  const scores = element("div", undefined, "model-scores");
+  for (const result of report.reports) {
+    const card = element("div", undefined, "model-score");
+    const bar = element("meter");
+    bar.min = 0;
+    bar.max = 1;
+    bar.value = result.macro_f1;
+    bar.setAttribute("aria-label", result.name + " macro F1");
+    card.append(element("strong", result.macro_f1.toFixed(3)), element("span", result.name), bar);
+    scores.append(card);
+  }
+  layout.append(element("h3", "Macro F1 on the held-out set"), scores);
   layout.append(table("Held-out results", ["Model", "Macro F1", "Coverage", "Accuracy when covered", "Review recall", "p50 / p95"], report.reports.map((r) => [
     r.name, r.macro_f1.toFixed(3), percent(r.coverage), percent(r.selective_accuracy), percent(r.review_recall), r.latency_ms.p50 + " / " + r.latency_ms.p95 + " ms",
   ]), true));
@@ -337,7 +442,35 @@ function evaluation(report) {
   }
   layout.append(table("Historical case study", ["Original source", "Observed category", "Observed stage", "Matches expected"],
     report.historical_cases.map((r) => [sourceLink(r.source, r.title), report.labels[r.observed_category], r.observed_stage, r.matched ? "Yes" : "No"]), true));
-  layout.append(element("p", host.platform + " · " + host.available_logical_cpus + " available logical CPUs · " + host.process_rss_mib + " MiB RSS. Host measurements.", "small muted"));
+  if (host?.available_logical_cpus != null && host?.process_rss_mib != null) {
+    layout.append(element("p", host.platform + " · " + host.available_logical_cpus + " available logical CPUs · " + host.process_rss_mib + " MiB RSS. Host measurements.", "small muted"));
+  }
+}
+
+const form = $("#analysis-form");
+
+function setImportMethod(method) {
+  const upload = method === "file";
+  form.elements.method.value = method;
+  $("#paste-field").hidden = upload;
+  $("#upload-field").hidden = !upload;
+  form.elements.text.disabled = upload;
+  form.elements.text.required = !upload;
+  form.elements.file.disabled = !upload;
+  form.elements.file.required = upload;
+}
+
+async function loadWorkspace() {
+  const retry = $("#retry-workspace");
+  retry.disabled = true;
+  try {
+    await refresh();
+    globalError(null);
+  } catch (error) {
+    globalError(error);
+  } finally {
+    retry.disabled = false;
+  }
 }
 
 $(".skip-link").addEventListener("click", (event) => {
@@ -346,13 +479,42 @@ $(".skip-link").addEventListener("click", (event) => {
 });
 
 addEventListener("hashchange", presentView);
+$("#retry-workspace").addEventListener("click", loadWorkspace);
+$("#filter-search").addEventListener("input", () => renderInbox());
 $("#filter-ticker").addEventListener("change", () => renderInbox());
 $("#filter-category").addEventListener("change", () => renderInbox());
 $("#toggle-link").addEventListener("click", () => replay("link", {connected: !state.connected}));
 $("#step-replay").addEventListener("click", () => replay("step"));
 $("#reset-replay").addEventListener("click", () => replay("reset"));
+$("#clear-workspace").addEventListener("click", async () => {
+  if (!window.confirm("Clear imported disclosures and reset the replay for this browser workspace?")) return;
+  workspaceBusy = true;
+  renderState();
+  const note = $("#workspace-status");
+  try {
+    await api("/api/workspace/clear", {method: "POST"});
+    selection = undefined;
+    inboxControls.forEach((id) => { $("#" + id).value = ""; });
+    form.reset();
+    setImportMethod("text");
+    $("#analysis-result").replaceChildren(element("h2", "Analysis result"), element("p", "Add a disclosure to see a new result.", "muted"));
+    status($("#analysis-status"), "");
+    status($("#replay-status"), "");
+    await refresh();
+    status(note, "Browser workspace cleared.");
+  } catch (error) {
+    status(note, error.message, true);
+  } finally {
+    workspaceBusy = false;
+    renderState();
+  }
+});
+for (const option of form.elements.method) {
+  option.addEventListener("change", () => setImportMethod(option.value));
+}
 $("#load-example").addEventListener("click", () => {
-  const fields = $("#analysis-form").elements;
+  const fields = form.elements;
+  setImportMethod("text");
   fields.ticker.value = "OTHER";
   fields.title.value = "Example acquisition disclosure";
   fields.disclosure_date.value = "";
@@ -362,23 +524,27 @@ $("#load-example").addEventListener("click", () => {
   fields.text.value = "The company signed a definitive agreement to acquire an engineering business for INR 240 crore. The transaction remains subject to regulatory approvals.";
   fields.text.focus();
 });
-$("#analysis-form").addEventListener("submit", async (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const form = event.currentTarget;
-  const button = form.querySelector("[type=submit]");
   const note = $("#analysis-status");
-  button.disabled = true;
-  status(note, "Analyzing on this device…");
+  if (!state || analysisBusy || workspaceBusy) return;
+  analysisBusy = true;
+  renderState();
+  status(note, "Analyzing the disclosure…");
   try {
     const result = await api("/api/analyze", {method: "POST", body: new FormData(form)});
-    detail(result.entry, $("#analysis-result"));
-    status(note, result.duplicate ? "This disclosure is already saved." : "Saved to the local inbox.");
+    const pane = $("#analysis-result");
+    detail(result.entry, pane);
+    status(note, result.duplicate ? "This disclosure is already saved." : "Saved to your inbox.");
     selection = result.entry.id;
+    inboxControls.forEach((id) => { $("#" + id).value = ""; });
     await refresh();
+    if (matchMedia("(max-width: 760px)").matches) pane.focus();
   } catch (error) {
     status(note, error.message, true);
   } finally {
-    button.disabled = false;
+    analysisBusy = false;
+    renderState();
   }
 });
 $("#run-evaluation").addEventListener("click", async (event) => {
@@ -396,4 +562,4 @@ $("#run-evaluation").addEventListener("click", async (event) => {
   }
 });
 presentView();
-refresh().then(() => globalError(null)).catch(globalError);
+loadWorkspace();

@@ -1,8 +1,9 @@
-"""Loopback HTTP interface for the local research workspace."""
+"""HTTP interface for local and hosted research workspaces."""
 from pathlib import Path
+from threading import BoundedSemaphore
 
-from fastapi import FastAPI, Form, HTTPException, Request, UploadFile
-from fastapi.responses import FileResponse, PlainTextResponse, Response
+from fastapi import Depends, FastAPI, Form, HTTPException, Request, UploadFile
+from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, StrictBool
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -11,6 +12,7 @@ from .corpus import LABELS, TICKERS
 from .display import display_png
 from .evaluation import evaluate, host_metrics
 from .fixtures import Document
+from .hosted import COOKIE_AGE, COOKIE_NAME, HostedWorkspaces, WorkspaceLimit, public_https_origin, workspace_session
 from .inputs import MAX_UPLOAD, make_document, read_upload
 from .nlp import MODEL, EventModel
 from .store import Inbox
@@ -50,24 +52,56 @@ class RequestLimit:
         return await self.app(scope, buffered, send)
 
 
-def create_app(path: Path | None = None, transformer=None):
+def create_app(path: Path | None = None, transformer=None, *, public_origin=None, database_url=None):
+    if database_url and public_origin is None:
+        raise ValueError("A PostgreSQL URL requires hosted mode.")
     model = EventModel()
-    inbox = Inbox(path or Path(".runtime/stockbrief.sqlite"), model)
+    workspaces = None
+    if public_origin is None:
+        local_inbox = Inbox(path or Path(".runtime/stockbrief.sqlite"), model)
+        hosts = ["localhost", "127.0.0.1", "testserver"]
+    else:
+        public_origin, hostname = public_https_origin(public_origin)
+        hosts = [hostname]
+        workspaces = HostedWorkspaces(path or Path(".runtime/stockbrief-hosted.sqlite"), model, database_url)
+    mode = "hosted" if workspaces is not None else "local"
+    storage = workspaces.storage if workspaces is not None else "sqlite"
+    hosted_benchmark = evaluate(model, transformer) if workspaces is not None else None
+    hosted_imports = BoundedSemaphore(2)
+
+    def get_inbox(request: Request):
+        if workspaces is None:
+            return local_inbox
+        return workspaces.workspace(request.state.workspace_key)
+
+    inbox_dependency = Depends(get_inbox)
     app = FastAPI(title="StockBrief Edge", docs_url=None, redoc_url=None, openapi_url=None)
     app.add_middleware(RequestLimit)
-    app.add_middleware(TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "testserver"])
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=hosts)
     app.mount("/static", StaticFiles(directory=STATIC), name="static")
 
     @app.middleware("http")
-    async def local_request(request: Request, call_next):
+    async def workspace_request(request: Request, call_next):
         origin = request.headers.get("origin")
         request_url = request.url
         if request.method == "POST":
+            expected = public_origin or f"{request_url.scheme}://{request.headers.get('host')}"
+            bad_origin = origin != expected if public_origin is not None else origin and origin != expected
             if request.headers.get("sec-fetch-site") == "cross-site":
-                return PlainTextResponse("Use the local workspace to send changes.", 403)
-            if origin and origin != f"{request_url.scheme}://{request.headers.get('host')}":
-                return PlainTextResponse("Use the local workspace to send changes.", 403)
+                return PlainTextResponse("Use the workspace website to send changes.", 403)
+            if bad_origin:
+                return PlainTextResponse("Use the workspace website to send changes.", 403)
+        token = None
+        if workspaces is not None:
+            request.state.workspace_key, token = workspace_session(request.cookies.get(COOKIE_NAME))
         response = await call_next(request)
+        if token and response.status_code < 400 and (
+            request_url.path == "/" or request_url.path.startswith("/api/")
+            and request_url.path not in {"/api/health", "/api/evaluation", "/api/display.png"}
+        ):
+            response.set_cookie(
+                COOKIE_NAME, token, max_age=COOKIE_AGE, path="/", secure=True, httponly=True, samesite="lax",
+            )
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
         )
@@ -80,21 +114,22 @@ def create_app(path: Path | None = None, transformer=None):
         return FileResponse(STATIC / "index.html")
 
     @app.get("/api/inbox")
-    def list_inbox():
+    def list_inbox(inbox=inbox_dependency):
         return {
             **inbox.state(), "labels": {**LABELS, "review": "Needs review"},
             "tickers": TICKERS, "transformer": transformer.name if transformer else None,
+            "mode": mode, "storage": storage,
         }
 
     @app.get("/api/disclosures/{entry_id}")
-    def get_disclosure(entry_id: int):
+    def get_disclosure(entry_id: int, inbox=inbox_dependency):
         entry = inbox.document(entry_id)
         if entry is None:
             raise HTTPException(404, "Disclosure not found.")
         return entry
 
     @app.get("/api/disclosures/{entry_id}/second-opinion")
-    def second_opinion(entry_id: int):
+    def second_opinion(entry_id: int, inbox=inbox_dependency):
         if transformer is None:
             raise HTTPException(404, "The optional local transformer is not loaded.")
         entry = inbox.document(entry_id)
@@ -113,8 +148,13 @@ def create_app(path: Path | None = None, transformer=None):
         disclosure_date: str = Form(""),
         url: str = Form(""),
         file: UploadFile | None = None,
+        inbox=inbox_dependency,
     ):
+        if workspaces is not None and not hosted_imports.acquire(blocking=False):
+            raise HTTPException(429, "Analysis is busy. Try again in a moment.")
         try:
+            if workspaces is not None and len(url) > 2048:
+                raise ValueError("The original source URL must be 2,048 characters or fewer.")
             if file and file.filename:
                 if text.strip():
                     raise ValueError("Choose either a file or pasted text.")
@@ -127,29 +167,48 @@ def create_app(path: Path | None = None, transformer=None):
             return {"entry": entry, "duplicate": duplicate}
         except ValueError as error:
             raise HTTPException(422, str(error)) from error
+        finally:
+            if workspaces is not None:
+                hosted_imports.release()
+
+    @app.exception_handler(WorkspaceLimit)
+    async def workspace_limit(_request, error):
+        return JSONResponse({"detail": str(error)}, status_code=429)
 
     @app.post("/api/replay/step")
-    def step():
+    def step(inbox=inbox_dependency):
         return inbox.step()
 
     @app.post("/api/replay/link")
-    def link(request: LinkRequest):
+    def link(request: LinkRequest, inbox=inbox_dependency):
         return inbox.link(request.connected)
 
     @app.post("/api/replay/reset")
-    def reset():
+    def reset(inbox=inbox_dependency):
         return inbox.reset()
 
+    @app.post("/api/workspace/clear")
+    def clear_workspace(inbox=inbox_dependency):
+        if workspaces is None:
+            raise HTTPException(404, "Workspace clearing is available only on the hosted website.")
+        return inbox.clear()
+
     @app.get("/api/display.png")
-    def display():
+    def display(inbox=inbox_dependency):
         return Response(display_png(inbox.state()), media_type="image/png")
 
     @app.get("/api/evaluation")
     def evaluation():
-        return evaluate(model, transformer)
+        return hosted_benchmark if hosted_benchmark is not None else evaluate(model, transformer)
 
     @app.get("/api/health")
     def health():
+        if workspaces is not None:
+            healthy = workspaces.healthy()
+            return JSONResponse({
+                "status": "ok" if healthy else "unavailable", "mode": mode,
+                "model": MODEL, "inference": "server", "source": "simulated", "storage": storage,
+            }, status_code=200 if healthy else 503)
         return {"status": "ok", "model": MODEL, "inference": "local", "source": "simulated", **host_metrics()}
 
     return app

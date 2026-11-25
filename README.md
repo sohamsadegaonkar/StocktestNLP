@@ -6,6 +6,18 @@ NSE watchlist researchers often need to decide which announcements to open and v
 
 [Product and system design](docs/DESIGN.md) · [Evaluation and jury demo](docs/DEMO.md) · [Editable Figma design](https://www.figma.com/design/bIwqXWeBhLKpGqO1IIj07s)
 
+## Hosted website
+
+The hosted workspace serves the frontend and API from the same HTTPS origin. It opens with example disclosures and gives each browser its own research inbox and replay queue. Upload a text-based PDF or TXT, analyze it, inspect the extracted evidence, and run the edge simulation or evaluation from the same interface.
+
+Hosted inference runs on the server. The link outage and 128 × 64 display simulate edge behavior. The local mode below runs inference on your own machine and continues working when the machine loses Internet access.
+
+To host a separate instance, install the base requirements, set `STOCKBRIEF_PUBLIC_ORIGIN` to the canonical HTTPS URL, and start `python -m stockbrief serve --hosted`. The server uses `PORT` when provided. On Render it can use the platform's `RENDER_EXTERNAL_URL`.
+
+The [Render Blueprint](render.yaml) defines a Free web service with an HTTP health check at `/api/health`.
+
+For persistent storage, mount a volume and pass `--db /your-volume/stockbrief.sqlite`, or install `requirements-hosted.txt` and set `STOCKBRIEF_DATABASE_URL` to a dedicated PostgreSQL connection string. Keep the connection string in the provider's environment settings. Hosted workspace access uses a browser cookie valid for seven days. The default SQLite database on a Free Render web service is temporary. Download important results before the service goes idle or redeploys.
+
 ## Run locally
 
 Requires Python 3.11 or 3.12. First-time dependency installation needs internet. After setup the default workflow runs without cloud credentials or external assets.
