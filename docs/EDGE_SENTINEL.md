@@ -22,6 +22,8 @@ Same issuer and exact nonempty attachment URL permit a comparison with the last
 processed RSS excerpt. This is a candidate relationship, not a proven official
 revision or chronological correction. Changed figures and bounded text diffs
 are reported; changed data is never discarded solely for semantic similarity.
+When both analyzed records have matching model versions and source scopes,
+compare their inferred category/stage sets as an additional model-level delta.
 No cross-link correlation or automatic claim of materiality yet.
 
 Compare FIFO and adaptive using six identical synthetic documents, actual

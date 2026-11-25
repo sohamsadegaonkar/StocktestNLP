@@ -496,6 +496,12 @@ function renderEdge(result, syncConfig = false) {
       section.append(element("p", "Removed figures: " + (delta.removed_figures.join(", ") || "None detected")),
         element("p", "Added figures: " + (delta.added_figures.join(", ") || "None detected")));
       for (const change of delta.changes) section.append(element("p", "Before: " + change.before), element("p", "After: " + change.after));
+      if (delta.model_comparison === "comparable") {
+        const labels = values => values.map(e => e.category + " / " + e.stage).join(", ") || "None";
+        section.append(element("p", "Model event labels removed: " + labels(delta.removed_event_labels)),
+          element("p", "Model event labels added: " + labels(delta.added_event_labels)),
+          element("p", "These are inferred labels, not verified economic effects.", "small muted"));
+      } else if (delta.model_comparison) section.append(element("p", "Model comparison withheld: differing model version or source scope.", "small muted"));
       history.append(section);
     }
   } else history.append(element("p", "No live jobs processed yet.", "small muted"));

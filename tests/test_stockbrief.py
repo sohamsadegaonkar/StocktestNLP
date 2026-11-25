@@ -247,6 +247,20 @@ class APITests(unittest.IsolatedAsyncioTestCase):
                 context = (await client.get("/api/market-context/INFY?filing_date=" + imported["date"])).json()
             self.assertEqual(context["relative_return_pp"], 3)
 
+    async def test_edge_lab_actual_model_and_local_config(self):
+        config = await self.client.post("/api/edge/config", json={"watchlist":["INFY"],"policy":"adaptive"})
+        self.assertEqual(config.status_code, 200)
+        self.assertEqual(config.json()["watchlist"], ["INFY"])
+        self.assertEqual((await self.client.post("/api/edge/config", json={"watchlist":["UNKNOWN"],"policy":"fifo"})).status_code, 422)
+        self.assertEqual((await self.client.post("/api/edge/drain")).json()["pending"], 0)
+        report = (await self.client.post("/api/edge/benchmark")).json()
+        self.assertTrue(report["same_categories"])
+        for policy in ("fifo", "adaptive"):
+            self.assertEqual(len(report["runs"][policy]), 2)
+            self.assertEqual(len(report["runs"][policy][0]["jobs"]), 6)
+        self.assertEqual((await self.client.post("/api/edge/config", headers={"Origin":"https://example.org"},
+                         json={"watchlist":[],"policy":"fifo"})).status_code, 403)
+
     async def test_bad_and_cross_origin_requests_are_rejected(self):
         responses = [
             (await self.client.post("/api/analyze", data={"ticker": "NONE", "text": "Something happened at a board meeting."}), 422),

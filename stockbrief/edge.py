@@ -73,6 +73,26 @@ def revision_delta(previous, current):
             "note": "Same issuer and attachment link; compared with last processed excerpt, not necessarily chronological revision. Verify the original filing."}
 
 
+def event_signature(brief):
+    return sorted({(event.get("category", "review"), event.get("stage", "Unclear"))
+                   for event in brief.get("events") or [brief]})
+
+
+def compare_model_events(previous, entry, delta):
+    """Compare model interpretations only when scope/version agree."""
+    if not previous or delta["state"] != "linked_excerpt_changed":
+        return
+    old, new = previous["brief"], entry["brief"]
+    if (previous.get("source_scope") != entry.get("source_scope") or
+            not old.get("model_version") or old.get("model_version") != new.get("model_version")):
+        delta["model_comparison"] = "different_scope_or_model"
+        return
+    a, b = set(event_signature(old)), set(event_signature(new))
+    delta["model_comparison"] = "comparable"
+    delta["removed_event_labels"] = [{"category": c, "stage": s} for c, s in sorted(a-b)]
+    delta["added_event_labels"] = [{"category": c, "stage": s} for c, s in sorted(b-a)]
+
+
 def resource_budget():
     cpu = psutil.cpu_percent(interval=0.05)
     free_mib = psutil.virtual_memory().available / (1024 * 1024)
@@ -154,6 +174,9 @@ class EdgeQueue:
                         (row["ticker"], row["link"])).fetchone()
                     delta = revision_delta(previous, row)
                     entry, duplicate = self.inbox._record(db, document)
+                    if previous and delta["state"] == "linked_excerpt_changed":
+                        old_row = db.execute("SELECT * FROM disclosures WHERE id=?", (previous["disclosure_id"],)).fetchone()
+                        compare_model_events(self.inbox._entry(old_row) if old_row else None, entry, delta)
                     db.execute("INSERT INTO live_receipts VALUES (?, ?)", (row["feed_key"], entry["id"]))
                     db.execute("""INSERT INTO edge_history (feed_key,ticker,link,description,published_at,disclosure_id,wait_ms,processing_ms,delta,relevant,completed_at)
                                   VALUES (?,?,?,?,?,?,?,?,?,?,?)""",

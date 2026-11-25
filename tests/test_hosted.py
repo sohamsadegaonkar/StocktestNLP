@@ -44,6 +44,8 @@ class HostedAPITests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(inbox.json()["storage"], "sqlite")
         self.assertNotIn("Set-Cookie", inbox.headers)
         self.assertFalse(inbox.json()["live_feed_available"])
+        self.assertEqual((await client.get("/api/edge/status")).status_code, 404)
+        self.assertEqual((await client.post("/api/edge/drain", headers=SAME_ORIGIN)).status_code, 404)
         self.assertEqual((await client.post("/api/live/refresh", headers=SAME_ORIGIN)).status_code, 404)
         health = await client.get("/api/health")
         self.assertEqual(health.json()["inference"], "server")
