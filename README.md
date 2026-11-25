@@ -6,30 +6,29 @@ NSE watchlist researchers often need to decide which announcements to open and v
 
 [Product and system design](docs/DESIGN.md) · [Evaluation and jury demo](docs/DEMO.md) · [Editable Figma design](https://www.figma.com/design/bIwqXWeBhLKpGqO1IIj07s)
 
-## Hosted website
-
-The hosted workspace serves the frontend and API from the same HTTPS origin. It opens with example disclosures and gives each browser its own research inbox and replay queue. Upload a text-based PDF or TXT, analyze it, inspect the extracted evidence, and run the edge simulation or evaluation from the same interface.
-
-Hosted inference runs on the server. The link outage and 128 × 64 display simulate edge behavior. The local mode below runs inference on your own machine and continues working when the machine loses Internet access.
-
-To host a separate instance, install the base requirements, set `STOCKBRIEF_PUBLIC_ORIGIN` to the canonical HTTPS URL, and start `python -m stockbrief serve --hosted`. The server uses `PORT` when provided. On Render it can use the platform's `RENDER_EXTERNAL_URL`.
-
-The [Render Blueprint](render.yaml) defines a Free web service with an HTTP health check at `/api/health`.
-
-For persistent storage, mount a volume and pass `--db /your-volume/stockbrief.sqlite`, or install `requirements-hosted.txt` and set `STOCKBRIEF_DATABASE_URL` to a dedicated PostgreSQL connection string. Keep the connection string in the provider's environment settings. Hosted workspace access uses a browser cookie valid for seven days. The default SQLite database on a Free Render web service is temporary. Download important results before the service goes idle or redeploys.
-
 ## Run locally
 
 Requires Python 3.11 or 3.12. First-time dependency installation needs internet. After setup the default workflow runs without cloud credentials or external assets.
 
-~~~bash
-python -m venv .venv
-source .venv/bin/activate   # PowerShell: .venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-python -m stockbrief serve
+### Windows PowerShell
+
+Open PowerShell in the repository folder:
+
+~~~powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m stockbrief serve
 ~~~
 
-Open [http://127.0.0.1:5050](http://127.0.0.1:5050). The app stores imports, analyses, and simulation state in `.runtime/stockbrief.sqlite`. Pass `--db PATH` for an isolated database or `--port 5051` to use a different local port. It is a single-user, loopback application.
+### macOS and Linux
+
+~~~bash
+python3 -m venv .venv
+./.venv/bin/python -m pip install -r requirements.txt
+./.venv/bin/python -m stockbrief serve
+~~~
+
+Open [http://127.0.0.1:5050](http://127.0.0.1:5050). The app stores imports, analyses, and simulation state in `.runtime/stockbrief.sqlite` and reopens that file at the next launch. Pass `--db PATH` for an isolated database or `--port 5051` to use a different local port. It is a single-user, loopback application.
 
 | View | What you can do |
 | --- | --- |
@@ -71,3 +70,15 @@ The benchmark writes JSON with model metrics, the confusion matrix, four source-
 This 32-case authored holdout favors the lighter model as the default for category coverage and macro F1. MobileBERT gives a second reading when a user wants to cross-check the category. These are small-sample host measurements. The edge device and its source link remain simulated.
 
 In GitHub Actions, run **Checks** with the **transformer** input enabled to install the pinned weights, exercise the local second-opinion API, and save the evaluation JSON in the workflow artifact.
+
+## Optional hosted mode
+
+The hosted workspace serves the frontend and API from the same HTTPS origin. It opens with example disclosures and gives each browser its own research inbox and replay queue. Upload a text-based PDF or TXT, analyze it, inspect the extracted evidence, and run the edge simulation or evaluation from the same interface.
+
+Hosted inference runs on the server. The link outage and 128 × 64 display simulate edge behavior. The default local mode runs inference on your own machine and continues working when the machine loses Internet access.
+
+To host a separate instance, install the base requirements, set `STOCKBRIEF_PUBLIC_ORIGIN` to the canonical HTTPS URL, and start `python -m stockbrief serve --hosted`. The server uses `PORT` when provided. On Render it can use the platform's `RENDER_EXTERNAL_URL`.
+
+The [Render Blueprint](render.yaml) defines a Free web service with an HTTP health check at `/api/health`.
+
+For persistent storage, mount a volume and pass `--db /your-volume/stockbrief.sqlite`, or install `requirements-hosted.txt` and set `STOCKBRIEF_DATABASE_URL` to a dedicated PostgreSQL connection string. Keep the connection string in the provider's environment settings. Hosted workspace access uses a browser cookie valid for seven days. The default SQLite database on a Free Render web service is temporary. Download important results before the service goes idle or redeploys.
