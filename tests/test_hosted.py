@@ -60,6 +60,10 @@ class HostedAPITests(unittest.IsolatedAsyncioTestCase):
         record = upload.json()["entry"]
         foreign = await second.get(f"/api/disclosures/{record['id']}")
         self.assertEqual(foreign.status_code, 404)
+        own = await first.get(f"/api/disclosures/{record['id']}/intelligence")
+        self.assertEqual(own.status_code, 200)
+        self.assertEqual(own.json()["entry_id"], record["id"])
+        self.assertEqual((await second.get(f"/api/disclosures/{record['id']}/intelligence")).status_code, 404)
         await first.post("/api/replay/link", headers=SAME_ORIGIN, json={"connected": False})
         for _ in range(2):
             step = await first.post("/api/replay/step", headers=SAME_ORIGIN)

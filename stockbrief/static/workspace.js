@@ -176,6 +176,64 @@ function eventDetails(entry, brief, pane, separateCard) {
   }
 }
 
+function intelligencePanel(entry) {
+  const panel = element("section", undefined, "intelligence-panel");
+  panel.append(element("h3", "News intelligence"));
+  const body = element("div");
+  panel.append(body);
+  async function load() {
+    const message = element("p", "Building evidence-backed brief…", "small muted");
+    message.setAttribute("role", "status");
+    body.replaceChildren(message);
+    try {
+      const result = await api("/api/disclosures/" + entry.id + "/intelligence");
+      body.replaceChildren(element("p", result.state === "needs_review"
+        ? "Needs review — no supported event established."
+        : "Extractive brief · model interpretation", "small muted"));
+      for (const event of result.events) {
+        const section = element("article", undefined, "intelligence-event");
+        section.append(element("h4", event.category_name + " · " + event.stage));
+        if (event.evidence.length) {
+          const quote = element("blockquote", undefined, "evidence");
+          const item = event.evidence[0];
+          quote.append(element("strong", "What the stored source says · " +
+            (entry.origin === "historical" ? "Excerpt " : "Page ") + item.page),
+            element("p", item.text));
+          section.append(quote);
+        } else {
+          section.append(element("p", "No validated evidence span available.", "small muted"));
+        }
+        if (event.interpretation) {
+          section.append(element("h4", "Why it may matter"), element("p", event.interpretation));
+        }
+        if (event.potentially_affected) {
+          section.append(element("h4", "Potentially affected"), element("p", event.potentially_affected));
+        }
+        const list = element("ul");
+        event.monitor.forEach(item => list.append(element("li", item)));
+        section.append(element("h4", "What to verify next"), list);
+        body.append(section);
+      }
+      const limits = element("details");
+      const notes = element("ul");
+      result.limitations.forEach(item => notes.append(element("li", item)));
+      limits.append(element("summary", "Method and limitations"), notes);
+      const download = element("button", "Download intelligence brief", "button");
+      download.type = "button";
+      download.addEventListener("click", () => downloadJson("stockbrief-intelligence-" + entry.id + ".json", result));
+      body.append(limits, download);
+    } catch (error) {
+      status(message, error.message, true);
+      const retry = element("button", "Retry intelligence brief", "button");
+      retry.type = "button";
+      retry.addEventListener("click", load);
+      body.append(retry);
+    }
+  }
+  load();
+  return panel;
+}
+
 function detail(entry, pane) {
   const brief = entry.brief;
   const heading = element("div", undefined, "chips");
@@ -190,6 +248,7 @@ function detail(entry, pane) {
   if (brief.chunk_limit_reached) {
     pane.append(element("p", "The analysis reached its 240-chunk limit. Later text may need a separate review.", "small muted"));
   }
+  pane.append(intelligencePanel(entry));
   if (brief.events?.length > 1) {
     for (const event of brief.events) {
       const card = element("section", undefined, "event-card");

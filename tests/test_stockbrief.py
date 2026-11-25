@@ -190,6 +190,21 @@ class APITests(unittest.IsolatedAsyncioTestCase):
         record = await self.client.get("/api/disclosures/" + str(uploaded.json()["entry"]["id"]))
         self.assertRegex(record.json()["pages"][0], "appointed a new director")
 
+    async def test_intelligence_uses_saved_source_and_handles_missing_entries(self):
+        uploaded = await self.client.post("/api/analyze", data={
+            "ticker": "OTHER", "text": "The company declared a special dividend of INR 4 per share.",
+        })
+        self.assertEqual(uploaded.status_code, 200)
+        entry_id = uploaded.json()["entry"]["id"]
+        result = await self.client.get(f"/api/disclosures/{entry_id}/intelligence")
+        self.assertEqual(result.status_code, 200)
+        event = result.json()["events"][0]
+        self.assertEqual(event["category"], "corporate_action")
+        raw = (await self.client.get(f"/api/disclosures/{entry_id}")).json()["pages"]
+        for quote in event["evidence"]:
+            self.assertEqual(raw[quote["page"] - 1][quote["start"]:quote["end"]], quote["text"])
+        self.assertEqual((await self.client.get("/api/disclosures/999/intelligence")).status_code, 404)
+
     async def test_bad_and_cross_origin_requests_are_rejected(self):
         responses = [
             (await self.client.post("/api/analyze", data={"ticker": "NONE", "text": "Something happened at a board meeting."}), 422),

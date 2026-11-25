@@ -18,6 +18,7 @@ from .fixtures import Document
 from .hosted import COOKIE_AGE, COOKIE_NAME, HostedWorkspaces, WorkspaceLimit, public_https_origin, workspace_session
 from .inputs import MAX_UPLOAD, make_document, read_upload
 from .market import INSTRUMENTS, MarketData
+from .intelligence import build_intelligence
 from .market_context import disclosure_context
 from .semantic import load_semantic, model_directory
 from .store import Inbox
@@ -135,6 +136,13 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
         if entry is None:
             raise HTTPException(404, "Disclosure not found.")
         return entry
+
+    @app.get("/api/disclosures/{entry_id}/intelligence")
+    def intelligence(entry_id: int, inbox=inbox_dependency):
+        entry = inbox.document(entry_id)
+        if entry is None:
+            raise HTTPException(404, "Disclosure not found.")
+        return build_intelligence(entry)
 
     @app.get("/api/disclosures/{entry_id}/second-opinion")
     def second_opinion(entry_id: int, inbox=inbox_dependency):
