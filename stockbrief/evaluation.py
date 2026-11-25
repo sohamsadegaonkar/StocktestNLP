@@ -64,8 +64,6 @@ def evaluate(model, transformer=None):
         assess("Keyword baseline", lambda doc: baseline(doc.pages[0]), pairs),
         assess(MODEL, lambda doc: model.analyze(doc)["category"], pairs),
     ]
-    if transformer is not None:
-        reports.append(assess(transformer.name, transformer.classify, pairs))
     cases = []
     for document, category, stage in CASE_STUDY:
         brief = model.analyze(document)
@@ -78,6 +76,22 @@ def evaluate(model, transformer=None):
             "observed_stage": brief["stage"],
             "matched": brief["category"] == category and brief["stage"] == stage,
         })
+    if transformer is not None:
+        report = assess(transformer.name, transformer.classify, pairs)
+        report["historical_cases"] = []
+        for document, category, _ in CASE_STUDY:
+            observed = transformer.classify(document)
+            report["historical_cases"].append({
+                "title": document.title,
+                "source": document.url,
+                "expected_category": category,
+                "observed_category": observed,
+                "category_matched": observed == category,
+            })
+        artifact = getattr(transformer, "artifact", None)
+        if artifact is not None:
+            report["artifact"] = artifact
+        reports.append(report)
     return {
         "dataset": {
             "train": sum(map(len, TRAIN.values())), "calibration": sum(map(len, CALIBRATION.values())),

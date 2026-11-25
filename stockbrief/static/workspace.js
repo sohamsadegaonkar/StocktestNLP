@@ -318,6 +318,21 @@ function evaluation(report) {
       checks.classes.map((r) => [report.labels[r.label], r.precision, r.recall, r.f1, r.support]),
       true,
     ));
+    if (checks.artifact) {
+      const artifact = checks.artifact;
+      section.append(element("p", artifact.repository + " · Revision " + artifact.revision.slice(0, 12) +
+        " · ONNX Runtime " + artifact.onnxruntime_version + " · " + artifact.execution_providers.join(", "), "small muted"));
+    }
+    if (checks.historical_cases) {
+      section.append(table(
+        "Historical category check", ["Original source", "Expected category", "Observed category", "Matches expected"],
+        checks.historical_cases.map((r) => [
+          sourceLink(r.source, r.title), report.labels[r.expected_category], report.labels[r.observed_category],
+          r.category_matched ? "Yes" : "No",
+        ]),
+        true,
+      ));
+    }
     layout.append(section);
   }
   layout.append(table("Historical case study", ["Original source", "Observed category", "Observed stage", "Matches expected"],

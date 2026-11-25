@@ -1,0 +1,563 @@
+{
+  "dataset": {
+    "train": 84,
+    "calibration": 18,
+    "test": 32,
+    "scope": "Authored English-language fixtures with disjoint splits"
+  },
+  "thresholds": {
+    "floor": 0.25,
+    "margin": 0.06
+  },
+  "labels": {
+    "earnings": "Earnings & guidance",
+    "corporate_action": "Corporate action",
+    "deal": "M&A & investment",
+    "governance": "Leadership & governance",
+    "regulatory": "Regulatory & legal",
+    "operations": "Operations",
+    "routine": "Routine notice",
+    "review": "Needs review"
+  },
+  "reports": [
+    {
+      "name": "Keyword baseline",
+      "macro_f1": 0.881,
+      "coverage": 0.75,
+      "selective_accuracy": 1.0,
+      "review_recall": 1.0,
+      "latency_ms": {
+        "p50": 0.088,
+        "p95": 0.233
+      },
+      "matrix": [
+        [
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2
+        ],
+        [
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          3,
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          3,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4
+        ]
+      ],
+      "classes": [
+        {
+          "label": "earnings",
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 4
+        },
+        {
+          "label": "corporate_action",
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.667,
+          "support": 4
+        },
+        {
+          "label": "deal",
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 4
+        },
+        {
+          "label": "governance",
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 4
+        },
+        {
+          "label": "regulatory",
+          "precision": 1.0,
+          "recall": 0.75,
+          "f1": 0.857,
+          "support": 4
+        },
+        {
+          "label": "operations",
+          "precision": 1.0,
+          "recall": 0.75,
+          "f1": 0.857,
+          "support": 4
+        },
+        {
+          "label": "routine",
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 4
+        },
+        {
+          "label": "review",
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.667,
+          "support": 4
+        }
+      ]
+    },
+    {
+      "name": "Word + character TF-IDF / logistic regression",
+      "macro_f1": 0.933,
+      "coverage": 0.938,
+      "selective_accuracy": 0.933,
+      "review_recall": 0.5,
+      "latency_ms": {
+        "p50": 3.384,
+        "p95": 4.255
+      },
+      "matrix": [
+        [
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          2
+        ]
+      ],
+      "classes": [
+        {
+          "label": "earnings",
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 4
+        },
+        {
+          "label": "corporate_action",
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 4
+        },
+        {
+          "label": "deal",
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 4
+        },
+        {
+          "label": "governance",
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 4
+        },
+        {
+          "label": "regulatory",
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 4
+        },
+        {
+          "label": "operations",
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 4
+        },
+        {
+          "label": "routine",
+          "precision": 0.667,
+          "recall": 1.0,
+          "f1": 0.8,
+          "support": 4
+        },
+        {
+          "label": "review",
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.667,
+          "support": 4
+        }
+      ]
+    },
+    {
+      "name": "MobileBERT MNLI / ONNX INT8",
+      "macro_f1": 0.516,
+      "coverage": 0.406,
+      "selective_accuracy": 0.923,
+      "review_recall": 1.0,
+      "latency_ms": {
+        "p50": 64.71,
+        "p95": 71.03
+      },
+      "matrix": [
+        [
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          3
+        ],
+        [
+          0,
+          0,
+          0,
+          3,
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          3,
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          2
+        ],
+        [
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1,
+          2
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4
+        ]
+      ],
+      "classes": [
+        {
+          "label": "earnings",
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.667,
+          "support": 4
+        },
+        {
+          "label": "corporate_action",
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4
+        },
+        {
+          "label": "deal",
+          "precision": 0.5,
+          "recall": 0.25,
+          "f1": 0.333,
+          "support": 4
+        },
+        {
+          "label": "governance",
+          "precision": 1.0,
+          "recall": 0.75,
+          "f1": 0.857,
+          "support": 4
+        },
+        {
+          "label": "regulatory",
+          "precision": 1.0,
+          "recall": 0.75,
+          "f1": 0.857,
+          "support": 4
+        },
+        {
+          "label": "operations",
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.667,
+          "support": 4
+        },
+        {
+          "label": "routine",
+          "precision": 1.0,
+          "recall": 0.25,
+          "f1": 0.4,
+          "support": 4
+        },
+        {
+          "label": "review",
+          "precision": 0.211,
+          "recall": 1.0,
+          "f1": 0.348,
+          "support": 4
+        }
+      ],
+      "historical_cases": [
+        {
+          "title": "Agreement to acquire in-tech",
+          "source": "https://www.infosys.com/investors/documents/outcome-board-meeting-18apr2024.pdf",
+          "expected_category": "deal",
+          "observed_category": "earnings",
+          "category_matched": false
+        },
+        {
+          "title": "Q1 FY25 results and outlook",
+          "source": "https://www.infosys.com/investors/reports-filings/quarterly-results/2024-2025/q1.html",
+          "expected_category": "earnings",
+          "observed_category": "earnings",
+          "category_matched": true
+        },
+        {
+          "title": "Commercial vehicles demerger scheme",
+          "source": "https://www.tatamotors.com/press-releases/demerger-of-cv-business-undertaking-of-tata-motors-ltd-into-a-separate-listed-company/",
+          "expected_category": "deal",
+          "observed_category": "deal",
+          "category_matched": true
+        },
+        {
+          "title": "RBI monetary penalty disclosure",
+          "source": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=58673",
+          "expected_category": "regulatory",
+          "observed_category": "regulatory",
+          "category_matched": true
+        }
+      ],
+      "artifact": {
+        "repository": "Xenova/mobilebert-uncased-mnli",
+        "revision": "8b0ea66ab7b190bba77418ba03b67d69cfc9a1ee",
+        "weights_sha256": "1dc36bc1f41b1d1da9e8f28f69f8dc6fa316410b2cde057756ddfb7083a48021",
+        "weights_bytes": 26967165,
+        "onnxruntime_version": "1.32.0",
+        "execution_providers": [
+          "CPUExecutionProvider"
+        ]
+      }
+    }
+  ],
+  "historical_cases": [
+    {
+      "title": "Agreement to acquire in-tech",
+      "source": "https://www.infosys.com/investors/documents/outcome-board-meeting-18apr2024.pdf",
+      "expected_category": "deal",
+      "observed_category": "deal",
+      "expected_stage": "Agreement signed",
+      "observed_stage": "Agreement signed",
+      "matched": true
+    },
+    {
+      "title": "Q1 FY25 results and outlook",
+      "source": "https://www.infosys.com/investors/reports-filings/quarterly-results/2024-2025/q1.html",
+      "expected_category": "earnings",
+      "observed_category": "earnings",
+      "expected_stage": "Reported",
+      "observed_stage": "Reported",
+      "matched": true
+    },
+    {
+      "title": "Commercial vehicles demerger scheme",
+      "source": "https://www.tatamotors.com/press-releases/demerger-of-cv-business-undertaking-of-tata-motors-ltd-into-a-separate-listed-company/",
+      "expected_category": "deal",
+      "observed_category": "deal",
+      "expected_stage": "Subject to approvals",
+      "observed_stage": "Subject to approvals",
+      "matched": true
+    },
+    {
+      "title": "RBI monetary penalty disclosure",
+      "source": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=58673",
+      "expected_category": "regulatory",
+      "observed_category": "regulatory",
+      "expected_stage": "Penalty imposed",
+      "observed_stage": "Penalty imposed",
+      "matched": true
+    }
+  ],
+  "host": {
+    "platform": "Linux x86_64",
+    "process_rss_mib": 237.8,
+    "available_logical_cpus": 1,
+    "scope": "Host process, including Python and loaded libraries",
+    "python": "3.12.14",
+    "scikit_learn": "1.8.0"
+  }
+}

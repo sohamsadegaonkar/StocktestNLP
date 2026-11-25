@@ -32,7 +32,7 @@ PDF import is limited to 5 MB and 30 pages. OCR is outside this release. Histori
 
 The default pipeline fits word and character TF-IDF with logistic regression on 84 original disclosures. It evaluates document context and individual chunks, routes ambiguous outputs to review, and extracts page-level evidence. Event stage and figures are separate deterministic rules with provenance. The stage label reflects the text of that disclosure and is not updated from later events.
 
-The optional advanced path runs quantized MobileBERT MNLI through ONNX Runtime on CPU. It scores seven event hypotheses against up to the first six chunks as a second opinion. The comparator leaves the original brief and citation selection intact. The first download records the exact repository revision. The served comparator reads only local model files.
+The optional transformer runs quantized MobileBERT MNLI through ONNX Runtime on CPU. It scores seven event hypotheses against up to the first six chunks as a second opinion. The downloader uses a pinned model revision and the app verifies the weights against the published SHA-256 before loading them. The served comparator reads only local model files.
 
 ~~~bash
 python -m pip install -r requirements-transformer.txt
@@ -48,4 +48,14 @@ python -m unittest discover -v
 python -m stockbrief evaluate --cpus 1  # Linux affinity; omit --cpus elsewhere
 ~~~
 
-The benchmark writes JSON with model metrics, the confusion matrix, four source-backed checks, process RSS, and latency. Authored fixture results describe this small suite. The host numbers are neither device measurements nor production accuracy estimates. See [the released test run](docs/evaluation.json).
+The benchmark writes JSON with model metrics, the confusion matrix, four source-backed checks, process RSS, and latency. See the [default test run](docs/evaluation.json) and the [one-CPU MobileBERT test run](docs/transformer-evaluation.json).
+
+| Model | Macro F1 | Coverage | Ambiguous cases sent to review |
+| --- | ---: | ---: | ---: |
+| Keyword baseline | 0.881 | 75.0% | 4 of 4 |
+| TF-IDF + logistic regression | 0.933 | 93.8% | 2 of 4 |
+| MobileBERT INT8 | 0.516 | 40.6% | 4 of 4 |
+
+This 32-case authored holdout favors the lighter model as the default for category coverage and macro F1. MobileBERT gives a second reading when a user wants to cross-check the category. These are small-sample host measurements. The edge device and its source link remain simulated.
+
+In GitHub Actions, run **Checks** with the **transformer** input enabled to install the pinned weights, exercise the local second-opinion API, and save the evaluation JSON in the workflow artifact.

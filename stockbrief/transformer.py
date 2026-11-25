@@ -1,4 +1,5 @@
 """Optional ONNX MobileBERT MNLI comparator. Inference uses local files only."""
+from hashlib import file_digest
 import json
 from pathlib import Path
 
@@ -8,7 +9,10 @@ from .corpus import LABELS
 from .nlp import chunks_for
 
 REPOSITORY = "Xenova/mobilebert-uncased-mnli"
-FILES = ("config.json", "tokenizer.json", "onnx/model_quantized.onnx")
+REVISION = "8b0ea66ab7b190bba77418ba03b67d69cfc9a1ee"
+WEIGHTS = "onnx/model_quantized.onnx"
+WEIGHTS_SHA256 = "1dc36bc1f41b1d1da9e8f28f69f8dc6fa316410b2cde057756ddfb7083a48021"
+FILES = ("config.json", "tokenizer.json", WEIGHTS)
 HYPOTHESES = {
     "earnings": "financial results, earnings, or earnings guidance",
     "corporate_action": "a dividend, stock split, repurchase, rights issue, or bonus shares",
@@ -20,29 +24,42 @@ HYPOTHESES = {
 }
 
 
-def fetch_model(folder: Path):
-    from huggingface_hub import HfApi, snapshot_download
+def _verified_weights(folder: Path) -> Path:
+    missing = [name for name in FILES if not (folder / name).is_file()]
+    if missing:
+        raise ValueError(f"Model files are missing: {', '.join(missing)}")
+    weights = folder / WEIGHTS
+    with weights.open("rb") as handle:
+        actual = file_digest(handle, "sha256").hexdigest()
+    if actual != WEIGHTS_SHA256:
+        raise ValueError("MobileBERT weights failed SHA-256 verification. Fetch the pinned model into a fresh folder.")
+    return weights
 
-    revision = HfApi().model_info(REPOSITORY).sha
-    if not revision:
-        raise RuntimeError("Could not resolve an immutable model revision.")
-    snapshot_download(repo_id=REPOSITORY, revision=revision, local_dir=folder, allow_patterns=list(FILES))
-    (folder / "stockbrief-revision.txt").write_text(revision + "\n", encoding="utf-8")
-    return revision
+
+def fetch_model(folder: Path) -> str:
+    from huggingface_hub import snapshot_download
+
+    snapshot_download(repo_id=REPOSITORY, revision=REVISION, local_dir=folder, allow_patterns=list(FILES))
+    _verified_weights(folder)
+    (folder / "stockbrief-revision.txt").write_text(REVISION + "\n", encoding="utf-8")
+    return REVISION
 
 
 class Transformer:
     name = "MobileBERT MNLI / ONNX INT8"
 
     def __init__(self, folder: Path):
+        weights = _verified_weights(folder)
         import onnxruntime as ort
         from tokenizers import Tokenizer
 
-        missing = [name for name in FILES if not (folder / name).is_file()]
-        if missing:
-            raise ValueError(f"Model files are missing: {', '.join(missing)}")
         config = json.loads((folder / "config.json").read_text(encoding="utf-8"))
-        labels = {str(label).lower(): int(index) for index, label in config["id2label"].items()}
+        try:
+            labels = {str(label).lower(): int(index) for index, label in config["id2label"].items()}
+        except (AttributeError, KeyError, TypeError, ValueError) as exc:
+            raise ValueError("MobileBERT config must define MNLI label indices.") from exc
+        if set(labels) != {"entailment", "neutral", "contradiction"} or set(labels.values()) != {0, 1, 2}:
+            raise ValueError("MobileBERT config must define distinct entailment, neutral, and contradiction indices.")
         self.entailment = labels["entailment"]
         self.contradiction = labels["contradiction"]
         self.tokenizer = Tokenizer.from_file(str(folder / "tokenizer.json"))
@@ -53,9 +70,17 @@ class Transformer:
         options.intra_op_num_threads = 1
         options.inter_op_num_threads = 1
         self.session = ort.InferenceSession(
-            str(folder / "onnx/model_quantized.onnx"), sess_options=options, providers=["CPUExecutionProvider"],
+            str(weights), sess_options=options, providers=["CPUExecutionProvider"],
         )
         self.inputs = [field.name for field in self.session.get_inputs()]
+        self.artifact = {
+            "repository": REPOSITORY,
+            "revision": REVISION,
+            "weights_sha256": WEIGHTS_SHA256,
+            "weights_bytes": weights.stat().st_size,
+            "onnxruntime_version": ort.__version__,
+            "execution_providers": self.session.get_providers(),
+        }
 
     def classify(self, document):
         chunks = chunks_for(document.pages)[:6]

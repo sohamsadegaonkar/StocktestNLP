@@ -26,9 +26,25 @@ jobs:
       - run: python -m pip install -r requirements.txt
       - run: python -m unittest discover -v
       - run: node --check stockbrief/static/workspace.js
-      - run: python -m stockbrief evaluate --cpus 1 > /tmp/stockbrief-evaluation.json
-      - if: github.event_name == 'workflow_dispatch' && inputs.transformer
+      - name: Evaluate the default classifier
+        run: python -m stockbrief evaluate --cpus 1 > "$RUNNER_TEMP/evaluation.json"
+      - name: Install and fetch the pinned transformer
+        if: github.event_name == 'workflow_dispatch' && inputs.transformer
         run: |
           python -m pip install -r requirements-transformer.txt
           python -m stockbrief fetch-model
-          python -m stockbrief evaluate --cpus 1 --transformer models/mobilebert
+      - name: Test and evaluate the local transformer
+        if: github.event_name == 'workflow_dispatch' && inputs.transformer
+        env:
+          HF_HUB_OFFLINE: "1"
+          STOCKBRIEF_MODEL_DIR: models/mobilebert
+        run: |
+          python -m unittest tests.test_transformer -v
+          python -m stockbrief evaluate --cpus 1 --transformer "$STOCKBRIEF_MODEL_DIR" > "$RUNNER_TEMP/transformer-evaluation.json"
+      - name: Upload evaluation reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: stockbrief-evaluation
+          path: ${{ runner.temp }}/*evaluation.json
+          if-no-files-found: error
+          retention-days: 14
