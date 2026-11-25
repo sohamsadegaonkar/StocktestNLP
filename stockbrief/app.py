@@ -1,6 +1,8 @@
 """HTTP interface for local and hosted research workspaces."""
+import os
 from pathlib import Path
 from threading import BoundedSemaphore
+from typing import Literal
 
 from fastapi import Depends, FastAPI, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, Response
@@ -14,6 +16,7 @@ from .evaluation import evaluate, host_metrics
 from .fixtures import Document
 from .hosted import COOKIE_AGE, COOKIE_NAME, HostedWorkspaces, WorkspaceLimit, public_https_origin, workspace_session
 from .inputs import MAX_UPLOAD, make_document, read_upload
+from .market import INSTRUMENTS, MarketData
 from .nlp import MODEL, EventModel
 from .store import Inbox
 
@@ -68,6 +71,7 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
     storage = workspaces.storage if workspaces is not None else "sqlite"
     hosted_benchmark = evaluate(model, transformer) if workspaces is not None else None
     hosted_imports = BoundedSemaphore(2)
+    market = MarketData() if workspaces is None and os.getenv("STOCKBRIEF_DISABLE_MARKET") != "1" else None
 
     def get_inbox(request: Request):
         if workspaces is None:
@@ -200,6 +204,14 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
     @app.get("/api/evaluation")
     def evaluation():
         return hosted_benchmark if hosted_benchmark is not None else evaluate(model, transformer)
+
+    @app.get("/api/market/{symbol}")
+    def market_chart(symbol: str, request: Request, period: Literal["1D", "1M"] = "1M"):
+        if market is None or symbol not in INSTRUMENTS:
+            raise HTTPException(404, "Market chart unavailable.")
+        if request.headers.get("sec-fetch-site") == "cross-site":
+            raise HTTPException(403, "Open the dashboard to view market charts.")
+        return market.chart(symbol, period)
 
     @app.get("/api/health")
     def health():
