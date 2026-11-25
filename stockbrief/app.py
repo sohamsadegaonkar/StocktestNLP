@@ -17,7 +17,7 @@ from .evaluation import evaluate, host_metrics
 from .fixtures import Document
 from .hosted import COOKIE_AGE, COOKIE_NAME, HostedWorkspaces, WorkspaceLimit, public_https_origin, workspace_session
 from .inputs import MAX_UPLOAD, make_document, read_upload
-from .live_feed import LiveFeed
+from .live_feed import LiveFeed, fetch_bytes
 from .market import INSTRUMENTS, MarketData
 from .intelligence import build_intelligence
 from .market_context import disclosure_context
@@ -59,7 +59,7 @@ class RequestLimit:
         return await self.app(scope, buffered, send)
 
 
-def create_app(path: Path | None = None, transformer=None, *, public_origin=None, database_url=None, model=None):
+def create_app(path: Path | None = None, transformer=None, *, public_origin=None, database_url=None, model=None, live_fetch=None):
     if database_url and public_origin is None:
         raise ValueError("A PostgreSQL URL requires hosted mode.")
     if model is None:
@@ -79,7 +79,8 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
     hosted_imports = BoundedSemaphore(2)
     market = MarketData() if workspaces is None and os.getenv("STOCKBRIEF_DISABLE_MARKET") != "1" else None
 
-    live = LiveFeed(local_inbox, attachments=os.getenv("STOCKBRIEF_NSE_ATTACHMENTS") == "1") if workspaces is None else None
+    live = LiveFeed(local_inbox, attachments=os.getenv("STOCKBRIEF_NSE_ATTACHMENTS") == "1",
+                    fetch=live_fetch or fetch_bytes) if workspaces is None else None
 
     def get_inbox(request: Request):
         if workspaces is None:

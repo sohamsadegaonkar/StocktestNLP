@@ -11,7 +11,7 @@ from xml.etree import ElementTree as ET
 
 import httpx
 
-from .inputs import MAX_UPLOAD, make_document, read_upload
+from .inputs import MAX_TEXT, MAX_UPLOAD, make_document, read_upload
 
 RSS_URL = "https://nsearchives.nseindia.com/content/RSS/Online_announcements.xml"
 IST = timezone(timedelta(hours=5, minutes=30))
@@ -172,8 +172,10 @@ class LiveFeed:
                     pages, scope = (row.description,), "rss_excerpt"
                     if self.attachments and row.url:
                         try:
-                            pages, _ = read_upload("filing.pdf", self.fetch(row.url, MAX_UPLOAD))
-                            scope = "pdf_text"
+                            extracted, _ = read_upload("filing.pdf", self.fetch(row.url, MAX_UPLOAD))
+                            if not 12 <= sum(len(page.strip()) for page in extracted) <= MAX_TEXT:
+                                raise ValueError("Extracted PDF text exceeds analysis bounds.")
+                            pages, scope = extracted, "pdf_text"
                         except (httpx.HTTPError, ValueError):
                             result["errors"] += 1
                     try:

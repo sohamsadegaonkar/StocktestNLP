@@ -86,6 +86,12 @@ class LiveFeedTests(unittest.TestCase):
         self.assertEqual(entry["source_scope"], "pdf_text")
         self.assertEqual(self.inbox.document(entry["id"])["pages"], ["Quarterly results were reported."])
 
+    def test_oversized_extracted_text_falls_back_to_rss(self):
+        provider = Mock(side_effect=[feed(), b"%PDF-fixture"])
+        with patch("stockbrief.live_feed.read_upload", return_value=(("x" * 90_001,), "pdf")):
+            result = LiveFeed(self.inbox, attachments=True, fetch=provider).refresh()
+        self.assertEqual((result["imported"], result["rss_only"], result["errors"]), (1, 1, 1))
+
     def test_network_error_and_cooldown_do_not_create_fake_news(self):
         provider = Mock(side_effect=httpx.ConnectError("offline"))
         live = LiveFeed(self.inbox, fetch=provider)

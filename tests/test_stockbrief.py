@@ -214,6 +214,39 @@ class APITests(unittest.IsolatedAsyncioTestCase):
         denied = await self.client.post("/api/live/refresh", headers={"Origin": "https://example.org"})
         self.assertEqual(denied.status_code, 403)
 
+    async def test_feed_to_bge_intelligence_and_matching_market_context(self):
+        from datetime import datetime
+        from unittest.mock import patch
+        from tests.test_live_feed import feed
+
+        raw = feed(description="Infosys reported fiscal first-quarter results. It reported revenue of USD 4,714 million and 3.6% sequential growth in constant currency.",
+                   published="Mon, 15 Jul 2024 18:05:00 +0530")
+        def provider(url, limit):
+            from stockbrief.live_feed import RSS_URL
+            self.assertEqual(url, RSS_URL)
+            return raw
+        with patch.dict("os.environ", {"STOCKBRIEF_NSE_ATTACHMENTS": "0", "STOCKBRIEF_DISABLE_MARKET": "0"}):
+            app = await asyncio.to_thread(create_app, self.path, live_fetch=provider)
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as client:
+            result = await client.post("/api/live/refresh")
+            self.assertEqual(result.json()["imported"], 1, result.text)
+            inbox = (await client.get("/api/inbox")).json()
+            imported = next(x for x in inbox["disclosures"] if x["origin"] == "nse-rss")
+            brief = (await client.get(f"/api/disclosures/{imported['id']}/intelligence")).json()
+            self.assertEqual(brief["source_scope"], "rss_excerpt")
+            self.assertEqual(brief["events"][0]["category"], "earnings")
+            self.assertTrue(brief["events"][0]["evidence"])
+            self.assertTrue(any("RSS excerpt" in note for note in brief["limitations"]))
+            self.assertEqual(imported["date"], "2024-07-15")
+            before = datetime.fromisoformat("2024-07-12T09:15:00+05:30")
+            after = datetime.fromisoformat("2024-07-16T09:15:00+05:30")
+            def candles(_self, instrument, period):
+                self.assertEqual(period, "1M")
+                return [(before, 100), (after, 102 if instrument.unit == "points" else 105)]
+            with patch("stockbrief.market.MarketData._load", candles):
+                context = (await client.get("/api/market-context/INFY?filing_date=" + imported["date"])).json()
+            self.assertEqual(context["relative_return_pp"], 3)
+
     async def test_bad_and_cross_origin_requests_are_rejected(self):
         responses = [
             (await self.client.post("/api/analyze", data={"ticker": "NONE", "text": "Something happened at a board meeting."}), 422),
