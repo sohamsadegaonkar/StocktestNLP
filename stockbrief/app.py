@@ -1,5 +1,6 @@
 """HTTP interface for local and hosted research workspaces."""
 import os
+from datetime import date
 from pathlib import Path
 from threading import BoundedSemaphore
 from typing import Literal
@@ -12,16 +13,33 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from .corpus import LABELS, TICKERS
 from .display import display_png
+from .edge import benchmark
+from .edge_simulation import experiment
 from .evaluation import evaluate, host_metrics
 from .fixtures import Document
 from .hosted import COOKIE_AGE, COOKIE_NAME, HostedWorkspaces, WorkspaceLimit, public_https_origin, workspace_session
 from .inputs import MAX_UPLOAD, make_document, read_upload
+from .live_feed import LiveFeed, fetch_bytes
 from .market import INSTRUMENTS, MarketData
+from .intelligence import build_intelligence
+from .market_context import disclosure_context
 from .semantic import load_semantic, model_directory
 from .store import Inbox
 
 STATIC = Path(__file__).resolve().parent / "static"
 MAX_REQUEST = MAX_UPLOAD + 256 * 1024
+
+
+class EdgeSimulationRequest(BaseModel):
+    count: int = 24
+    burst: StrictBool = True
+    latency_ms: int = 30
+    scenario: Literal["normal", "worker_outage", "source_outage", "combined"] = "combined"
+
+
+class EdgeConfig(BaseModel):
+    watchlist: list[str]
+    policy: Literal["fifo", "adaptive"]
 
 
 class LinkRequest(BaseModel):
@@ -55,7 +73,7 @@ class RequestLimit:
         return await self.app(scope, buffered, send)
 
 
-def create_app(path: Path | None = None, transformer=None, *, public_origin=None, database_url=None, model=None):
+def create_app(path: Path | None = None, transformer=None, *, public_origin=None, database_url=None, model=None, live_fetch=None):
     if database_url and public_origin is None:
         raise ValueError("A PostgreSQL URL requires hosted mode.")
     if model is None:
@@ -74,6 +92,9 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
     hosted_benchmark = evaluate(model, transformer) if workspaces is not None else None
     hosted_imports = BoundedSemaphore(2)
     market = MarketData() if workspaces is None and os.getenv("STOCKBRIEF_DISABLE_MARKET") != "1" else None
+
+    live = LiveFeed(local_inbox, attachments=os.getenv("STOCKBRIEF_NSE_ATTACHMENTS") == "1",
+                    fetch=live_fetch or fetch_bytes) if workspaces is None else None
 
     def get_inbox(request: Request):
         if workspaces is None:
@@ -124,8 +145,54 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
         return {
             **inbox.state(), "labels": labels,
             "tickers": TICKERS, "transformer": transformer.name if transformer else None,
+            "live_feed_available": live is not None,
             "mode": mode, "storage": storage,
         }
+
+    @app.post("/api/live/refresh")
+    def live_refresh():
+        if live is None:
+            raise HTTPException(404, "Live feed is available only in local mode.")
+        return live.refresh()
+
+    def local_edge():
+        if live is None:
+            raise HTTPException(404, "Edge scheduler is local-only.")
+        return live.edge
+
+    @app.post("/api/edge/simulate")
+    def edge_simulate(config: EdgeSimulationRequest):
+        local_edge()
+        try:
+            return experiment(config.count, config.burst, config.latency_ms, config.scenario)
+        except ValueError as error:
+            raise HTTPException(422, str(error)) from error
+
+    @app.get("/api/edge/status")
+    def edge_status():
+        return local_edge().status()
+
+    @app.post("/api/edge/config")
+    def edge_config(config: EdgeConfig):
+        try:
+            return local_edge().configure(config.watchlist, config.policy)
+        except ValueError as error:
+            raise HTTPException(422, str(error)) from error
+
+    @app.post("/api/edge/drain")
+    def edge_drain():
+        local_edge()
+        return live.drain_offline()
+
+    @app.post("/api/edge/benchmark")
+    def edge_benchmark():
+        local_edge()
+        if not live.lock.acquire(blocking=False):
+            raise HTTPException(409, "The edge processor is busy.")
+        try:
+            return benchmark(model)
+        finally:
+            live.lock.release()
 
     @app.get("/api/disclosures/{entry_id}")
     def get_disclosure(entry_id: int, inbox=inbox_dependency):
@@ -133,6 +200,13 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
         if entry is None:
             raise HTTPException(404, "Disclosure not found.")
         return entry
+
+    @app.get("/api/disclosures/{entry_id}/intelligence")
+    def intelligence(entry_id: int, inbox=inbox_dependency):
+        entry = inbox.document(entry_id)
+        if entry is None:
+            raise HTTPException(404, "Disclosure not found.")
+        return build_intelligence(entry)
 
     @app.get("/api/disclosures/{entry_id}/second-opinion")
     def second_opinion(entry_id: int, inbox=inbox_dependency):
@@ -214,6 +288,14 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
         if request.headers.get("sec-fetch-site") == "cross-site":
             raise HTTPException(403, "Open the dashboard to view market charts.")
         return market.chart(symbol, period)
+
+    @app.get("/api/market-context/{symbol}")
+    def market_context(symbol: str, filing_date: date, request: Request):
+        if market is None or symbol not in INSTRUMENTS or symbol == "NIFTY50":
+            raise HTTPException(404, "Disclosure market context unavailable.")
+        if request.headers.get("sec-fetch-site") == "cross-site":
+            raise HTTPException(403, "Open the dashboard to view market context.")
+        return disclosure_context(market.chart(symbol, "1M"), market.chart("NIFTY50", "1M"), filing_date)
 
     @app.get("/api/health")
     def health():

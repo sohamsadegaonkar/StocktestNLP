@@ -417,3 +417,28 @@ footer {
   .market-controls select { max-width: 100%; }
   .market-quote strong { font-size: 23px; }
 }
+
+.intelligence-panel { margin: 14px 0; padding: 14px; border: 1px solid var(--edge); border-radius: 10px; background: #f7f9f6; min-width: 0; overflow-wrap: anywhere; }
+.intelligence-panel > h3 { margin: 0 0 8px; font-size: 17px; color: var(--ink); }
+.intelligence-event { padding: 10px 0; border-top: 1px solid var(--edge); }
+.intelligence-event h4 { margin: 8px 0 4px; font-size: 13px; color: var(--ink); }
+.intelligence-event p, .intelligence-panel li { font-size: 13px; line-height: 1.5; }
+.intelligence-panel ul { padding-inline-start: 20px; margin: 5px 0 10px; }
+.intelligence-panel button { margin-top: 10px; }
+
+#live-feed-panel .market-status { overflow-wrap: anywhere; }
+
+#sentinel-panel { margin-bottom: 18px; }
+.edge-symbols { display: flex; flex-wrap: wrap; gap: 10px; }
+.edge-option { display: flex; flex-direction: row; align-items: center; gap: 5px; }
+.edge-option input { width: auto; }
+.edge-metrics { margin: 12px 0; }
+#legacy-lab { margin-top: 12px; }
+#edge-history details { margin: 8px 0; overflow-wrap: anywhere; }
+
+#cooperative-panel { margin-bottom: 18px; }
+.sim-bars { display: grid; gap: 8px; margin: 14px 0; }
+.sim-bars label { display: grid; gap: 4px; }
+.sim-bars meter { width: 100%; height: 14px; accent-color: var(--teal); }
+#sim-playback { margin-top: 16px; border-top: 1px solid var(--edge); padding-top: 12px; }
+#sim-clock { width: 100%; }

@@ -43,6 +43,11 @@ class HostedAPITests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(inbox.json()["mode"], "hosted")
         self.assertEqual(inbox.json()["storage"], "sqlite")
         self.assertNotIn("Set-Cookie", inbox.headers)
+        self.assertFalse(inbox.json()["live_feed_available"])
+        self.assertEqual((await client.get("/api/edge/status")).status_code, 404)
+        self.assertEqual((await client.post("/api/edge/simulate", headers=SAME_ORIGIN, json={})).status_code, 404)
+        self.assertEqual((await client.post("/api/edge/drain", headers=SAME_ORIGIN)).status_code, 404)
+        self.assertEqual((await client.post("/api/live/refresh", headers=SAME_ORIGIN)).status_code, 404)
         health = await client.get("/api/health")
         self.assertEqual(health.json()["inference"], "server")
         self.assertNotIn("process_rss_mb", health.json())
@@ -60,6 +65,10 @@ class HostedAPITests(unittest.IsolatedAsyncioTestCase):
         record = upload.json()["entry"]
         foreign = await second.get(f"/api/disclosures/{record['id']}")
         self.assertEqual(foreign.status_code, 404)
+        own = await first.get(f"/api/disclosures/{record['id']}/intelligence")
+        self.assertEqual(own.status_code, 200)
+        self.assertEqual(own.json()["entry_id"], record["id"])
+        self.assertEqual((await second.get(f"/api/disclosures/{record['id']}/intelligence")).status_code, 404)
         await first.post("/api/replay/link", headers=SAME_ORIGIN, json={"connected": False})
         for _ in range(2):
             step = await first.post("/api/replay/step", headers=SAME_ORIGIN)

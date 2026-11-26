@@ -2,12 +2,14 @@ const $ = (selector) => document.querySelector(selector);
 const viewText = {
   inbox: ["Disclosure workspace", "Find the event, its stage, and the source passage behind each company announcement."],
   analyze: ["Analyze a disclosure", "Classify a company filing and inspect the passages used in the result."],
-  lab: ["Edge lab", "Queue, resend, and deduplicate disclosures on a simulated source link."],
+  lab: ["Edge lab", "Measure local financial inference, adaptive scheduling and persistent event recovery."],
   evaluation: ["Evaluation", "Compare event classification, review decisions, and inference latency."],
 };
 const originNames = {
   historical: "Historical paraphrase",
   synthetic: "Synthetic scenario",
+  "nse-rss": "NSE RSS excerpt",
+  "nse-pdf": "NSE filing PDF text",
   text: "Text import",
   pdf: "PDF import",
 };
@@ -109,6 +111,8 @@ function presentView() {
   $("#hero-actions").hidden = current !== "inbox";
   $("#hero-process").hidden = current !== "inbox";
   document.title = viewText[current][0] + " · StockBrief Edge";
+  if (current !== "lab") stopSimulation();
+  if (current === "lab" && state?.live_feed_available) loadEdge();
 }
 
 function addOptions(select, entries) {
@@ -176,6 +180,102 @@ function eventDetails(entry, brief, pane, separateCard) {
   }
 }
 
+function intelligencePanel(entry) {
+  const panel = element("section", undefined, "intelligence-panel");
+  panel.append(element("h3", "News intelligence"));
+  const body = element("div");
+  panel.append(body);
+  async function load() {
+    const message = element("p", "Building evidence-backed brief…", "small muted");
+    message.setAttribute("role", "status");
+    body.replaceChildren(message);
+    try {
+      const result = await api("/api/disclosures/" + entry.id + "/intelligence");
+      body.replaceChildren(element("p", result.state === "needs_review"
+        ? "Needs review — no supported event established."
+        : "Extractive brief · model interpretation", "small muted"));
+      for (const event of result.events) {
+        const section = element("article", undefined, "intelligence-event");
+        section.append(element("h4", event.category_name + " · " + event.stage));
+        if (event.evidence.length) {
+          const quote = element("blockquote", undefined, "evidence");
+          const item = event.evidence[0];
+          quote.append(element("strong", "What the stored source says · " +
+            (entry.origin === "historical" ? "Excerpt " : "Page ") + item.page),
+            element("p", item.text));
+          section.append(quote);
+        } else {
+          section.append(element("p", "No validated evidence span available.", "small muted"));
+        }
+        if (event.interpretation) {
+          section.append(element("h4", "Why it may matter"), element("p", event.interpretation));
+        }
+        if (event.potentially_affected) {
+          section.append(element("h4", "Potentially affected"), element("p", event.potentially_affected));
+        }
+        const list = element("ul");
+        event.monitor.forEach(item => list.append(element("li", item)));
+        section.append(element("h4", "What to verify next"), list);
+        body.append(section);
+      }
+      const limits = element("details");
+      const notes = element("ul");
+      result.limitations.forEach(item => notes.append(element("li", item)));
+      limits.append(element("summary", "Method and limitations"), notes);
+      const download = element("button", "Download intelligence brief", "button");
+      download.type = "button";
+      download.addEventListener("click", () => downloadJson("stockbrief-intelligence-" + entry.id + ".json", result));
+      body.append(limits, download);
+    } catch (error) {
+      status(message, error.message, true);
+      const retry = element("button", "Retry intelligence brief", "button");
+      retry.type = "button";
+      retry.addEventListener("click", load);
+      body.append(retry);
+    }
+  }
+  load();
+  return panel;
+}
+
+function marketContextPanel(entry) {
+  const panel = element("section", undefined, "intelligence-panel");
+  panel.append(element("h3", "Observed market context"));
+  const note = element("p", "Checking completed trading sessions…", "small muted");
+  note.setAttribute("role", "status");
+  panel.append(note);
+  const signed = (n, unit) => n == null ? "Unavailable" : (n > 0 ? "+" : "") + n.toFixed(2) + unit;
+  api("/api/market-context/" + encodeURIComponent(entry.ticker) + "?filing_date=" + encodeURIComponent(entry.date))
+    .then(result => {
+      const metrics = element("dl");
+      metrics.append(detailField("Company return", signed(result.symbol_return_pct, "%")),
+        detailField("Nifty 50 return", signed(result.benchmark_return_pct, "%")),
+        detailField("Relative return", signed(result.relative_return_pp, " pp")));
+      note.textContent = result.before && result.after
+        ? dateLabel(result.before.date) + " to " + dateLabel(result.after.date) + " · " + result.state
+        : result.state + " · " + (result.reason || "No matching sessions").replaceAll("_", " ");
+      panel.append(metrics);
+      if (result.before && result.after) {
+        panel.append(element("p", "Company closes: ₹" + result.before.close + " → ₹" + result.after.close, "small"));
+        const chart = $("#market-symbol");
+        if (chart && !$("#market-panel").hidden) {
+          const button = element("button", "Show issuer price chart", "button");
+          button.type = "button";
+          button.addEventListener("click", () => {
+            chart.value = entry.ticker;
+            chart.dispatchEvent(new Event("change"));
+            $("#market-panel").scrollIntoView({block: "start"});
+          });
+          panel.append(button);
+        }
+      }
+      const list = element("ul");
+      result.limitations.forEach(item => list.append(element("li", item)));
+      panel.append(element("p", "Upstox · source checked " + (result.symbol_checked_at || "unavailable"), "small muted"), list);
+    }).catch(error => status(note, error.message, true));
+  return panel;
+}
+
 function detail(entry, pane) {
   const brief = entry.brief;
   const heading = element("div", undefined, "chips");
@@ -190,6 +290,11 @@ function detail(entry, pane) {
   if (brief.chunk_limit_reached) {
     pane.append(element("p", "The analysis reached its 240-chunk limit. Later text may need a separate review.", "small muted"));
   }
+  if (entry.published_at) pane.append(element("p", "Published " + entry.published_at +
+    " · retrieved " + entry.retrieved_at, "small muted"));
+  if (entry.source_scope === "rss_excerpt") pane.append(element("p",
+    "RSS excerpt only — the full filing was not analyzed.", "small muted"));
+  pane.append(intelligencePanel(entry));
   if (brief.events?.length > 1) {
     for (const event of brief.events) {
       const card = element("section", undefined, "event-card");
@@ -200,6 +305,8 @@ function detail(entry, pane) {
   } else {
     eventDetails(entry, brief, pane, false);
   }
+
+  if (entry.origin.startsWith("nse-") && entry.date) pane.append(marketContextPanel(entry));
 
   const sourceActions = element("div", undefined, "actions source-actions");
   if (entry.url) sourceActions.append(sourceLink(entry.url, "Open original source →"));
@@ -310,7 +417,231 @@ function renderInbox(focusId) {
   saveInboxView();
 }
 
+let liveEnabled = false;
+let liveBusy = false;
+let liveStarted = 0;
+async function pollLive() {
+  if (!state?.live_feed_available || liveBusy || analysisBusy || replayBusy || workspaceBusy) return;
+  liveBusy = true;
+  liveStarted = Date.now();
+  const button = $("#live-refresh");
+  const note = $("#live-status");
+  button.disabled = true;
+  status(note, "Checking NSE RSS…");
+  try {
+    const result = await api("/api/live/refresh", {method: "POST"});
+    if (result.state === "busy") {
+      status(note, "Another refresh is running.");
+      return;
+    }
+    const summary = "Imported " + result.imported + " · " + result.duplicates + " already seen · " +
+      result.pending + " pending in local queue · " + result.errors + " processing warnings" +
+      (result.capacity_deferred ? " · " + result.capacity_deferred + " deferred at capacity" : "");
+    status(note, (result.state === "unavailable" ? "Feed unavailable; saved briefs retained. " + summary : summary) +
+      " · Last successful check: " + (result.last_success || "none") +
+      (result.throttled ? " · Cached refresh status" : ""), result.state === "unavailable");
+    if (result.imported || result.throttled) await refresh();
+  } catch (error) {
+    status(note, error.message, true);
+  } finally {
+    liveBusy = false;
+    button.disabled = false;
+  }
+}
+$("#live-refresh").addEventListener("click", pollLive);
+$("#live-toggle").addEventListener("click", () => {
+  liveEnabled = !liveEnabled;
+  $("#live-toggle").textContent = liveEnabled ? "Stop auto refresh" : "Start auto refresh";
+  if (liveEnabled) pollLive();
+});
+setInterval(() => {
+  if (liveEnabled && !document.hidden && !$("#view-inbox").hidden && Date.now() - liveStarted >= 120000) pollLive();
+}, 5000);
+
+let simReport;
+let simTimer;
+function stopSimulation() {
+  if (simTimer !== undefined) clearInterval(simTimer);
+  simTimer = undefined;
+  $("#sim-play").textContent = "Play";
+}
+function simFrame() {
+  if (!simReport) return;
+  const run = simReport.runs[$("#sim-architecture").value];
+  const t = Number($("#sim-clock").value);
+  const down = window => window && window[0] <= t && t < window[1];
+  const completed = run.results.filter(r => r.completed_ms <= t).length;
+  const events = run.trace.filter(e => e.time_ms <= t);
+  const received = events.filter(e => e.event === "received").length;
+  $("#sim-time").textContent = t + " ms virtual time · " + completed + "/" + run.total + " completed · " +
+    received + " received · source " + (down(run.source_outage) ? "offline" : "online (simulated)");
+  const nodes = $("#sim-nodes"); nodes.replaceChildren();
+  for (const node of run.nodes) {
+    const card = element("article");
+    const active = run.attempts.find(a => a.node === node.name && a.start_ms <= t && (a.end_ms === null || t < a.end_ms));
+    const count = run.results.filter(r => r.node === node.name && r.completed_ms <= t).length;
+    const state = node.name === "worker" && down(run.worker_outage) ? "Offline" : active ? "Job " + active.job : "Idle";
+    card.append(element("p", node.name + " · " + node.speed + "×", "eyebrow"),
+      element("strong", state), element("span", count + " completed"));
+    nodes.append(card);
+  }
+  const panel = $("#sim-events");
+  panel.replaceChildren(element("h3", "Latest simulated events"));
+  if (events.length) panel.append(table("Virtual event trace", ["Time (ms)", "Event", "Job", "Device"],
+    events.slice(-8).reverse().map(e => [String(e.time_ms), e.event.replaceAll("_"," "), String(e.job ?? "—"), e.node || "—"])));
+}
+function simSelect() {
+  stopSimulation();
+  if (!simReport) return;
+  $("#sim-clock").max = simReport.runs[$("#sim-architecture").value].end_ms;
+  $("#sim-clock").value = 0;
+  simFrame();
+}
+$("#sim-architecture").addEventListener("change", simSelect);
+$("#sim-clock").addEventListener("input", () => { stopSimulation(); simFrame(); });
+$("#sim-reset").addEventListener("click", simSelect);
+$("#sim-play").addEventListener("click", () => {
+  if (simTimer !== undefined) { stopSimulation(); return; }
+  if (!simReport) return;
+  const clock = $("#sim-clock");
+  if (Number(clock.value) >= Number(clock.max)) clock.value = 0;
+  $("#sim-play").textContent = "Pause";
+  simTimer = setInterval(() => {
+    clock.value = Math.min(Number(clock.max), Number(clock.value) + Math.max(10, Math.ceil(Number(clock.max)/100/10)*10));
+    simFrame();
+    if (Number(clock.value) >= Number(clock.max)) stopSimulation();
+  }, 100);
+});
+$("#sim-config").addEventListener("submit", async event => {
+  event.preventDefault(); stopSimulation();
+  const button = $("#sim-run");
+  button.disabled = true;
+  status($("#sim-status"), "Running virtual workload…");
+  try {
+    const data = await api("/api/edge/simulate", {method:"POST", headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({count:Number($("#sim-count").value), latency_ms:Number($("#sim-delay").value),
+        burst:$("#sim-burst").value === "burst",scenario:$("#sim-scenario").value})});
+    simReport = data;
+    const target = $("#sim-results");
+    const runs = Object.values(data.runs);
+    const ms = n => n === null ? "Unavailable" : n + " ms";
+    target.replaceChildren(element("h3","Simulated architecture comparison"), element("p",data.scope,"small muted"),
+      table("Virtual performance — same work", ["Architecture","First relevant","All relevant","p95 latency","Makespan","Completed"],
+        runs.map(r => [r.architecture,ms(r.first_relevant_ms),ms(r.all_relevant_ms),ms(r.p95_latency_ms),ms(r.makespan_ms),r.completed+"/"+r.total])),
+      table("Virtual reliability and network costs", ["Architecture","Duplicate packets","Lease retries","Stale results rejected","Assumed bytes"],
+        runs.map(r => [r.architecture,r.duplicates,r.lease_retries,r.stale_results,r.modeled_network_bytes])));
+    const bars = element("div", undefined, "sim-bars");
+    bars.append(element("h3", "Virtual time to first relevant brief"));
+    const maximum = Math.max(1,...runs.map(r => r.first_relevant_ms || 0));
+    for (const r of runs) {
+      const label = element("label",r.architecture+" · "+ms(r.first_relevant_ms));
+      const meter = element("meter"); meter.min=0; meter.max=maximum; meter.value=r.first_relevant_ms ?? maximum;
+      meter.setAttribute("aria-label",label.textContent); label.append(meter); bars.append(label);
+    }
+    const download = element("button","Export complete simulation trace","button");
+    download.type="button"; download.addEventListener("click",()=>downloadJson("edge-network-simulation.json",data));
+    target.append(bars,download);
+    $("#sim-playback").hidden=false;
+    simSelect();
+    status($("#sim-status"),"Simulation complete. Move the virtual clock or play the trace.");
+  } catch(error) { status($("#sim-status"),error.message,true); }
+  finally { button.disabled=false; }
+});
+let edgeBusy = false;
+let edgeConfigLoaded = false;
+function renderEdge(result, syncConfig = false) {
+  if (syncConfig || !edgeConfigLoaded) {
+    $("#edge-policy").value = result.policy;
+    const symbols = $("#edge-symbols");
+    symbols.replaceChildren();
+    for (const ticker of result.supported) {
+      const label = element("label", undefined, "edge-option");
+      const check = element("input");
+      check.type = "checkbox"; check.value = ticker; check.checked = result.watchlist.includes(ticker);
+      label.append(check, document.createTextNode(ticker)); symbols.append(label);
+    }
+    edgeConfigLoaded = true;
+  }
+  const metrics = $("#edge-metrics");
+  metrics.replaceChildren();
+  for (const [name, value] of [["Pending", result.pending], ["Failed retained", result.failed], ["Capacity", result.capacity]]) {
+    const card = element("article");
+    card.append(element("p", name, "eyebrow"), element("strong", String(value)));
+    metrics.append(card);
+  }
+  const queue = $("#edge-queue");
+  queue.replaceChildren(element("h3", "Next jobs"));
+  if (result.queue.length) queue.append(table("Current queue order", ["Issuer", "Published", "Priority", "Wait"], result.queue.map(r =>
+    [r.ticker, r.published_at, String(r.priority), r.age_seconds + " s"])));
+  else queue.append(element("p", "No pending received announcements.", "small muted"));
+  const history = $("#edge-history");
+  history.replaceChildren(element("h3", "Recent actual processing"));
+  if (result.recent.length) {
+    history.append(table("Local processing history", ["Issuer", "Queue wait", "Processing", "Revision"], result.recent.map(r =>
+      [r.ticker, r.wait_ms + " ms", r.processing_ms + " ms", r.delta.state.replaceAll("_", " ")])));
+    for (const r of result.recent.filter(r => r.delta.state === "linked_excerpt_changed")) {
+      const delta = r.delta;
+      const section = element("details");
+      section.append(element("summary", r.ticker + " · Same-link excerpt changed"), element("p", delta.note, "small muted"));
+      section.append(element("p", "Removed figures: " + (delta.removed_figures.join(", ") || "None detected")),
+        element("p", "Added figures: " + (delta.added_figures.join(", ") || "None detected")));
+      for (const change of delta.changes) section.append(element("p", "Before: " + change.before), element("p", "After: " + change.after));
+      if (delta.model_comparison === "comparable") {
+        const labels = values => values.map(e => e.category + " / " + e.stage).join(", ") || "None";
+        section.append(element("p", "Model event labels removed: " + labels(delta.removed_event_labels)),
+          element("p", "Model event labels added: " + labels(delta.added_event_labels)),
+          element("p", "These are inferred labels, not verified economic effects.", "small muted"));
+      } else if (delta.model_comparison) section.append(element("p", "Model comparison withheld: differing model version or source scope.", "small muted"));
+      history.append(section);
+    }
+  } else history.append(element("p", "No live jobs processed yet.", "small muted"));
+}
+async function loadEdge(syncConfig = false) {
+  try { renderEdge(await api("/api/edge/status"), syncConfig); }
+  catch (error) { status($("#edge-status"), error.message, true); }
+}
+async function edgeAction(action, payload) {
+  if (edgeBusy) return;
+  edgeBusy = true;
+  const controls = [...$("#sentinel-panel").querySelectorAll("button")];
+  controls.forEach(button => button.disabled = true);
+  status($("#edge-status"), "Running local " + action + "…");
+  try {
+    const result = await api("/api/edge/" + action, {method:"POST",
+      ...(payload ? {headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)} : {})});
+    if (action === "benchmark") {
+      const target = $("#edge-results");
+      const rows = Object.entries(result.runs).flatMap(([policy,runs]) => runs.map((r,i) =>
+        [policy + " " + (i+1), r.first_relevant_ms + " ms", r.all_relevant_ms + " ms", r.total_ms + " ms"]));
+      target.replaceChildren(element("h3", "Measured scheduling experiment"), element("p", result.scope, "small muted"),
+        table("Actual host model runs", ["Policy / run", "First relevant", "All relevant", "Total"], rows),
+        element("p", "Equivalent category outputs: " + (result.same_categories ? "Yes" : "No")));
+      const download = element("button", "Download benchmark evidence", "button");
+      download.type = "button"; download.addEventListener("click", () => downloadJson("edge-scheduling.json", result));
+      target.append(download);
+    } else if (action === "drain") {
+      if (result.state === "busy") { status($("#edge-status"), "Processor busy; retry."); return; }
+      await refresh();
+    }
+    await loadEdge(action === "config");
+    status($("#edge-status"), action === "drain" ? "Processed " + result.imported + " · pending " + result.pending +
+      " · batch budget " + result.budget.max_jobs + " · CPU " + result.budget.cpu_percent + "%" : "Complete.");
+  } catch (error) { status($("#edge-status"), error.message, true); }
+  finally { edgeBusy = false; controls.forEach(button => button.disabled = false); }
+}
+$("#edge-refresh").addEventListener("click", () => loadEdge());
+$("#edge-config").addEventListener("submit", event => {
+  event.preventDefault();
+  edgeAction("config", {watchlist: [...$("#edge-symbols").querySelectorAll("input:checked")].map(i => i.value), policy: $("#edge-policy").value});
+});
+$("#edge-drain").addEventListener("click", () => edgeAction("drain"));
+$("#edge-benchmark").addEventListener("click", () => edgeAction("benchmark"));
+
 function renderState() {
+  $("#live-feed-panel").hidden = !state.live_feed_available;
+  $("#sentinel-panel").hidden = !state.live_feed_available;
+  $("#cooperative-panel").hidden = !state.live_feed_available;
+  if (state.live_feed_available && !edgeConfigLoaded && !$("#view-lab").hidden) loadEdge();
   const hosted = state.mode === "hosted";
   $("#workspace-scope").textContent = hosted ? "Private browser workspace" : "Local workspace";
   $("#storage-note").hidden = !hosted || state.storage !== "sqlite";

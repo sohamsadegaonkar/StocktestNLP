@@ -12,6 +12,10 @@ class Document:
     url: str = ""
     origin: str = "import"
 
+    published_at: str = ""
+    retrieved_at: str = ""
+    source_scope: str = ""
+
     def record(self) -> dict:
         return asdict(self)
 

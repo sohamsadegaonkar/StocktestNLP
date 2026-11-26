@@ -190,6 +190,87 @@ class APITests(unittest.IsolatedAsyncioTestCase):
         record = await self.client.get("/api/disclosures/" + str(uploaded.json()["entry"]["id"]))
         self.assertRegex(record.json()["pages"][0], "appointed a new director")
 
+    async def test_intelligence_uses_saved_source_and_handles_missing_entries(self):
+        uploaded = await self.client.post("/api/analyze", data={
+            "ticker": "OTHER", "text": "The company declared a special dividend of INR 4 per share.",
+        })
+        self.assertEqual(uploaded.status_code, 200)
+        entry_id = uploaded.json()["entry"]["id"]
+        result = await self.client.get(f"/api/disclosures/{entry_id}/intelligence")
+        self.assertEqual(result.status_code, 200)
+        event = result.json()["events"][0]
+        self.assertEqual(event["category"], "corporate_action")
+        raw = (await self.client.get(f"/api/disclosures/{entry_id}")).json()["pages"]
+        for quote in event["evidence"]:
+            self.assertEqual(raw[quote["page"] - 1][quote["start"]:quote["end"]], quote["text"])
+        self.assertEqual((await self.client.get("/api/disclosures/999/intelligence")).status_code, 404)
+
+    async def test_live_refresh_routes_to_local_feed(self):
+        from unittest.mock import patch
+        with patch("stockbrief.live_feed.LiveFeed.refresh", return_value={"state": "available", "imported": 0}):
+            result = await self.client.post("/api/live/refresh")
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.json()["state"], "available")
+        denied = await self.client.post("/api/live/refresh", headers={"Origin": "https://example.org"})
+        self.assertEqual(denied.status_code, 403)
+
+    async def test_feed_to_bge_intelligence_and_matching_market_context(self):
+        from datetime import datetime
+        from unittest.mock import patch
+        from tests.test_live_feed import feed
+
+        raw = feed(description="Infosys reported fiscal first-quarter results. It reported revenue of USD 4,714 million and 3.6% sequential growth in constant currency.",
+                   published="Mon, 15 Jul 2024 18:05:00 +0530")
+        def provider(url, limit):
+            from stockbrief.live_feed import RSS_URL
+            self.assertEqual(url, RSS_URL)
+            return raw
+        with patch.dict("os.environ", {"STOCKBRIEF_NSE_ATTACHMENTS": "0", "STOCKBRIEF_DISABLE_MARKET": "0"}):
+            app = await asyncio.to_thread(create_app, self.path, live_fetch=provider)
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as client:
+            result = await client.post("/api/live/refresh")
+            self.assertEqual(result.json()["imported"], 1, result.text)
+            inbox = (await client.get("/api/inbox")).json()
+            imported = next(x for x in inbox["disclosures"] if x["origin"] == "nse-rss")
+            brief = (await client.get(f"/api/disclosures/{imported['id']}/intelligence")).json()
+            self.assertEqual(brief["source_scope"], "rss_excerpt")
+            self.assertEqual(brief["events"][0]["category"], "earnings")
+            self.assertTrue(brief["events"][0]["evidence"])
+            self.assertTrue(any("RSS excerpt" in note for note in brief["limitations"]))
+            self.assertEqual(imported["date"], "2024-07-15")
+            before = datetime.fromisoformat("2024-07-12T09:15:00+05:30")
+            after = datetime.fromisoformat("2024-07-16T09:15:00+05:30")
+            def candles(_self, instrument, period):
+                self.assertEqual(period, "1M")
+                return [(before, 100), (after, 102 if instrument.unit == "points" else 105)]
+            with patch("stockbrief.market.MarketData._load", candles):
+                context = (await client.get("/api/market-context/INFY?filing_date=" + imported["date"])).json()
+            self.assertEqual(context["relative_return_pp"], 3)
+
+    async def test_cooperative_simulation_is_bounded_and_does_not_modify_inbox(self):
+        before = (await self.client.get("/api/inbox")).json()
+        response = await self.client.post("/api/edge/simulate", json={"count":24,"scenario":"worker_outage"})
+        self.assertEqual(response.status_code, 200)
+        run = response.json()["runs"]["cooperative"]
+        self.assertEqual(run["completed"], 24)
+        self.assertGreater(run["lease_retries"], 0)
+        self.assertEqual((await self.client.get("/api/inbox")).json(), before)
+        self.assertEqual((await self.client.post("/api/edge/simulate", json={"count":61})).status_code, 422)
+
+    async def test_edge_lab_actual_model_and_local_config(self):
+        config = await self.client.post("/api/edge/config", json={"watchlist":["INFY"],"policy":"adaptive"})
+        self.assertEqual(config.status_code, 200)
+        self.assertEqual(config.json()["watchlist"], ["INFY"])
+        self.assertEqual((await self.client.post("/api/edge/config", json={"watchlist":["UNKNOWN"],"policy":"fifo"})).status_code, 422)
+        self.assertEqual((await self.client.post("/api/edge/drain")).json()["pending"], 0)
+        report = (await self.client.post("/api/edge/benchmark")).json()
+        self.assertTrue(report["same_categories"])
+        for policy in ("fifo", "adaptive"):
+            self.assertEqual(len(report["runs"][policy]), 2)
+            self.assertEqual(len(report["runs"][policy][0]["jobs"]), 6)
+        self.assertEqual((await self.client.post("/api/edge/config", headers={"Origin":"https://example.org"},
+                         json={"watchlist":[],"policy":"fifo"})).status_code, 403)
+
     async def test_bad_and_cross_origin_requests_are_rejected(self):
         responses = [
             (await self.client.post("/api/analyze", data={"ticker": "NONE", "text": "Something happened at a board meeting."}), 422),
