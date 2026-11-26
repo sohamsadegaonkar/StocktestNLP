@@ -1,6 +1,8 @@
 const panel = document.querySelector("#market-panel");
 const select = document.querySelector("#market-symbol");
 const refresh = document.querySelector("#market-refresh");
+const periodControls = document.querySelector("#market-period");
+const external = document.querySelector("#market-external");
 const exampleButton = document.querySelector("#market-example");
 const recorded = document.querySelector("#market-recorded");
 const source = document.querySelector("#market-source");
@@ -34,9 +36,16 @@ function setStatus(message, stale = false) {
 
 const emptyStatus = {
   empty: "Upstox returned no candles for the selected period.",
-  disabled: "Live prices are disabled for this workspace.",
+  disabled: "This workspace opens current NSE charts on TradingView. Quotes may be delayed.",
   unavailable: "Upstox prices are currently unavailable.",
 };
+
+function updateExternalLink() {
+  const instrument = select.selectedOptions[0];
+  const symbol = instrument.dataset.tradingviewSymbol || instrument.value;
+  external.href = "https://in.tradingview.com/symbols/NSE-" + encodeURIComponent(symbol) + "/";
+  external.textContent = "Open " + instrument.textContent + " chart on TradingView";
+}
 
 function draw() {
   if (!series || output.hidden) return;
@@ -135,7 +144,9 @@ function render(data) {
     + (data.period === "1D" ? ", " + shortTime.format(time) : "") + " IST";
   canvas.setAttribute("aria-label", data.name + " closing price. " + caption.textContent + ". " + price.textContent + ". " + change.textContent);
   if (data.state === "recorded") {
-    setStatus("Recorded data from July 2024. Refresh prices to return to the selected instrument.");
+    setStatus(enabled
+      ? "Recorded Infosys prices from July 2024. Refresh prices to return to the selected instrument."
+      : "Recorded Infosys prices from July 2024. Use TradingView for the selected instrument’s current chart.");
   } else {
     const checked = shortTime.format(new Date(data.checked_at)) + " IST";
     setStatus(data.state === "cached"
@@ -169,6 +180,10 @@ async function load(clear = false) {
     const data = await response.json();
     if (sequence === requestNumber) {
       enabled = data.state !== "disabled";
+      periodControls.hidden = !enabled;
+      refresh.hidden = !enabled;
+      external.hidden = enabled;
+      if (!enabled) updateExternalLink();
       render(data);
       if (firstCheck && !series) await showExample(emptyStatus[data.state] || emptyStatus.unavailable);
     }
@@ -271,7 +286,10 @@ buttons.forEach((button) => button.addEventListener("click", () => {
   buttons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
   load(true);
 }));
-select.addEventListener("change", () => load(true));
+select.addEventListener("change", () => {
+  if (enabled) load(true);
+  else updateExternalLink();
+});
 refresh.addEventListener("click", () => load());
 exampleButton.addEventListener("click", () => showExample());
 new ResizeObserver(draw).observe(canvas);
