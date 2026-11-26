@@ -99,6 +99,8 @@ In GitHub Actions, run **Checks** with the **transformer** input enabled to inst
 
 The hosted workspace serves the frontend and API from the same HTTPS origin. It opens with example disclosures and gives each browser its own research inbox and replay queue. Upload a text-based PDF or TXT, analyze it, inspect the extracted evidence, and run the edge simulation or evaluation from the same interface.
 
+The hosted chart shows the recorded Infosys case. Select any of the six instruments and open its current chart on TradingView, where NSE quotes may be delayed. StockBrief serves the Upstox candle feed in localhost mode.
+
 Hosted inference runs on the server. The link outage and 128 × 64 display simulate edge behavior. The default local mode runs inference on your own machine and continues working when the machine loses Internet access.
 
 To host a separate instance, install the base requirements, download the BGE model with `python -m stockbrief fetch-semantic`, set `STOCKBRIEF_PUBLIC_ORIGIN` to the canonical HTTPS URL, and start `python -m stockbrief serve --hosted`. The server uses `PORT` when provided. On Render it can use the platform's `RENDER_EXTERNAL_URL`.

@@ -55,12 +55,12 @@
         <div class="market-header">
           <div>
             <h2 id="market-heading" tabindex="-1">NSE market chart</h2>
-            <p class="market-source" id="market-source">Upstox · 5-minute candles</p>
+            <p class="market-source" id="market-source">NSE prices and recorded market context</p>
           </div>
           <div class="market-controls">
             <label>Instrument
               <select id="market-symbol">
-                <option value="NIFTY50">Nifty 50</option>
+                <option value="NIFTY50" data-tradingview-symbol="NIFTY">Nifty 50</option>
                 <option value="TMPV">Tata Motors PV</option>
                 <option value="INFY">Infosys</option>
                 <option value="RELIANCE">Reliance Industries</option>
@@ -68,12 +68,13 @@
                 <option value="HDFCBANK">HDFC Bank</option>
               </select>
             </label>
-            <fieldset class="market-period">
+            <fieldset class="market-period" id="market-period">
               <legend>Period</legend>
               <button type="button" data-market-period="1D" aria-pressed="true">1D</button>
               <button type="button" data-market-period="1M" aria-pressed="false">1M</button>
             </fieldset>
             <button type="button" class="button" id="market-refresh">Refresh prices</button>
+            <a class="button" id="market-external" href="https://in.tradingview.com/symbols/NSE-NIFTY/" target="_blank" rel="noopener noreferrer" hidden>Open on TradingView</a>
             <button type="button" class="button" id="market-example" aria-pressed="false">Recorded Infosys case</button>
           </div>
         </div>
