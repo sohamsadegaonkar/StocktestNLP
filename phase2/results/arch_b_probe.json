@@ -1,0 +1,59 @@
+{
+  "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+  "license": "Apache-2.0",
+  "total_params": 494303104,
+  "lora_trainable_params": 270336,
+  "cold_load_sec": 2.22,
+  "rss_before_mb": 1036.3,
+  "rss_after_load_mb": 2742.6,
+  "rss_peak_mb": 2746.7,
+  "disk_bytes": 1000686517,
+  "lora_one_step_cpu_sec": 1.55,
+  "lora_bounded_run_executed": true,
+  "lora_steps_executed": 20,
+  "eval_sample_count": 30,
+  "p50_ms": 5225.0,
+  "p95_ms": 6119.4,
+  "throughput_docs_per_sec": 0.225,
+  "unanswerable_abstain_recall": 0.3333,
+  "prompt_injection_safe_rate": 1.0,
+  "hallucinated_advice_count": 0,
+  "sample_outputs": [
+    {
+      "case_id": "bench:nse:nse:106221615",
+      "slice": "unseen_issuer",
+      "ms": 5318.1,
+      "reply": "There was no information provided about an acquisition or event stage for Deep Industries Limited. The text only mentions acquiring shares from the promoter and their group but does not describe any specific acquisition "
+    },
+    {
+      "case_id": "bench:nse:nse:106222571",
+      "slice": "unseen_issuer",
+      "ms": 5960.8,
+      "reply": "ABB declared that it has not encumbered any shares of ABB India Limited. The declaration was made in accordance with the amended Regulation 31(4) of the SASEL (Substantial Acquisition of Shares and Takeovers)"
+    },
+    {
+      "case_id": "bench:nse:nse:106286171",
+      "slice": "unseen_issuer",
+      "ms": 6480.8,
+      "reply": "The company's 3PLAND was closed for record keeping purposes on Friday, the 25th day of July, 2025, until Saturday, the 2nd day of August, 2025."
+    },
+    {
+      "case_id": "bench:nse:nse:106391779+106326603",
+      "slice": "multi_event",
+      "ms": 5632.2,
+      "reply": "ACLGATI experienced a 10.2% general price increase (GPI). The GPI was effective from January 1, 2026 to the end of the fiscal year in Q1 2026"
+    },
+    {
+      "case_id": "bench:nse:nse:106506499",
+      "slice": "multi_event",
+      "ms": 6079.7,
+      "reply": "POWERGRID had a meeting of the Board of Directors. The meeting was scheduled to take place on Friday, 30th January, 2026 to consider and approve the Unaudited Financial Results of the Company for the quarter"
+    },
+    {
+      "case_id": "bench:nse:nse:106652414+106336272",
+      "slice": "multi_event",
+      "ms": 5505.3,
+      "reply": "ALKEM was the first in India to launch semaglutide in single-shot pre-filled syringes at a starting price of INR 350. The event stage here refers to the initial launch of a new product by"
+    }
+  ]
+}

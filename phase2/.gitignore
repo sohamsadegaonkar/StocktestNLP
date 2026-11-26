@@ -1,0 +1,7 @@
+.cache/
+raw_pdfs/
+__pycache__/
+*.pyc
+data/phrasebank_nc_sa_eval.jsonl
+data/rel_*.jsonl
+data/qa_*.jsonl

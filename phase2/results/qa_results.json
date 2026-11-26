@@ -1,0 +1,95 @@
+{
+  "extractive_qa": {
+    "eval_span_count": 60,
+    "fp32_bytes": 260909960,
+    "fp32_sha256": "03eec2afb9dd28c76e6c8cc597ec23399473bf6d17c7c77b5270b3918f49664f",
+    "int8_bytes": 65770865,
+    "int8_sha256": "9f9f9188d328f9b4acdf6b53bea3d55658e70de50be20541c8eb6a1f9f9676e8",
+    "fp32_int8_span_agreement": 0.8,
+    "modes": {
+      "pytorch": {
+        "mean_token_f1": 0.1831,
+        "p50_ms": 104.825,
+        "p95_ms": 131.144
+      },
+      "fp32": {
+        "mean_token_f1": 0.1831,
+        "p50_ms": 246.621,
+        "p95_ms": 255.606
+      },
+      "int8": {
+        "mean_token_f1": 0.1939,
+        "p50_ms": 102.072,
+        "p95_ms": 105.563
+      }
+    }
+  },
+  "op_planner_and_numeric": {
+    "train_sampled_count": 1268,
+    "test_count": 598,
+    "history": [
+      {
+        "epoch": 1,
+        "loss": 1.4549,
+        "val": {
+          "count": 250,
+          "accuracy": 0.76,
+          "macro_f1": 0.5481,
+          "p50_ms": 37.48,
+          "p95_ms": 52.014
+        },
+        "seconds": 246.3
+      },
+      {
+        "epoch": 2,
+        "loss": 0.773,
+        "val": {
+          "count": 250,
+          "accuracy": 0.772,
+          "macro_f1": 0.5868,
+          "p50_ms": 37.664,
+          "p95_ms": 50.972
+        },
+        "seconds": 247.8
+      },
+      {
+        "epoch": 3,
+        "loss": 0.6167,
+        "val": {
+          "count": 250,
+          "accuracy": 0.784,
+          "macro_f1": 0.5889,
+          "p50_ms": 37.584,
+          "p95_ms": 51.948
+        },
+        "seconds": 247.8
+      }
+    ],
+    "artifact": {
+      "fp32_bytes": 133131111,
+      "fp32_sha256": "88fcd94557701bc073ee73aeb5b7b8b0bbb9baee63c6ba2f60bb090680e5ba95",
+      "int8_bytes": 33966758,
+      "int8_sha256": "fbdabcf8833b908aaa3169b353d3c225c63430fd3f813ef3e47ff41b77c2176d"
+    },
+    "test_fp32": {
+      "count": 598,
+      "accuracy": 0.8294,
+      "macro_f1": 0.682,
+      "p50_ms": 68.081,
+      "p95_ms": 72.223
+    },
+    "test_int8": {
+      "count": 598,
+      "accuracy": 0.8261,
+      "macro_f1": 0.6788,
+      "p50_ms": 34.225,
+      "p95_ms": 35.902
+    },
+    "deterministic_finqa_exec": {
+      "tested": 292,
+      "exact_or_2pct_match": 290,
+      "accuracy": 0.9932,
+      "unit_and_guard_suite_passed": true
+    }
+  }
+}
