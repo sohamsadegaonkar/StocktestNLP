@@ -102,7 +102,7 @@ function presentView() {
   const current = Object.hasOwn(viewText, key) ? key : "inbox";
   for (const id of Object.keys(viewText)) $("#view-" + id).hidden = id !== current;
   for (const link of document.querySelectorAll("nav [data-view]")) {
-    if (link.dataset.view === current) link.setAttribute("aria-current", "page");
+    if (link.dataset.view === (key === "market-panel" ? key : current)) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");
   }
   $("#view-title").textContent = viewText[current][0];
@@ -113,6 +113,10 @@ function presentView() {
   document.title = viewText[current][0] + " · StockBrief Edge";
   if (current !== "lab") stopSimulation();
   if (current === "lab" && state?.live_feed_available) loadEdge();
+  if (key === "market-panel") requestAnimationFrame(() => {
+    $("#market-heading").focus({preventScroll: true});
+    $("#market-panel").scrollIntoView({block: "start"});
+  });
 }
 
 function addOptions(select, entries) {
@@ -240,39 +244,56 @@ function intelligencePanel(entry) {
 
 function marketContextPanel(entry) {
   const panel = element("section", undefined, "intelligence-panel");
-  panel.append(element("h3", "Observed market context"));
-  const note = element("p", "Checking completed trading sessions…", "small muted");
+  const actions = element("div", undefined, "actions");
+  const compare = element("button", "Compare market closes", "button");
+  compare.type = "button";
+  const chartLink = element("a", "Show issuer price chart", "small");
+  chartLink.href = "#market-panel";
+  chartLink.addEventListener("click", () => {
+    const chart = $("#market-symbol");
+    chart.value = entry.ticker;
+    chart.dispatchEvent(new Event("change"));
+  });
+  actions.append(compare, chartLink);
+  panel.append(element("h3", "Observed market context"), actions);
+  const note = element("p", "", "small muted");
   note.setAttribute("role", "status");
-  panel.append(note);
+  const output = element("div");
+  panel.append(note, output);
   const signed = (n, unit) => n == null ? "Unavailable" : (n > 0 ? "+" : "") + n.toFixed(2) + unit;
-  api("/api/market-context/" + encodeURIComponent(entry.ticker) + "?filing_date=" + encodeURIComponent(entry.date))
-    .then(result => {
+  const reasons = {
+    future_filing_date: "This disclosure date is in the future.",
+    symbol_data_unavailable: "Upstox returned no completed prices for this issuer and date.",
+    no_prior_completed_session: "The prior completed trading session is missing.",
+    no_later_completed_session: "A later completed trading session is unavailable for comparison.",
+    session_gap_too_large: "The surrounding closes are too far from this disclosure date.",
+  };
+  compare.addEventListener("click", async () => {
+    compare.disabled = true;
+    output.replaceChildren();
+    status(note, "Checking completed trading sessions…");
+    try {
+      const result = await api("/api/market-context/" + encodeURIComponent(entry.ticker) + "?filing_date=" + encodeURIComponent(entry.date));
+      if (!result.before || !result.after) {
+        status(note, reasons[result.reason] || "No matching trading sessions are available.");
+        return;
+      }
       const metrics = element("dl");
       metrics.append(detailField("Company return", signed(result.symbol_return_pct, "%")),
         detailField("Nifty 50 return", signed(result.benchmark_return_pct, "%")),
         detailField("Relative return", signed(result.relative_return_pp, " pp")));
-      note.textContent = result.before && result.after
-        ? dateLabel(result.before.date) + " to " + dateLabel(result.after.date) + " · " + result.state
-        : result.state + " · " + (result.reason || "No matching sessions").replaceAll("_", " ");
-      panel.append(metrics);
-      if (result.before && result.after) {
-        panel.append(element("p", "Company closes: ₹" + result.before.close + " → ₹" + result.after.close, "small"));
-        const chart = $("#market-symbol");
-        if (chart && !$("#market-panel").hidden) {
-          const button = element("button", "Show issuer price chart", "button");
-          button.type = "button";
-          button.addEventListener("click", () => {
-            chart.value = entry.ticker;
-            chart.dispatchEvent(new Event("change"));
-            $("#market-panel").scrollIntoView({block: "start"});
-          });
-          panel.append(button);
-        }
-      }
+      status(note, dateLabel(result.before.date) + " to " + dateLabel(result.after.date) +
+        (result.state === "cached" ? " · Cached prices" : ""));
       const list = element("ul");
       result.limitations.forEach(item => list.append(element("li", item)));
-      panel.append(element("p", "Upstox · source checked " + (result.symbol_checked_at || "unavailable"), "small muted"), list);
-    }).catch(error => status(note, error.message, true));
+      const checked = result.symbol_checked_at ? " · Checked " + timeInIndia(result.symbol_checked_at) : "";
+      output.append(metrics, element("p", "Closes ₹" + result.before.close + " → ₹" + result.after.close + " · Upstox" + checked, "small muted"), list);
+    } catch (error) {
+      status(note, error.message, true);
+    } finally {
+      compare.disabled = false;
+    }
+  });
   return panel;
 }
 
@@ -306,7 +327,9 @@ function detail(entry, pane) {
     eventDetails(entry, brief, pane, false);
   }
 
-  if (entry.origin.startsWith("nse-") && entry.date) pane.append(marketContextPanel(entry));
+  if (entry.date && entry.origin !== "synthetic" && state?.market_tickers?.includes(entry.ticker)) {
+    pane.append(marketContextPanel(entry));
+  }
 
   const sourceActions = element("div", undefined, "actions source-actions");
   if (entry.url) sourceActions.append(sourceLink(entry.url, "Open original source →"));
@@ -420,7 +443,9 @@ function renderInbox(focusId) {
 let liveEnabled = false;
 let liveBusy = false;
 let liveStarted = 0;
-async function pollLive() {
+const indiaTime = new Intl.DateTimeFormat("en-IN", {timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short"});
+const timeInIndia = (stamp) => indiaTime.format(new Date(stamp)) + " IST";
+async function pollLive(showAlternatives = false) {
   if (!state?.live_feed_available || liveBusy || analysisBusy || replayBusy || workspaceBusy) return;
   liveBusy = true;
   liveStarted = Date.now();
@@ -437,9 +462,15 @@ async function pollLive() {
     const summary = "Imported " + result.imported + " · " + result.duplicates + " already seen · " +
       result.pending + " pending in local queue · " + result.errors + " processing warnings" +
       (result.capacity_deferred ? " · " + result.capacity_deferred + " deferred at capacity" : "");
-    status(note, (result.state === "unavailable" ? "Feed unavailable; saved briefs retained. " + summary : summary) +
-      " · Last successful check: " + (result.last_success || "none") +
+    const lead = {
+      available: result.matching + " matches in the current NSE snapshot. ",
+      unavailable: "Could not reach NSE RSS. Saved briefs are available below. ",
+      no_matches: "NSE RSS responded. This snapshot has no filings for the five tracked companies. ",
+    };
+    status(note, (lead[result.state] || "") + summary +
+      " · Last successful check: " + (result.last_success ? timeInIndia(result.last_success) : "none") +
       (result.throttled ? " · Cached refresh status" : ""), result.state === "unavailable");
+    if (showAlternatives && ["no_matches", "unavailable"].includes(result.state)) $("#headline-panel").open = true;
     if (result.imported || result.throttled) await refresh();
   } catch (error) {
     status(note, error.message, true);
@@ -448,7 +479,7 @@ async function pollLive() {
     button.disabled = false;
   }
 }
-$("#live-refresh").addEventListener("click", pollLive);
+$("#live-refresh").addEventListener("click", () => pollLive(true));
 $("#live-toggle").addEventListener("click", () => {
   liveEnabled = !liveEnabled;
   $("#live-toggle").textContent = liveEnabled ? "Stop auto refresh" : "Start auto refresh";
@@ -457,6 +488,41 @@ $("#live-toggle").addEventListener("click", () => {
 setInterval(() => {
   if (liveEnabled && !document.hidden && !$("#view-inbox").hidden && Date.now() - liveStarted >= 120000) pollLive();
 }, 5000);
+
+let headlineRequest = 0;
+$("#headline-symbol").addEventListener("change", () => {
+  ++headlineRequest;
+  $("#headline-list").replaceChildren();
+  status($("#headline-status"), "");
+  $("#headline-load").disabled = false;
+});
+$("#headline-load").addEventListener("click", async () => {
+  const request = ++headlineRequest;
+  const button = $("#headline-load");
+  const note = $("#headline-status");
+  button.disabled = true;
+  status(note, "Looking for recent headlines…");
+  try {
+    const result = await api("/api/headlines/" + encodeURIComponent($("#headline-symbol").value));
+    if (request !== headlineRequest) return;
+    const messages = {
+      available: "Checked " + (result.checked_at ? timeInIndia(result.checked_at) : "just now"),
+      cached: "Showing cached headlines from " + (result.checked_at ? timeInIndia(result.checked_at) : "the last check"),
+      empty: "No matching headlines were found within the past seven days.",
+      unavailable: "The headline feed is unavailable. You can still paste a source in Analyze.",
+    };
+    status(note, messages[result.state] || "Headline feed unavailable.", result.state === "unavailable");
+    $("#headline-list").replaceChildren(...result.items.map(item => {
+      const row = element("li");
+      row.append(sourceLink(item.url, item.title), element("p", item.publisher + " · " + timeInIndia(item.published_at), "small muted"));
+      return row;
+    }));
+  } catch (error) {
+    if (request === headlineRequest) status(note, error.message, true);
+  } finally {
+    if (request === headlineRequest) button.disabled = false;
+  }
+});
 
 let simReport;
 let simTimer;

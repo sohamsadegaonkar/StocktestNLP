@@ -34,16 +34,18 @@ Open [http://127.0.0.1:5050](http://127.0.0.1:5050). The app stores imports, ana
 
 | View | What you can do |
 | --- | --- |
-| Inbox | View NSE price charts, filter disclosures, and inspect the event, figures, and supporting source. |
+| Inbox | View NSE charts, fetch official filings, and inspect a local brief with source evidence. |
 | Analyze | Paste English text or import a UTF-8 TXT or text-based PDF. Choose an issuer and optionally provide the disclosure date and source link. |
 | Edge lab | Disconnect or reconnect the source link, advance replay packets, and see queue state on the virtual 128 × 64 display. |
 | Evaluation | Compare the learned model with keyword matching. Inspect class-level results, matrix, abstention, timings, and source-backed examples. |
 
 PDF import is limited to 5 MB and 30 pages. OCR is outside this release. Historical fixtures use short, attributed paraphrases with the original URLs. The display preserves the text of those fixtures or of your imported pages. Reading a historical fixture’s original URL requires a connection.
 
-### NSE charts
+### NSE feed and charts
 
-The localhost Inbox fetches public Upstox candle data for Nifty 50, Tata Motors Passenger Vehicles, Infosys, Reliance, TCS, and HDFC Bank. The chart uses daily closes for **1M** and five-minute closes for **1D**. Outside the current trading session, **1D** can show the latest available session. The candle timestamp is displayed in IST. The chart refreshes once a minute while the dashboard is visible and labels cached data after a connection failure.
+Open **Inbox → Fetch now** to check official NSE announcements. When the exchange snapshot has zero tracked companies or the feed cannot be reached, the UI shows which happened and offers **Find recent publisher headlines**. This optional Google News RSS lookup retrieves the last seven days of linked headlines by company. Those results stay out of the official filing queue.
+
+The chart appears at the top of the Inbox and is reachable from **Charts**. The localhost chart requests Upstox candle data for Nifty 50, Tata Motors Passenger Vehicles, Infosys, Reliance, TCS, and HDFC Bank. The chart uses daily closes for **1M** and five-minute closes for **1D**. Outside the current trading session, **1D** can show the latest available session. The candle timestamp is displayed in IST. The chart refreshes once a minute while the dashboard is visible and labels cached data after a connection failure. **Recorded Infosys case** opens an attributed historical chart and first- and fifth-session comparisons against Nifty 50, even without an internet connection. On the initial load, the recorded case is shown with a clear label if the selected market feed returns no prices. **Refresh prices** retries the latest chart. Open a saved or pasted disclosure with a supported ticker and publication date to request **Compare market closes**.
 
 An internet connection is needed to fetch candles. The chart calls the provider with the selected instrument and period only. For an entirely offline demo, set `$env:STOCKBRIEF_DISABLE_MARKET = "1"` in PowerShell before startup. Disclosure analysis, the saved inbox, and replay run locally.
 

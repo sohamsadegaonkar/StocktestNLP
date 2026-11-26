@@ -365,7 +365,7 @@ footer {
   body { display: block; }
   .sidebar { min-height: 0; position: static; padding: 14px 14px 10px; }
   .brand { margin: 0 0 8px; }
-  .sidebar nav { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; }
+  .sidebar nav { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; }
   .sidebar nav a { justify-content: center; padding-inline: 2px; min-height: 43px; font-size: 12px; }
   .sidebar nav a span, .side-status { display: none; }
   main { padding-top: 18px; }
@@ -442,3 +442,18 @@ footer {
 .sim-bars meter { width: 100%; height: 14px; accent-color: var(--teal); }
 #sim-playback { margin-top: 16px; border-top: 1px solid var(--edge); padding-top: 12px; }
 #sim-clock { width: 100%; }
+
+#market-panel { scroll-margin-top: 14px; }
+#market-example[aria-pressed="true"] { background: var(--mint); border-color: #88baa9; }
+#market-recorded { border-top: 1px solid var(--edge); margin-top: 10px; padding-top: 10px; }
+#market-recorded h3 { margin: 0 0 3px; font-size: 16px; }
+#market-recorded p { margin-bottom: 6px; }
+#market-recorded th, #market-recorded td { white-space: nowrap; }
+.headlines { border-top: 1px solid var(--edge); margin-top: 12px; padding-top: 10px; }
+.headlines summary { font-weight: 700; color: var(--teal); }
+.headline-controls { align-items: end; margin-top: 8px; }
+.headline-controls label { font-size: 12px; font-weight: 700; }
+.headline-controls select { margin-top: 2px; }
+.headline-list { display: grid; gap: 8px; padding: 0; list-style: none; margin: 8px 0 0; }
+.headline-list li { border-top: 1px solid var(--edge); padding-top: 7px; }
+.headline-list li p { margin: 3px 0 0; }

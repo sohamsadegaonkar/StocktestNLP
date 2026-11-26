@@ -1,6 +1,7 @@
 """Public Upstox candle data for the local NSE watchlist."""
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
+from functools import lru_cache
 from math import isfinite
 from threading import Lock
 from time import monotonic
@@ -59,6 +60,7 @@ class MarketData:
     def __init__(self):
         self._locks = {(symbol, period): Lock() for symbol in INSTRUMENTS for period in ("1D", "1M")}
         self._cache = {}
+        self._bounded_daily = lru_cache(maxsize=96)(self._daily_in_range)
 
     @staticmethod
     def _get(path: str) -> list[tuple[datetime, float]]:
@@ -71,13 +73,37 @@ class MarketData:
         today = datetime.now(IST).date()
         if period == "1M":
             return self._get(f"{key}/days/1/{today}/{today - timedelta(days=30)}")
-        candles = self._get(f"intraday/{key}/minutes/5")
+        try:
+            candles = self._get(f"intraday/{key}/minutes/5")
+        except (httpx.HTTPError, ValueError):
+            candles = []
         if not candles:
             candles = self._get(f"{key}/minutes/5/{today}/{today - timedelta(days=7)}")
         if not candles:
             return []
         last_session = candles[-1][0].astimezone(IST).date()
         return [(when, price) for when, price in candles if when.astimezone(IST).date() == last_session]
+
+    def _daily_in_range(self, symbol: str, start: date, end: date, _cache_minute: int) -> dict:
+        key = quote(INSTRUMENTS[symbol].key, safe="")
+        try:
+            data = self._get(f"{key}/days/1/{end}/{start}")
+        except (httpx.HTTPError, ValueError, ImportError):
+            return {"symbol": symbol, "state": "unavailable", "period": "1M", "candles": []}
+        candles = [{"time": when.isoformat(), "close": close} for when, close in data
+                   if start <= when.astimezone(IST).date() <= end]
+        return {"symbol": symbol, "state": "available" if candles else "empty", "period": "1M",
+                "checked_at": datetime.now(timezone.utc).isoformat(), "candles": candles}
+
+    def daily_for_filing(self, symbol: str, filing_date: date) -> dict:
+        today = datetime.now(IST).date()
+        if filing_date > today:
+            return {"symbol": symbol, "state": "unavailable", "period": "1M", "candles": []}
+        if filing_date >= today - timedelta(days=23):
+            return self.chart(symbol, "1M")
+        start = max(filing_date, date.min + timedelta(days=7)) - timedelta(days=7)
+        end = filing_date + timedelta(days=7)
+        return self._bounded_daily(symbol, start, end, int(monotonic() // REFRESH_SECONDS))
 
     def chart(self, symbol: str, period: str) -> dict:
         instrument = INSTRUMENTS[symbol]
@@ -99,10 +125,8 @@ class MarketData:
                     candles=[{"time": when.isoformat(), "close": close} for when, close in candles],
                 )
             except (httpx.HTTPError, ValueError, ImportError):
-                old = previous[1] if previous else None
-                if old and old["candles"]:
-                    response = {**old, "state": "cached"}
-                else:
-                    response["state"] = "unavailable"
+                response["state"] = "unavailable"
+            if not response["candles"] and previous and previous[1]["candles"]:
+                response = {**previous[1], "state": "cached"}
             self._cache[key] = (monotonic() + REFRESH_SECONDS, response)
             return response

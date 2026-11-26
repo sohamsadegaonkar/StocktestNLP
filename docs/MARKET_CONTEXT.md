@@ -16,7 +16,7 @@ comparison is conservative and may not be available for a new filing. No
 interpolation, trading advice, causal attribution or price prediction is made.
 A gap of more than seven calendar days on either side is not treated as a
 surrounding-session comparison. Corporate action adjustments are not verified.
-Market data is limited to the provider's existing one-month chart window.
+For older filings, the app requests a bounded daily range within seven calendar days on either side of the filing. Coverage depends on the provider. The client requests comparisons on demand for dated disclosures, including local imports.
 
 For the UI owner: attach this response to the selected filing and only request
 it for supported instrument symbols; do not map legacy TATAMOTORS to TMPV
