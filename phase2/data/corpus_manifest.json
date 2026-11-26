@@ -1,0 +1,36 @@
+{
+  "nse_pool": {
+    "train": 1100,
+    "val": 85,
+    "test": 170
+  },
+  "ner": {
+    "ner_train": 2091,
+    "ner_val": 136,
+    "ner_test": 284
+  },
+  "relations": {
+    "rel_train": 3763,
+    "rel_val": 295,
+    "rel_test": 624,
+    "nse_rel_test": 24
+  },
+  "retrieval": {
+    "retrieval_train": 859,
+    "retrieval_val": 77,
+    "retrieval_test": 139
+  },
+  "qa": {
+    "qa_train": 4986,
+    "qa_val": 844,
+    "qa_test": 598
+  },
+  "impact": {
+    "impact_train": 1103,
+    "impact_val": 85,
+    "impact_test": 172,
+    "phrasebank_nc_sa_eval": 2264
+  },
+  "benchmark_frozen_count": 370,
+  "total_training_examples": 12802
+}

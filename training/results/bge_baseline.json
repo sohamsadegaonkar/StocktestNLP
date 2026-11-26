@@ -1,0 +1,448 @@
+{
+  "model": "BGE-small-en-v1.5 INT8 / supervised classifier",
+  "model_version": "stockbrief-bge-events-v1",
+  "floor": 0.35,
+  "margin": 0.0,
+  "artifact": {
+    "repository": "Xenova/bge-small-en-v1.5",
+    "revision": "ea104dacec62c0de699686887e3f920caeb4f3e3",
+    "weights_sha256": "6c9c6101a956d62dfb5e7190c538226c0c5bb9cb27b651234b6df063ee7dbfe4",
+    "weights_bytes": 34014426,
+    "onnxruntime_version": "1.32.0",
+    "execution_providers": [
+      "CPUExecutionProvider"
+    ]
+  },
+  "calibration": {
+    "name": "BGE-small-en-v1.5 INT8 / supervised classifier",
+    "count": 85,
+    "macro_f1": 0.6217,
+    "weighted_f1": 0.6254,
+    "coverage": 0.8,
+    "selective_accuracy": 0.7059,
+    "review_precision": 0.2353,
+    "review_recall": 0.5,
+    "review_f1": 0.32,
+    "multilabel_micro_f1": 0.5787,
+    "multilabel_macro_f1": 0.5914,
+    "stage_accuracy": 0.3412,
+    "evidence_accuracy": 0.8033,
+    "offset_exact_valid_rate": 1.0,
+    "numeric_error_rate": 0.129,
+    "numeric_errors": "4/31",
+    "negation_error_rate": 0.8,
+    "negation_errors": "4/5",
+    "scheduled_error_rate": 1.0,
+    "scheduled_errors": "5/5",
+    "failed_pdf_accuracy": "3/3",
+    "mixed_pricing_earnings_exact": "1/1",
+    "latency_ms": {
+      "p50": 149.068,
+      "p95": 322.449,
+      "mean": 149.618
+    },
+    "peak_rss_mib": 219.0,
+    "classes": [
+      {
+        "label": "earnings",
+        "precision": 1.0,
+        "recall": 0.7,
+        "f1": 0.8235,
+        "support": 10
+      },
+      {
+        "label": "corporate_action",
+        "precision": 0.875,
+        "recall": 0.7,
+        "f1": 0.7778,
+        "support": 10
+      },
+      {
+        "label": "deal",
+        "precision": 0.6667,
+        "recall": 0.4444,
+        "f1": 0.5333,
+        "support": 9
+      },
+      {
+        "label": "governance",
+        "precision": 1.0,
+        "recall": 0.5556,
+        "f1": 0.7143,
+        "support": 9
+      },
+      {
+        "label": "regulatory",
+        "precision": 0.6,
+        "recall": 0.75,
+        "f1": 0.6667,
+        "support": 8
+      },
+      {
+        "label": "operations",
+        "precision": 0.8571,
+        "recall": 0.6,
+        "f1": 0.7059,
+        "support": 10
+      },
+      {
+        "label": "routine",
+        "precision": 0.4545,
+        "recall": 1.0,
+        "f1": 0.625,
+        "support": 10
+      },
+      {
+        "label": "pricing",
+        "precision": 1.0,
+        "recall": 0.2727,
+        "f1": 0.4286,
+        "support": 11
+      },
+      {
+        "label": "review",
+        "precision": 0.2353,
+        "recall": 0.5,
+        "f1": 0.32,
+        "support": 8
+      }
+    ],
+    "confusion_matrix_labels": [
+      "earnings",
+      "corporate_action",
+      "deal",
+      "governance",
+      "regulatory",
+      "operations",
+      "routine",
+      "pricing",
+      "review"
+    ],
+    "confusion_matrix": [
+      [
+        7,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        7,
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        4,
+        0,
+        3,
+        1,
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        5,
+        0,
+        0,
+        1,
+        0,
+        3
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        6,
+        0,
+        1,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        1,
+        0,
+        0,
+        6,
+        1,
+        0,
+        2
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        10,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        3,
+        3,
+        4
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        4,
+        0,
+        4
+      ]
+    ]
+  },
+  "test": {
+    "name": "BGE-small-en-v1.5 INT8 / supervised classifier",
+    "count": 118,
+    "macro_f1": 0.6189,
+    "weighted_f1": 0.6021,
+    "coverage": 0.822,
+    "selective_accuracy": 0.6392,
+    "review_precision": 0.3333,
+    "review_recall": 0.4118,
+    "review_f1": 0.3684,
+    "multilabel_micro_f1": 0.5448,
+    "multilabel_macro_f1": 0.5917,
+    "stage_accuracy": 0.3983,
+    "evidence_accuracy": 0.8834,
+    "offset_exact_valid_rate": 1.0,
+    "numeric_error_rate": 0.0882,
+    "numeric_errors": "3/34",
+    "negation_error_rate": 0.7143,
+    "negation_errors": "5/7",
+    "scheduled_error_rate": 1.0,
+    "scheduled_errors": "3/3",
+    "failed_pdf_accuracy": "5/5",
+    "mixed_pricing_earnings_exact": "2/4",
+    "latency_ms": {
+      "p50": 123.544,
+      "p95": 273.963,
+      "mean": 126.672
+    },
+    "peak_rss_mib": 225.8,
+    "classes": [
+      {
+        "label": "earnings",
+        "precision": 0.8571,
+        "recall": 0.5,
+        "f1": 0.6316,
+        "support": 12
+      },
+      {
+        "label": "corporate_action",
+        "precision": 1.0,
+        "recall": 0.5,
+        "f1": 0.6667,
+        "support": 10
+      },
+      {
+        "label": "deal",
+        "precision": 1.0,
+        "recall": 0.2941,
+        "f1": 0.4545,
+        "support": 17
+      },
+      {
+        "label": "governance",
+        "precision": 1.0,
+        "recall": 0.6,
+        "f1": 0.75,
+        "support": 15
+      },
+      {
+        "label": "regulatory",
+        "precision": 0.5152,
+        "recall": 0.8947,
+        "f1": 0.6538,
+        "support": 19
+      },
+      {
+        "label": "operations",
+        "precision": 1.0,
+        "recall": 0.7143,
+        "f1": 0.8333,
+        "support": 7
+      },
+      {
+        "label": "routine",
+        "precision": 0.28,
+        "recall": 0.7778,
+        "f1": 0.4118,
+        "support": 9
+      },
+      {
+        "label": "pricing",
+        "precision": 1.0,
+        "recall": 0.6667,
+        "f1": 0.8,
+        "support": 12
+      },
+      {
+        "label": "review",
+        "precision": 0.3333,
+        "recall": 0.4118,
+        "f1": 0.3684,
+        "support": 17
+      }
+    ],
+    "confusion_matrix_labels": [
+      "earnings",
+      "corporate_action",
+      "deal",
+      "governance",
+      "regulatory",
+      "operations",
+      "routine",
+      "pricing",
+      "review"
+    ],
+    "confusion_matrix": [
+      [
+        6,
+        0,
+        0,
+        0,
+        2,
+        0,
+        4,
+        0,
+        0
+      ],
+      [
+        0,
+        5,
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        3
+      ],
+      [
+        0,
+        0,
+        5,
+        0,
+        6,
+        0,
+        1,
+        0,
+        5
+      ],
+      [
+        0,
+        0,
+        0,
+        9,
+        4,
+        0,
+        0,
+        0,
+        2
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        17,
+        0,
+        1,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        1,
+        5,
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        7,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        8,
+        2
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        10,
+        0,
+        7
+      ]
+    ]
+  },
+  "repo_benchmarks": {
+    "repo_test_32": {
+      "macro_f1": 1.0,
+      "review_recall": 1.0,
+      "review_precision": 1.0
+    },
+    "repo_additional_8": {
+      "macro_f1": 1.0,
+      "pricing_f1": 1.0,
+      "review_f1": 1.0
+    },
+    "case_study_matched": "4/4",
+    "tata_acceptance_events": {
+      "pricing": "Announced",
+      "earnings": "Reported"
+    },
+    "tata_acceptance_passed": true
+  }
+}

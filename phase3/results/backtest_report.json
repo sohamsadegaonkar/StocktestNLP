@@ -1,0 +1,296 @@
+{
+  "disclaimer": "Research-only historical simulation with zero real-money execution. Uses executable post-announcement entry (Open[T0] or Close[T0] for intraday), liquidity floor >= INR 50 lakh daily turnover, and 5-day non-overlapping capital slots.",
+  "frozen_test_horizon": "2026-03-17..2026-10-23",
+  "frozen_test_strategies": {
+    "combined_long_only_20bps": {
+      "trades": 86,
+      "active_days": 49,
+      "round_trip_cost_bps": 20.0,
+      "gross_cum_return": 0.0195,
+      "net_cum_return": -0.0003,
+      "benchmark_cum_return": -0.0133,
+      "sharpe_annualized": 0.087,
+      "sortino_annualized": 0.152,
+      "max_drawdown": -0.0956,
+      "trade_hit_rate": 0.5,
+      "mean_net_5d_per_trade": 0.01518,
+      "avg_daily_turnover_pct": 35.1,
+      "by_regime": {
+        "bear": {
+          "trades": 24,
+          "mean_net_5d": 0.00994,
+          "hit_rate": 0.5833
+        },
+        "bull": {
+          "trades": 9,
+          "mean_net_5d": -0.02362,
+          "hit_rate": 0.3333
+        },
+        "high_vol": {
+          "trades": 39,
+          "mean_net_5d": 0.02779,
+          "hit_rate": 0.5128
+        },
+        "sideways": {
+          "trades": 14,
+          "mean_net_5d": 0.01398,
+          "hit_rate": 0.4286
+        }
+      }
+    },
+    "combined_long_only_30bps": {
+      "trades": 86,
+      "active_days": 49,
+      "round_trip_cost_bps": 30.0,
+      "gross_cum_return": 0.0195,
+      "net_cum_return": -0.0101,
+      "benchmark_cum_return": -0.0133,
+      "sharpe_annualized": -0.171,
+      "sortino_annualized": -0.294,
+      "max_drawdown": -0.1014,
+      "trade_hit_rate": 0.4884,
+      "mean_net_5d_per_trade": 0.01418,
+      "avg_daily_turnover_pct": 35.1,
+      "by_regime": {
+        "bear": {
+          "trades": 24,
+          "mean_net_5d": 0.00894,
+          "hit_rate": 0.5417
+        },
+        "bull": {
+          "trades": 9,
+          "mean_net_5d": -0.02462,
+          "hit_rate": 0.3333
+        },
+        "high_vol": {
+          "trades": 39,
+          "mean_net_5d": 0.02679,
+          "hit_rate": 0.5128
+        },
+        "sideways": {
+          "trades": 14,
+          "mean_net_5d": 0.01298,
+          "hit_rate": 0.4286
+        }
+      }
+    },
+    "combined_long_only_50bps": {
+      "trades": 86,
+      "active_days": 49,
+      "round_trip_cost_bps": 50.0,
+      "gross_cum_return": 0.0195,
+      "net_cum_return": -0.0293,
+      "benchmark_cum_return": -0.0133,
+      "sharpe_annualized": -0.686,
+      "sortino_annualized": -1.164,
+      "max_drawdown": -0.1129,
+      "trade_hit_rate": 0.4535,
+      "mean_net_5d_per_trade": 0.01218,
+      "avg_daily_turnover_pct": 35.1,
+      "by_regime": {
+        "bear": {
+          "trades": 24,
+          "mean_net_5d": 0.00694,
+          "hit_rate": 0.5
+        },
+        "bull": {
+          "trades": 9,
+          "mean_net_5d": -0.02662,
+          "hit_rate": 0.3333
+        },
+        "high_vol": {
+          "trades": 39,
+          "mean_net_5d": 0.02479,
+          "hit_rate": 0.4615
+        },
+        "sideways": {
+          "trades": 14,
+          "mean_net_5d": 0.01098,
+          "hit_rate": 0.4286
+        }
+      }
+    },
+    "combined_long_short_excess_30bps": {
+      "trades": 831,
+      "active_days": 149,
+      "round_trip_cost_bps": 30.0,
+      "gross_cum_return": -0.064,
+      "net_cum_return": -0.1441,
+      "benchmark_cum_return": -0.0227,
+      "sharpe_annualized": -2.48,
+      "sortino_annualized": -3.881,
+      "max_drawdown": -0.1731,
+      "trade_hit_rate": 0.4898,
+      "mean_net_5d_per_trade": -0.00508,
+      "avg_daily_turnover_pct": 100.0,
+      "by_regime": {
+        "bear": {
+          "trades": 204,
+          "mean_net_5d": 0.00026,
+          "hit_rate": 0.5588
+        },
+        "bull": {
+          "trades": 79,
+          "mean_net_5d": -0.01138,
+          "hit_rate": 0.4051
+        },
+        "high_vol": {
+          "trades": 219,
+          "mean_net_5d": -0.01946,
+          "hit_rate": 0.3881
+        },
+        "sideways": {
+          "trades": 329,
+          "mean_net_5d": 0.0027,
+          "hit_rate": 0.535
+        }
+      }
+    },
+    "market_only_long_30bps": {
+      "trades": 136,
+      "active_days": 56,
+      "round_trip_cost_bps": 30.0,
+      "gross_cum_return": 0.0593,
+      "net_cum_return": 0.0243,
+      "benchmark_cum_return": -0.0024,
+      "sharpe_annualized": 0.601,
+      "sortino_annualized": 1.014,
+      "max_drawdown": -0.1239,
+      "trade_hit_rate": 0.5,
+      "mean_net_5d_per_trade": 0.00536,
+      "avg_daily_turnover_pct": 48.57,
+      "by_regime": {
+        "bear": {
+          "trades": 45,
+          "mean_net_5d": 0.0042,
+          "hit_rate": 0.4444
+        },
+        "bull": {
+          "trades": 6,
+          "mean_net_5d": 0.03397,
+          "hit_rate": 0.8333
+        },
+        "high_vol": {
+          "trades": 66,
+          "mean_net_5d": 0.01107,
+          "hit_rate": 0.5
+        },
+        "sideways": {
+          "trades": 19,
+          "mean_net_5d": -0.02078,
+          "hit_rate": 0.5263
+        }
+      }
+    }
+  },
+  "walk_forward_oos_strategies": {
+    "combined_long_only_30bps": {
+      "trades": 1070,
+      "active_days": 320,
+      "round_trip_cost_bps": 30.0,
+      "gross_cum_return": 0.2577,
+      "net_cum_return": 0.0381,
+      "benchmark_cum_return": 0.0586,
+      "sharpe_annualized": 0.249,
+      "sortino_annualized": 0.523,
+      "max_drawdown": -0.2741,
+      "trade_hit_rate": 0.4598,
+      "mean_net_5d_per_trade": 0.00307,
+      "avg_daily_turnover_pct": 66.88,
+      "by_regime": {
+        "bear": {
+          "trades": 119,
+          "mean_net_5d": 0.00977,
+          "hit_rate": 0.4958
+        },
+        "bull": {
+          "trades": 396,
+          "mean_net_5d": 0.00038,
+          "hit_rate": 0.4217
+        },
+        "high_vol": {
+          "trades": 243,
+          "mean_net_5d": 0.01861,
+          "hit_rate": 0.535
+        },
+        "sideways": {
+          "trades": 312,
+          "mean_net_5d": -0.00817,
+          "hit_rate": 0.4359
+        }
+      }
+    },
+    "combined_long_short_excess_30bps": {
+      "trades": 2155,
+      "active_days": 401,
+      "round_trip_cost_bps": 30.0,
+      "gross_cum_return": 0.1418,
+      "net_cum_return": -0.1024,
+      "benchmark_cum_return": 0.1125,
+      "sharpe_annualized": -0.494,
+      "sortino_annualized": -0.801,
+      "max_drawdown": -0.1841,
+      "trade_hit_rate": 0.4919,
+      "mean_net_5d_per_trade": -7e-05,
+      "avg_daily_turnover_pct": 100.0,
+      "by_regime": {
+        "bear": {
+          "trades": 198,
+          "mean_net_5d": 0.0047,
+          "hit_rate": 0.4899
+        },
+        "bull": {
+          "trades": 721,
+          "mean_net_5d": -0.00254,
+          "hit_rate": 0.4549
+        },
+        "high_vol": {
+          "trades": 567,
+          "mean_net_5d": -0.00215,
+          "hit_rate": 0.5009
+        },
+        "sideways": {
+          "trades": 669,
+          "mean_net_5d": 0.00293,
+          "hit_rate": 0.5247
+        }
+      }
+    },
+    "market_only_long_30bps": {
+      "trades": 1184,
+      "active_days": 324,
+      "round_trip_cost_bps": 30.0,
+      "gross_cum_return": -0.0873,
+      "net_cum_return": -0.2486,
+      "benchmark_cum_return": 0.0772,
+      "sharpe_annualized": -1.269,
+      "sortino_annualized": -2.25,
+      "max_drawdown": -0.3148,
+      "trade_hit_rate": 0.4527,
+      "mean_net_5d_per_trade": -0.00129,
+      "avg_daily_turnover_pct": 73.09,
+      "by_regime": {
+        "bear": {
+          "trades": 126,
+          "mean_net_5d": 0.00028,
+          "hit_rate": 0.4365
+        },
+        "bull": {
+          "trades": 373,
+          "mean_net_5d": -0.00023,
+          "hit_rate": 0.429
+        },
+        "high_vol": {
+          "trades": 329,
+          "mean_net_5d": 0.0088,
+          "hit_rate": 0.5441
+        },
+        "sideways": {
+          "trades": 356,
+          "mean_net_5d": -0.01226,
+          "hit_rate": 0.3989
+        }
+      }
+    }
+  }
+}

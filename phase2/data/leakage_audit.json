@@ -1,0 +1,99 @@
+{
+  "leakage_checks": [
+    {
+      "task": "ner",
+      "train": 2091,
+      "val": 136,
+      "test": 284,
+      "train_val_overlap": 0,
+      "train_test_overlap": 0,
+      "val_test_overlap": 0
+    },
+    {
+      "task": "rel",
+      "train": 3762,
+      "val": 295,
+      "test": 624,
+      "train_val_overlap": 0,
+      "train_test_overlap": 0,
+      "val_test_overlap": 0
+    },
+    {
+      "task": "retrieval",
+      "train": 859,
+      "val": 77,
+      "test": 139,
+      "train_val_overlap": 0,
+      "train_test_overlap": 0,
+      "val_test_overlap": 0
+    },
+    {
+      "task": "qa",
+      "train": 4986,
+      "val": 844,
+      "test": 598,
+      "train_val_overlap": 0,
+      "train_test_overlap": 0,
+      "val_test_overlap": 0
+    },
+    {
+      "task": "impact",
+      "train": 1103,
+      "val": 85,
+      "test": 172,
+      "train_val_overlap": 0,
+      "train_test_overlap": 0,
+      "val_test_overlap": 0
+    }
+  ],
+  "benchmark_total": 370,
+  "benchmark_slices": {
+    "long_report": 23,
+    "contradictory_or_rumor": 4,
+    "multi_event": 5,
+    "unseen_issuer": 107,
+    "incomplete_or_failed_pdf": 31,
+    "numerical_reasoning": 110,
+    "misleading_headline": 15,
+    "unanswerable": 30,
+    "non_financial": 25,
+    "prompt_injection": 20
+  },
+  "ner_train_entity_counts": {
+    "DATE_PERIOD": 1740,
+    "GEO_MARKET": 630,
+    "REGULATOR": 2028,
+    "ORG": 316,
+    "MONEY": 132,
+    "STAGE_COND": 90,
+    "TICKER": 102,
+    "PERCENT": 166,
+    "PRODUCT_SECTOR": 58,
+    "FIN_INST": 12
+  },
+  "rel_train_counts": {
+    "leadership_role": 753,
+    "located_or_listed_at": 1617,
+    "subsidiary_or_owned_by": 1039,
+    "price_or_product_for": 162,
+    "no_relation": 62,
+    "acquisition_denied_or_cancelled": 2,
+    "reported_metric_for": 52,
+    "acquisition_approved_for": 23,
+    "penalized_or_ordered_by": 36,
+    "contract_awarded_to": 9,
+    "acquires": 7
+  },
+  "rel_test_counts": {
+    "subsidiary_or_owned_by": 196,
+    "leadership_role": 114,
+    "located_or_listed_at": 255,
+    "price_or_product_for": 38,
+    "no_relation": 5,
+    "reported_metric_for": 7,
+    "penalized_or_ordered_by": 4,
+    "acquisition_denied_or_cancelled": 2,
+    "acquisition_approved_for": 1,
+    "contract_awarded_to": 2
+  }
+}

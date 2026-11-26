@@ -1,0 +1,167 @@
+{
+  "frozen_bge_int8_test": {
+    "queries": 139,
+    "corpus_size": 351,
+    "recall_at_5": 0.2158,
+    "recall_at_10": 0.2878,
+    "mrr_at_10": 0.1526,
+    "ndcg_at_10": 0.1845,
+    "p50_ms": 4.966,
+    "p95_ms": 5.472
+  },
+  "domain_ft_bge": {
+    "history": [
+      {
+        "epoch": 1,
+        "loss": 1.867,
+        "queries": 77,
+        "corpus_size": 211,
+        "recall_at_5": 0.8052,
+        "recall_at_10": 0.8961,
+        "mrr_at_10": 0.6624,
+        "ndcg_at_10": 0.7183,
+        "p50_ms": 22.106,
+        "p95_ms": 26.223,
+        "seconds": 789.1
+      },
+      {
+        "epoch": 2,
+        "loss": 1.0285,
+        "queries": 77,
+        "corpus_size": 211,
+        "recall_at_5": 0.8052,
+        "recall_at_10": 0.8961,
+        "mrr_at_10": 0.6628,
+        "ndcg_at_10": 0.719,
+        "p50_ms": 22.122,
+        "p95_ms": 25.653,
+        "seconds": 839.3
+      }
+    ],
+    "artifact": {
+      "fp32_bytes": 133120600,
+      "fp32_sha256": "29453b5b6fed4749fa3dcd69caacfa307886045c18207d0934f727d48558b75c",
+      "int8_bytes": 33963555,
+      "int8_sha256": "275019e6ab91f6c6af8096eecb62b03418e34c1df7b6b398110fe8fa1255505d"
+    },
+    "test_fp32": {
+      "queries": 139,
+      "corpus_size": 351,
+      "recall_at_5": 0.6619,
+      "recall_at_10": 0.8201,
+      "mrr_at_10": 0.522,
+      "ndcg_at_10": 0.5919,
+      "p50_ms": 12.306,
+      "p95_ms": 16.747
+    },
+    "test_int8": {
+      "queries": 139,
+      "corpus_size": 351,
+      "recall_at_5": 0.6619,
+      "recall_at_10": 0.7842,
+      "mrr_at_10": 0.5202,
+      "ndcg_at_10": 0.5832,
+      "p50_ms": 6.053,
+      "p95_ms": 6.816
+    }
+  },
+  "bge_cross_encoder_reranker": {
+    "history": [
+      {
+        "epoch": 1,
+        "loss": 0.8694,
+        "queries": 77,
+        "corpus_size": 211,
+        "recall_at_5": 0.2468,
+        "recall_at_10": 0.6753,
+        "mrr_at_10": 0.1851,
+        "ndcg_at_10": 0.2944,
+        "p50_ms": 683.511,
+        "p95_ms": 718.531,
+        "seconds": 334.2
+      },
+      {
+        "epoch": 2,
+        "loss": 0.3879,
+        "queries": 77,
+        "corpus_size": 211,
+        "recall_at_5": 0.2857,
+        "recall_at_10": 0.6623,
+        "mrr_at_10": 0.1712,
+        "ndcg_at_10": 0.2824,
+        "p50_ms": 681.702,
+        "p95_ms": 723.452,
+        "seconds": 332.2
+      }
+    ],
+    "artifact": {
+      "fp32_bytes": 133122022,
+      "fp32_sha256": "21d8caae41b77ecd0a0c1b02d230f62c615adbe8db33dc170e935b2d4046e673",
+      "int8_bytes": 33964641,
+      "int8_sha256": "2d40a29c4024ec602f3de5b41347898096f1d5fdc3842e82b765e6f6dd0ead68"
+    },
+    "test_fp32": {
+      "queries": 139,
+      "corpus_size": 351,
+      "recall_at_5": 0.2878,
+      "recall_at_10": 0.5899,
+      "mrr_at_10": 0.1522,
+      "ndcg_at_10": 0.2517,
+      "p50_ms": 1168.322,
+      "p95_ms": 1268.475
+    },
+    "test_int8": {
+      "queries": 139,
+      "corpus_size": 351,
+      "recall_at_5": 0.3022,
+      "recall_at_10": 0.5827,
+      "mrr_at_10": 0.1608,
+      "ndcg_at_10": 0.2568,
+      "p50_ms": 582.583,
+      "p95_ms": 614.144
+    }
+  },
+  "modernbert_cross_encoder_reranker": {
+    "history": [
+      {
+        "epoch": 1,
+        "loss": 1.1965,
+        "queries": 77,
+        "corpus_size": 211,
+        "recall_at_5": 0.3377,
+        "recall_at_10": 0.6883,
+        "mrr_at_10": 0.1748,
+        "ndcg_at_10": 0.2924,
+        "p50_ms": 3337.169,
+        "p95_ms": 3555.555,
+        "seconds": 777.0
+      }
+    ],
+    "artifact": {
+      "fp32_bytes": 596658487,
+      "fp32_sha256": "534aa26cddd223c1f852be0b9874342f55d319a1dd4ed04e52ff4e817e2ba7f7",
+      "int8_bytes": 150455688,
+      "int8_sha256": "99ac11a0927c0cc7230b9c2d0e4b346d46437cecf64447b0a8b2f695c62da2ca"
+    },
+    "test_fp32": {
+      "queries": 139,
+      "corpus_size": 351,
+      "recall_at_5": 0.3165,
+      "recall_at_10": 0.6331,
+      "mrr_at_10": 0.199,
+      "ndcg_at_10": 0.2975,
+      "p50_ms": 5321.603,
+      "p95_ms": 5644.214
+    },
+    "test_int8": {
+      "queries": 139,
+      "corpus_size": 351,
+      "recall_at_5": 0.3022,
+      "recall_at_10": 0.6043,
+      "mrr_at_10": 0.1782,
+      "ndcg_at_10": 0.2752,
+      "p50_ms": 2119.43,
+      "p95_ms": 2196.915
+    }
+  }
+}

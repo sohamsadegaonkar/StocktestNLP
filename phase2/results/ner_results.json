@@ -1,0 +1,198 @@
+{
+  "train_count": 640,
+  "val_count": 136,
+  "test_count": 284,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 0.5442,
+      "val_f1": 0.054,
+      "val_precision": 0.0577,
+      "val_recall": 0.0507,
+      "seconds": 297.8,
+      "rss_mib": 2591.4
+    },
+    {
+      "epoch": 2,
+      "loss": 0.0686,
+      "val_f1": 0.0532,
+      "val_precision": 0.0559,
+      "val_recall": 0.0507,
+      "seconds": 302.2,
+      "rss_mib": 3102.5
+    }
+  ],
+  "artifact": {
+    "labels": [
+      "O",
+      "B-ORG",
+      "I-ORG",
+      "B-TICKER",
+      "I-TICKER",
+      "B-FIN_INST",
+      "I-FIN_INST",
+      "B-MONEY",
+      "I-MONEY",
+      "B-PERCENT",
+      "I-PERCENT",
+      "B-DATE_PERIOD",
+      "I-DATE_PERIOD",
+      "B-REGULATOR",
+      "I-REGULATOR",
+      "B-PRODUCT_SECTOR",
+      "I-PRODUCT_SECTOR",
+      "B-GEO_MARKET",
+      "I-GEO_MARKET",
+      "B-STAGE_COND",
+      "I-STAGE_COND"
+    ],
+    "fp32_bytes": 596719123,
+    "fp32_sha256": "0efb52b253a7667e71c185be0787c72b3448a020a7e3f2145bb53fe6a8fef7e7",
+    "int8_bytes": 150468563,
+    "int8_sha256": "8d9d2c0c8aeb71968d8d78f726a1707d46f39839c6f531b018e27ccf807263ae"
+  },
+  "test_fp32": {
+    "precision": 0.8397,
+    "recall": 0.7451,
+    "f1": 0.7896,
+    "tp": 529,
+    "fp": 101,
+    "fn": 181,
+    "p50_ms": 166.808,
+    "p95_ms": 327.065,
+    "per_entity_type": {
+      "ORG": {
+        "precision": 0.3409,
+        "recall": 0.3061,
+        "f1": 0.3226,
+        "support": 49
+      },
+      "TICKER": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 21
+      },
+      "FIN_INST": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "MONEY": {
+        "precision": 0.4483,
+        "recall": 0.5909,
+        "f1": 0.5098,
+        "support": 22
+      },
+      "PERCENT": {
+        "precision": 1.0,
+        "recall": 0.5882,
+        "f1": 0.7407,
+        "support": 17
+      },
+      "DATE_PERIOD": {
+        "precision": 0.8782,
+        "recall": 0.865,
+        "f1": 0.8715,
+        "support": 200
+      },
+      "REGULATOR": {
+        "precision": 0.988,
+        "recall": 0.9392,
+        "f1": 0.963,
+        "support": 263
+      },
+      "PRODUCT_SECTOR": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 14
+      },
+      "GEO_MARKET": {
+        "precision": 0.6915,
+        "recall": 0.6311,
+        "f1": 0.6599,
+        "support": 103
+      },
+      "STAGE_COND": {
+        "precision": 1.0,
+        "recall": 0.3,
+        "f1": 0.4615,
+        "support": 20
+      }
+    }
+  },
+  "test_int8": {
+    "precision": 0.8399,
+    "recall": 0.6944,
+    "f1": 0.7602,
+    "tp": 493,
+    "fp": 94,
+    "fn": 217,
+    "p50_ms": 60.703,
+    "p95_ms": 126.196,
+    "per_entity_type": {
+      "ORG": {
+        "precision": 0.2903,
+        "recall": 0.1837,
+        "f1": 0.225,
+        "support": 49
+      },
+      "TICKER": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 21
+      },
+      "FIN_INST": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 1
+      },
+      "MONEY": {
+        "precision": 0.2414,
+        "recall": 0.3182,
+        "f1": 0.2745,
+        "support": 22
+      },
+      "PERCENT": {
+        "precision": 1.0,
+        "recall": 0.5882,
+        "f1": 0.7407,
+        "support": 17
+      },
+      "DATE_PERIOD": {
+        "precision": 0.875,
+        "recall": 0.84,
+        "f1": 0.8571,
+        "support": 200
+      },
+      "REGULATOR": {
+        "precision": 0.992,
+        "recall": 0.9392,
+        "f1": 0.9648,
+        "support": 263
+      },
+      "PRODUCT_SECTOR": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 14
+      },
+      "GEO_MARKET": {
+        "precision": 0.662,
+        "recall": 0.4563,
+        "f1": 0.5402,
+        "support": 103
+      },
+      "STAGE_COND": {
+        "precision": 1.0,
+        "recall": 0.25,
+        "f1": 0.4,
+        "support": 20
+      }
+    }
+  }
+}

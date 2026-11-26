@@ -1,0 +1,229 @@
+{
+  "train_count": 556,
+  "val_count": 295,
+  "test_count": 624,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 2.2774,
+      "val_macro_f1": 0.2604,
+      "val_micro_f1": 0.461,
+      "val_nse_acc": 0.4615,
+      "seconds": 84.5,
+      "rss_mib": 1091.2
+    },
+    {
+      "epoch": 2,
+      "loss": 1.6953,
+      "val_macro_f1": 0.3842,
+      "val_micro_f1": 0.7322,
+      "val_nse_acc": 0.4615,
+      "seconds": 82.7,
+      "rss_mib": 1223.1
+    },
+    {
+      "epoch": 3,
+      "loss": 1.4213,
+      "val_macro_f1": 0.4145,
+      "val_micro_f1": 0.7017,
+      "val_nse_acc": 0.5385,
+      "seconds": 84.4,
+      "rss_mib": 1205.9
+    }
+  ],
+  "artifact": {
+    "labels": [
+      "no_relation",
+      "acquires",
+      "acquisition_approved_for",
+      "acquisition_denied_or_cancelled",
+      "subsidiary_or_owned_by",
+      "leadership_role",
+      "penalized_or_ordered_by",
+      "contract_awarded_to",
+      "price_or_product_for",
+      "reported_metric_for",
+      "located_or_listed_at"
+    ],
+    "fp32_bytes": 133137273,
+    "fp32_sha256": "db403935b59edf0d6a751bb2efbf30b6f7f7dff3c90c216fe1b8e68d1c6258ae",
+    "int8_bytes": 33968330,
+    "int8_sha256": "7e0ae7b6994f6c82c917a294993ff8d46c5b7539f935a898a8f6713964261502"
+  },
+  "test_fp32": {
+    "macro_f1": 0.4347,
+    "weighted_f1": 0.7143,
+    "micro_f1": 0.7115,
+    "nse_event_relation_acc": 0.5417,
+    "nse_event_relation_count": 24,
+    "p50_ms": 29.595,
+    "p95_ms": 69.427,
+    "per_relation": [
+      {
+        "relation": "no_relation",
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 5
+      },
+      {
+        "relation": "acquires",
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      {
+        "relation": "acquisition_approved_for",
+        "precision": 0.3333,
+        "recall": 1.0,
+        "f1": 0.5,
+        "support": 1
+      },
+      {
+        "relation": "acquisition_denied_or_cancelled",
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 2
+      },
+      {
+        "relation": "subsidiary_or_owned_by",
+        "precision": 0.7006,
+        "recall": 0.5969,
+        "f1": 0.6446,
+        "support": 196
+      },
+      {
+        "relation": "leadership_role",
+        "precision": 0.7703,
+        "recall": 1.0,
+        "f1": 0.8702,
+        "support": 114
+      },
+      {
+        "relation": "penalized_or_ordered_by",
+        "precision": 1.0,
+        "recall": 0.75,
+        "f1": 0.8571,
+        "support": 4
+      },
+      {
+        "relation": "contract_awarded_to",
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 2
+      },
+      {
+        "relation": "price_or_product_for",
+        "precision": 0.4328,
+        "recall": 0.7632,
+        "f1": 0.5524,
+        "support": 38
+      },
+      {
+        "relation": "reported_metric_for",
+        "precision": 0.4375,
+        "recall": 1.0,
+        "f1": 0.6087,
+        "support": 7
+      },
+      {
+        "relation": "located_or_listed_at",
+        "precision": 0.8357,
+        "recall": 0.6784,
+        "f1": 0.7489,
+        "support": 255
+      }
+    ]
+  },
+  "test_int8": {
+    "macro_f1": 0.4354,
+    "weighted_f1": 0.7131,
+    "micro_f1": 0.7099,
+    "nse_event_relation_acc": 0.5417,
+    "nse_event_relation_count": 24,
+    "p50_ms": 13.875,
+    "p95_ms": 34.582,
+    "per_relation": [
+      {
+        "relation": "no_relation",
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 5
+      },
+      {
+        "relation": "acquires",
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0
+      },
+      {
+        "relation": "acquisition_approved_for",
+        "precision": 0.3333,
+        "recall": 1.0,
+        "f1": 0.5,
+        "support": 1
+      },
+      {
+        "relation": "acquisition_denied_or_cancelled",
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 2
+      },
+      {
+        "relation": "subsidiary_or_owned_by",
+        "precision": 0.6932,
+        "recall": 0.6224,
+        "f1": 0.6559,
+        "support": 196
+      },
+      {
+        "relation": "leadership_role",
+        "precision": 0.7651,
+        "recall": 1.0,
+        "f1": 0.8669,
+        "support": 114
+      },
+      {
+        "relation": "penalized_or_ordered_by",
+        "precision": 1.0,
+        "recall": 0.75,
+        "f1": 0.8571,
+        "support": 4
+      },
+      {
+        "relation": "contract_awarded_to",
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 2
+      },
+      {
+        "relation": "price_or_product_for",
+        "precision": 0.4462,
+        "recall": 0.7632,
+        "f1": 0.5631,
+        "support": 38
+      },
+      {
+        "relation": "reported_metric_for",
+        "precision": 0.4375,
+        "recall": 1.0,
+        "f1": 0.6087,
+        "support": 7
+      },
+      {
+        "relation": "located_or_listed_at",
+        "precision": 0.8434,
+        "recall": 0.6549,
+        "f1": 0.7373,
+        "support": 255
+      }
+    ]
+  }
+}

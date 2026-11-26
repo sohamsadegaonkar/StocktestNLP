@@ -1,0 +1,87 @@
+{
+  "train_count": 1103,
+  "val_count": 85,
+  "test_count": 172,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 4.5087,
+      "count": 85,
+      "implications_micro_f1": 0.593,
+      "implications_macro_f1": 0.5356,
+      "stakeholders_micro_f1": 0.7634,
+      "materiality_acc": 0.8824,
+      "event_maturity_acc": 0.8824,
+      "uncertainty_acc": 0.9529,
+      "adversarial_overlap_acc": "n/a",
+      "p50_ms": 45.495,
+      "p95_ms": 64.041,
+      "seconds": 218.0
+    },
+    {
+      "epoch": 2,
+      "loss": 2.1441,
+      "count": 85,
+      "implications_micro_f1": 0.7303,
+      "implications_macro_f1": 0.6895,
+      "stakeholders_micro_f1": 0.8792,
+      "materiality_acc": 0.9412,
+      "event_maturity_acc": 0.9529,
+      "uncertainty_acc": 0.9647,
+      "adversarial_overlap_acc": "n/a",
+      "p50_ms": 45.438,
+      "p95_ms": 63.044,
+      "seconds": 226.7
+    },
+    {
+      "epoch": 3,
+      "loss": 1.7877,
+      "count": 85,
+      "implications_micro_f1": 0.7771,
+      "implications_macro_f1": 0.7154,
+      "stakeholders_micro_f1": 0.8828,
+      "materiality_acc": 0.9647,
+      "event_maturity_acc": 0.9529,
+      "uncertainty_acc": 0.9882,
+      "adversarial_overlap_acc": "n/a",
+      "p50_ms": 51.877,
+      "p95_ms": 82.264,
+      "seconds": 224.8
+    }
+  ],
+  "artifact": {
+    "fp32_bytes": 133158833,
+    "fp32_sha256": "82b2f71c7382bb62592c6045044822716d7bf8aaf6eb5c4a47ffdcf604186f7d",
+    "int8_bytes": 33973833,
+    "int8_sha256": "664c2ed4f7a39a2ad86580dac9a86fa7a0b4418e20d1d3e485702c63c23d022b"
+  },
+  "test_fp32": {
+    "count": 172,
+    "implications_micro_f1": 0.8282,
+    "implications_macro_f1": 0.7982,
+    "stakeholders_micro_f1": 0.913,
+    "materiality_acc": 0.9826,
+    "event_maturity_acc": 0.9767,
+    "uncertainty_acc": 0.9767,
+    "adversarial_overlap_acc": "0/2",
+    "p50_ms": 93.071,
+    "p95_ms": 95.798
+  },
+  "test_int8": {
+    "count": 172,
+    "implications_micro_f1": 0.8159,
+    "implications_macro_f1": 0.786,
+    "stakeholders_micro_f1": 0.9045,
+    "materiality_acc": 0.9884,
+    "event_maturity_acc": 0.9767,
+    "uncertainty_acc": 0.9767,
+    "adversarial_overlap_acc": "0/2",
+    "p50_ms": 47.752,
+    "p95_ms": 50.125
+  },
+  "phrasebank_nc_sa_research_eval": {
+    "license_tier": "nc_sa_research_only",
+    "sample_n": 500,
+    "directional_alignment": 0.114
+  }
+}
