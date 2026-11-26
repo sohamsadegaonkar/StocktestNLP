@@ -125,6 +125,8 @@ def _event(pages, event):
     }
     if not supported:
         result["monitor"] = ["Read the original source and verify the issuer and event before drawing conclusions."]
+        if category == "review" and isinstance(event.get("review_message"), str) and event["review_message"]:
+            result["missing_guidance"] = event["review_message"]
     elif stage in NON_ACTIVE:
         result["monitor"] = ["Verify the stated status or clarification in the original source and subsequent filings."]
         if stage in {"Denied", "Terminated"}:

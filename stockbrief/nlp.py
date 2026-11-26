@@ -35,7 +35,7 @@ KEYWORDS = {
 }
 STAGES = {
     "deal": (
-        ("Denied", r"\b(?:denied|no agreement (?:was |has been )?signed|did not (?:acquire|complete)|no acquisition (?:has |was )?(?:been )?(?:made|completed))\b"),
+        ("Denied", r"\b(?:den(?:y|ied|ies)|no agreement (?:was |has been )?signed|did not (?:acquire|complete)|no acquisition (?:has |was )?(?:been )?(?:made|completed))\b"),
         ("Terminated", r"\b(?:terminat\w+|abandoned|withdrew|cancelled|canceled|called off)\b"),
         (
             "Completed",
@@ -61,7 +61,7 @@ STAGES = {
     ),
     "earnings": (("Reported", r"\b(?:report\w+|publish\w+|approved|results show)\b"),),
     "pricing": (
-        ("Denied", r"\b(?:denied|no price (?:increase|hike)|will not (?:raise|increase|cut) prices)\b"),
+        ("Denied", r"\b(?:den(?:y|ied|ies)|no price (?:increase|hike)|will not (?:raise|increase|cut) prices)\b"),
         ("Announced", r"\b(?:announc\w+|price revision|will (?:raise|increase|cut|reduce) prices|"
                       r"introduced|launched|is increasing|is reducing)\b"),
     ),
@@ -73,6 +73,9 @@ STAGES = {
         ("Disruption reported", r"\b(?:suspended|disruption|halted|outage|fire)\b"),
         ("Operations resumed", r"\b(?:resumed|restarted|commenced|begun)\b"),
         ("Contract awarded", r"\b(?:awarded|won|letter of award)\b"),
+    ),
+    "routine": (
+        ("Denied", r"\b(?:den(?:y|ied|ies)|no agreement (?:was |has been )?signed|did not (?:acquire|complete)|baseless|factually incorrect)\b"),
     ),
 }
 COMPLETION_BLOCKERS = re.compile(

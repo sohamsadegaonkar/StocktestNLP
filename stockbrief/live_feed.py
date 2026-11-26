@@ -143,6 +143,7 @@ class LiveFeed:
         self.next_check = 0
         self.last = None
         self.last_success = None
+        self.last_supported_at = None
 
     def prepare(self, row, *, allow_network=False):
         pages, scope, warnings = (row["description"],), "rss_excerpt", 0
@@ -178,7 +179,8 @@ class LiveFeed:
             if self.last is not None and monotonic() < self.next_check:
                 return {**self.last, "throttled": True, "imported": 0}
             result = {"state": "available", "checked_at": datetime.now(timezone.utc).isoformat(),
-                      "last_success": self.last_success, "imported": 0, "duplicates": 0,
+                      "last_success": self.last_success, "latest_supported_at": self.last_supported_at,
+                      "imported": 0, "duplicates": 0,
                       "pending": 0, "matching": 0, "unmatched": 0, "rejected": 0, "rss_only": 0, "pdf": 0,
                       "errors": 0, "retry_seconds": POLL_SECONDS, "attachment_access": self.attachments}
             try:
@@ -191,7 +193,9 @@ class LiveFeed:
                 result["matching"] = len(rows)
                 if not rows:
                     result["state"] = "no_matches"
-                result["latest_supported_at"] = rows[0].published.isoformat() if rows else None
+                else:
+                    self.last_supported_at = rows[0].published.isoformat()
+                    result["latest_supported_at"] = self.last_supported_at
                 result["outside_window"] = max(0, len(rows) - WINDOW)
                 counts = self.edge.enqueue(rows[:WINDOW])
                 result.update(counts)

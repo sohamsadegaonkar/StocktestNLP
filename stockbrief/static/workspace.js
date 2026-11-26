@@ -184,6 +184,127 @@ function eventDetails(entry, brief, pane, separateCard) {
   }
 }
 
+function signedPct(value) {
+  if (value == null) return "Unavailable";
+  return (value > 0 ? "+" : "") + Number(value).toFixed(2) + "%";
+}
+
+function horizonSummaryCard(title, stats) {
+  const card = element("div", undefined, "historical-horizon");
+  card.append(element("h4", title + " · " + stats.completed_count + " completed" +
+    (stats.pending_after_cutoff_count ? " (" + stats.pending_after_cutoff_count + " excluded at cutoff)" : "")));
+  if (!stats.completed_count) {
+    card.append(element("p", "No matched window finished before the cutoff date.", "small muted"));
+    return card;
+  }
+  const metrics = element("dl");
+  metrics.append(
+    detailField("Raw return (median)", signedPct(stats.raw_return_median_pct)),
+    detailField("Excess vs Nifty 50 (median)", signedPct(stats.excess_nifty50_median_pct) +
+      (stats.excess_nifty50_iqr_pct ? " · IQR " + signedPct(stats.excess_nifty50_iqr_pct[0]) + " to " + signedPct(stats.excess_nifty50_iqr_pct[1]) : "")),
+    detailField("Market-model CAR (median)", signedPct(stats.market_model_car_median_pct)),
+    detailField("Positive Nifty excess", stats.positive_excess_count + " of " + stats.completed_count),
+  );
+  card.append(metrics);
+  return card;
+}
+
+function windowMetricsCell(observed, statusFlag, endDate, cutoffDate) {
+  const box = element("div", undefined, "comp-metrics");
+  if (!observed) {
+    box.append(element("span", "Excluded (" + (endDate || statusFlag) + " >= " + cutoffDate + ")", "chip review"));
+    return box;
+  }
+  box.append(
+    element("span", "Raw: " + signedPct(observed.raw_return_pct), "small"),
+    element("span", "vs Nifty 50: " + signedPct(observed.excess_vs_nifty50_pct), "small"),
+    element("span", "CAR: " + signedPct(observed.market_model_car_pct), "small"),
+    element("span", "Ended " + dateLabel(endDate), "small muted"),
+  );
+  return box;
+}
+
+function historicalComparablesPanel(entry) {
+  const panel = element("section", undefined, "intelligence-panel historical-panel");
+  const head = element("div", undefined, "actions");
+  head.append(element("h3", "Similar past events"), element("span", "Historical analytics only · no predictions", "chip subtle"));
+  const body = element("div");
+  panel.append(head, body);
+
+  async function load() {
+    const wait = element("p", "Searching strictly prior historical NSE filings…", "small muted");
+    wait.setAttribute("role", "status");
+    body.replaceChildren(wait);
+    try {
+      const result = await api("/api/disclosures/" + entry.id + "/comparables");
+      body.replaceChildren();
+      const meta = element("p",
+        result.package_label + " · " +
+        (result.matching_mode === "semantic_and_category" ? "Semantic + category similarity" :
+          result.matching_mode === "category_fallback" ? "Category matching fallback" : "No matching applied") +
+        " · Cutoff " + timeInIndia(result.cutoff_ist),
+        "small muted");
+      body.append(meta, element("p", result.cutoff_assumption, "small muted"));
+
+      if (result.state === "disabled" || result.state === "unavailable" || result.state === "insufficient_evidence") {
+        const reasonText = result.limitations?.[0] || "Historical comparison is unavailable for this disclosure.";
+        body.append(element("p", reasonText, "small"));
+      } else {
+        const dist = element("div", undefined, "historical-summary");
+        dist.append(
+          horizonSummaryCard("1-day observed window (T0)", result.summary_distribution.horizon_1d),
+          horizonSummaryCard("5-day observed window (T0..T0+4)", result.summary_distribution.horizon_5d),
+        );
+        body.append(dist, table("Comparable past NSE disclosures (strictly before cutoff)",
+          ["Prior filing & match basis", "1-day observed", "5-day observed"],
+          result.comparables.map((comp) => {
+            const left = element("div", undefined, "comp-filing");
+            const badges = element("div", undefined, "chips");
+            badges.append(
+              element("span", comp.symbol, "chip"),
+              element("span", comp.category_name + " · " + comp.stage, "chip subtle"),
+            );
+            if (!comp.corp_action_verified) badges.append(element("span", "Unadjusted fallback", "chip review"));
+            if (comp.has_split_near || comp.has_div_near) badges.append(element("span", "Near split/div", "chip review"));
+            if (comp.is_overlapping_10d) badges.append(element("span", "Overlapping <=10d", "chip subtle"));
+            left.append(
+              badges,
+              element("p", dateLabel(comp.published_ts_ist.slice(0, 10)) + " (" + comp.published_ts_ist + ") · " + comp.sector, "small muted"),
+              element("p", comp.excerpt, "comp-excerpt"),
+              element("p", comp.match_reasons.join(" · "), "small muted"),
+            );
+            if (comp.source_url) left.append(sourceLink(comp.source_url, "NSE source →"));
+            return [
+              left,
+              windowMetricsCell(comp.observed_1d, comp.window_1d_status, comp.window_1d_end_date, result.cutoff_date),
+              windowMetricsCell(comp.observed_5d, comp.window_5d_status, comp.window_5d_end_date, result.cutoff_date),
+            ];
+          })));
+      }
+
+      const limits = element("details");
+      const list = element("ul");
+      (result.limitations || []).forEach((item) => list.append(element("li", item)));
+      limits.append(element("summary", "Method, cutoffs & limitations"), list);
+      body.append(limits);
+      if (result.comparables?.length) {
+        const download = element("button", "Download historical comparisons", "button");
+        download.type = "button";
+        download.addEventListener("click", () => downloadJson("stockbrief-comparables-" + entry.id + ".json", result));
+        body.append(download);
+      }
+    } catch (error) {
+      status(wait, error.message, true);
+      const retry = element("button", "Retry historical lookup", "button");
+      retry.type = "button";
+      retry.addEventListener("click", load);
+      body.append(retry);
+    }
+  }
+  load();
+  return panel;
+}
+
 function intelligencePanel(entry) {
   const panel = element("section", undefined, "intelligence-panel");
   panel.append(element("h3", "News intelligence"));
@@ -210,6 +331,9 @@ function intelligencePanel(entry) {
           section.append(quote);
         } else {
           section.append(element("p", "No validated evidence span available.", "small muted"));
+        }
+        if (event.missing_guidance) {
+          section.append(element("h4", "What is missing & how to continue"), element("p", event.missing_guidance));
         }
         if (event.interpretation) {
           section.append(element("h4", "Why it may matter"), element("p", event.interpretation));
@@ -330,6 +454,9 @@ function detail(entry, pane) {
   if (entry.date && entry.origin !== "synthetic" && state?.market_tickers?.includes(entry.ticker)) {
     pane.append(marketContextPanel(entry));
   }
+  if (state?.historical_available !== false) {
+    pane.append(historicalComparablesPanel(entry));
+  }
 
   const sourceActions = element("div", undefined, "actions source-actions");
   if (entry.url) sourceActions.append(sourceLink(entry.url, "Open original source →"));
@@ -444,7 +571,11 @@ let liveEnabled = false;
 let liveBusy = false;
 let liveStarted = 0;
 const indiaTime = new Intl.DateTimeFormat("en-IN", {timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short"});
-const timeInIndia = (stamp) => indiaTime.format(new Date(stamp)) + " IST";
+const timeInIndia = (stamp) => {
+  if (!stamp) return "—";
+  const parsed = new Date(stamp);
+  return Number.isNaN(parsed.getTime()) ? String(stamp) : indiaTime.format(parsed) + " IST";
+};
 async function pollLive(showAlternatives = false) {
   if (!state?.live_feed_available || liveBusy || analysisBusy || replayBusy || workspaceBusy) return;
   liveBusy = true;
@@ -468,7 +599,9 @@ async function pollLive(showAlternatives = false) {
       no_matches: "NSE RSS responded. This snapshot has no filings for the five tracked companies. ",
     };
     status(note, (lead[result.state] || "") + summary +
+      " · Last check: " + (result.checked_at ? timeInIndia(result.checked_at) : "none") +
       " · Last successful check: " + (result.last_success ? timeInIndia(result.last_success) : "none") +
+      " · Latest publication time: " + (result.latest_supported_at ? timeInIndia(result.latest_supported_at) : "none in snapshot") +
       (result.throttled ? " · Cached refresh status" : ""), result.state === "unavailable");
     if (showAlternatives && ["no_matches", "unavailable"].includes(result.state)) $("#headline-panel").open = true;
     if (result.imported || result.throttled) await refresh();

@@ -208,10 +208,21 @@ class SemanticEventModel:
             strength = sentence_scores.max(axis=0)
             ranking = np.argsort(-strength, kind="stable")
             candidate = next(self.classes[index] for index in ranking if self.classes[index] != "review")
+            top_score = float(strength[self.classes.index(candidate)])
+            if top_score < 0.25:
+                review_msg = (
+                    "No company disclosure event could be established (input may be unrelated, non-financial, or incomplete). "
+                    "To continue, paste an official corporate announcement naming the company action, results, pricing, governance, regulatory order, or operational update."
+                )
+            else:
+                review_msg = (
+                    "Incomplete or ambiguous disclosure details (leading candidate: "
+                    f"{self.labels[candidate]}). Verify the original source or paste additional context (dates, figures, and action status)."
+                )
             primary = {
                 "category": "review", "category_name": self.labels["review"],
-                "review_message": "Review the excerpts for a company event with enough supporting detail.",
-                "score": round(float(strength[self.classes.index(candidate)]), 4),
+                "review_message": review_msg,
+                "score": round(top_score, 4),
                 "stage": "Unclear", "stage_evidence": None,
                 "evidence": [asdict(chunk) for chunk in chunks[:2]],
                 "figures": [], "dates": [],

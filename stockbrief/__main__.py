@@ -7,13 +7,20 @@ import sys
 
 def main():
     parser = argparse.ArgumentParser(description="StockBrief Edge disclosure workspace")
-    parser.add_argument("command", choices=("serve", "evaluate", "fetch-model", "fetch-semantic"), nargs="?", default="serve")
+    parser.add_argument(
+        "command",
+        choices=("serve", "evaluate", "fetch-model", "fetch-semantic", "export-historical"),
+        nargs="?",
+        default="serve",
+    )
     parser.add_argument("--port", type=int, help="Server port (default 5050 locally, PORT in hosted mode)")
     parser.add_argument("--db", type=Path, help="SQLite database path")
     parser.add_argument("--hosted", action="store_true", help="Serve private browser workspaces on a configured HTTPS origin")
     parser.add_argument("--cpus", type=int, help="Limit Linux CPU affinity to this many available CPUs")
     parser.add_argument("--transformer", type=Path, help="Path to local transformer files for evaluation or download")
     parser.add_argument("--semantic-model", type=Path, help="BGE model directory (default models/semantic)")
+    parser.add_argument("--historical-out", type=Path, help="Output directory for exported Phase 3 historical package")
+    parser.add_argument("--write-demo", action="store_true", help="Refresh stockbrief/historical_demo.json during export-historical")
     args = parser.parse_args()
     if args.cpus:
         if args.cpus < 1 or not hasattr(os, "sched_getaffinity"):
@@ -26,6 +33,16 @@ def main():
         parser.error("--cpus must be positive")
 
     try:
+        if args.command == "export-historical":
+            from .historical_export import DEFAULT_DEMO_PATH, DEFAULT_OUT_DIR, export_historical_package
+
+            manifest = export_historical_package(
+                out_dir=args.historical_out or DEFAULT_OUT_DIR,
+                demo_path=DEFAULT_DEMO_PATH if args.write_demo else None,
+            )
+            print(json.dumps(manifest, ensure_ascii=False, indent=2))
+            return
+
         if args.command == "fetch-semantic":
             from .semantic import fetch_semantic, model_directory
 

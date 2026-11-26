@@ -4,7 +4,7 @@
 
 NSE watchlist researchers often need to decide which announcements to open and verify. StockBrief classifies a disclosure, extracts the stated event stage and figures, and shows the exact passages used. It keeps working on local documents while its simulated inbound feed is disconnected.
 
-[Product and system design](docs/DESIGN.md) · [Evaluation and jury demo](docs/DEMO.md) · [Editable Figma design](https://www.figma.com/design/bIwqXWeBhLKpGqO1IIj07s)
+[Product and system design](docs/DESIGN.md) · [Historical comparisons & Phase 3 handoff](docs/HISTORICAL_COMPARISONS.md) · [Evaluation and jury demo](docs/DEMO.md) · [Editable Figma design](https://www.figma.com/design/bIwqXWeBhLKpGqO1IIj07s)
 
 ## Run locally
 
@@ -47,7 +47,14 @@ Open **Inbox → Fetch now** to check official NSE announcements. When the excha
 
 The chart appears at the top of the Inbox and is reachable from **Charts**. The localhost chart requests Upstox candle data for Nifty 50, Tata Motors Passenger Vehicles, Infosys, Reliance, TCS, and HDFC Bank. The chart uses daily closes for **1M** and five-minute closes for **1D**. Outside the current trading session, **1D** can show the latest available session. The candle timestamp is displayed in IST. The chart refreshes once a minute while the dashboard is visible and labels cached data after a connection failure. **Recorded Infosys case** opens an attributed historical chart and first- and fifth-session comparisons against Nifty 50, even without an internet connection. On the initial load, the recorded case is shown with a clear label if the selected market feed returns no prices. **Refresh prices** retries the latest chart. Open a saved or pasted disclosure with a supported ticker and publication date to request **Compare market closes**.
 
-An internet connection is needed to fetch candles. The chart calls the provider with the selected instrument and period only. For an entirely offline demo, set `$env:STOCKBRIEF_DISABLE_MARKET = "1"` in PowerShell before startup. Disclosure analysis, the saved inbox, and replay run locally.
+An internet connection is needed to fetch candles. The chart calls the provider with the selected instrument and period only. For an entirely offline demo, set `$env:STOCKBRIEF_DISABLE_MARKET = "1"` in PowerShell before startup (or `$env:STOCKBRIEF_DISABLE_HISTORICAL = "1"` to disable historical comparisons). Disclosure analysis, the saved inbox, and replay run locally.
+
+### Similar past events (historical comparisons)
+
+Opening any analyzed or saved disclosure renders a read-only **Similar past events** panel below **Observed market context** (analytics only; no directional probabilities or trading advice):
+- Out of the box, StockBrief uses `stockbrief/historical_demo.json` (32 source-backed public NSE announcements, ~46.0 KiB).
+- When local Phase 3 caches are present (`phase3/.cache/`), export the compact local archive (`26,185` filings across `310` issuers, ~22.28 MiB under `.runtime/historical/phase3_package`) with `.\training\.venv\Scripts\python.exe -m stockbrief.historical_export --write-demo`.
+- Queries enforce strict publication cutoffs (conservative `00:00:00+05:30` when time of day is absent) and exclude any 1-day or 5-day outcome window that finishes on or after the cutoff date. See [Historical comparisons](docs/HISTORICAL_COMPARISONS.md) for compatibility checks and provenance flags.
 
 [Upstox historical candles](https://upstox.com/developer/api-documentation/v3/get-historical-candle-data/) · [Upstox intraday candles](https://upstox.com/developer/api-documentation/v3/get-intra-day-candle-data/)
 

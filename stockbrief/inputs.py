@@ -36,7 +36,10 @@ def read_upload(name: str, payload: bytes) -> tuple[tuple[str, ...], str]:
     except (PdfReadError, RecursionError, TypeError, KeyError, IndexError, OSError) as error:
         raise ValueError("The PDF could not be read. Try a text-based export.") from error
     if not any(page.strip() for page in pages):
-        raise ValueError("No selectable text found. Paste the text or use a text-based PDF.")
+        raise ValueError(
+            "No selectable text found (this PDF may be scanned or image-only). "
+            "Paste the disclosure text directly in Analyze or export a text-based PDF."
+        )
     return pages, "pdf"
 
 
@@ -44,7 +47,7 @@ def make_document(ticker, title, pages, source="", date_value="", url="", origin
     if ticker not in TICKERS:
         raise ValueError("Choose a ticker from the watchlist.")
     if not 12 <= sum(len(page.strip()) for page in pages) <= MAX_TEXT:
-        raise ValueError("Provide 12 to 90,000 characters of disclosure text.")
+        raise ValueError("Provide 12 to 90,000 characters of readable disclosure text (current input is too short or incomplete).")
     if date_value:
         try:
             date_value = date.fromisoformat(date_value).isoformat()

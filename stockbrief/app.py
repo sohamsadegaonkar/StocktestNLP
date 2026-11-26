@@ -18,6 +18,7 @@ from .edge_simulation import experiment
 from .evaluation import evaluate, host_metrics
 from .fixtures import Document
 from .headlines import Headlines, ISSUERS as HEADLINE_ISSUERS
+from .historical import HistoricalIndex
 from .hosted import COOKIE_AGE, COOKIE_NAME, HostedWorkspaces, WorkspaceLimit, public_https_origin, workspace_session
 from .inputs import MAX_UPLOAD, make_document, read_upload
 from .live_feed import LiveFeed, fetch_bytes
@@ -75,7 +76,7 @@ class RequestLimit:
         return await self.app(scope, buffered, send)
 
 
-def create_app(path: Path | None = None, transformer=None, *, public_origin=None, database_url=None, model=None, live_fetch=None):
+def create_app(path: Path | None = None, transformer=None, *, public_origin=None, database_url=None, model=None, live_fetch=None, historical=None):
     if database_url and public_origin is None:
         raise ValueError("A PostgreSQL URL requires hosted mode.")
     if model is None:
@@ -98,6 +99,11 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
     live = LiveFeed(local_inbox, attachments=os.getenv("STOCKBRIEF_NSE_ATTACHMENTS") == "1",
                     fetch=live_fetch or fetch_bytes) if workspaces is None else None
     headlines = Headlines() if live is not None else None
+    historical_index = (
+        historical
+        if historical is not None
+        else HistoricalIndex(encoder=getattr(model, "encoder", None), encoder_artifact=getattr(model, "artifact", None))
+    )
 
     def get_inbox(request: Request):
         if workspaces is None:
@@ -149,6 +155,8 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
             **inbox.state(), "labels": labels,
             "tickers": TICKERS, "transformer": transformer.name if transformer else None,
             "live_feed_available": live is not None,
+            "historical_available": historical_index.status()["available"],
+            "historical_mode": historical_index.status()["mode"],
             "market_tickers": [symbol for symbol in INSTRUMENTS if symbol != "NIFTY50"] if market is not None else [],
             "mode": mode, "storage": storage,
         }
@@ -219,6 +227,19 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
         if entry is None:
             raise HTTPException(404, "Disclosure not found.")
         return build_intelligence(entry)
+
+    @app.get("/api/historical/status")
+    def historical_status():
+        return historical_index.status()
+
+    @app.get("/api/disclosures/{entry_id}/comparables")
+    def disclosure_comparables(entry_id: int, request: Request, limit: int = 6, inbox=inbox_dependency):
+        if request.headers.get("sec-fetch-site") == "cross-site":
+            raise HTTPException(403, "Open the dashboard to view historical comparisons.")
+        entry = inbox.document(entry_id)
+        if entry is None:
+            raise HTTPException(404, "Disclosure not found.")
+        return historical_index.compare_entry(entry, limit=limit)
 
     @app.get("/api/disclosures/{entry_id}/second-opinion")
     def second_opinion(entry_id: int, inbox=inbox_dependency):
