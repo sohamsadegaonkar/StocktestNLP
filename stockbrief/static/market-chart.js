@@ -1,6 +1,8 @@
 const panel = document.querySelector("#market-panel");
 const select = document.querySelector("#market-symbol");
 const refresh = document.querySelector("#market-refresh");
+const exampleButton = document.querySelector("#market-example");
+const recorded = document.querySelector("#market-recorded");
 const source = document.querySelector("#market-source");
 const output = document.querySelector("#market-display");
 const status = document.querySelector("#market-status");
@@ -18,15 +20,23 @@ const shortTime = new Intl.DateTimeFormat("en-IN", {timeZone: marketZone, hour: 
 const number = new Intl.NumberFormat("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2});
 const axis = new Intl.NumberFormat("en-IN", {maximumFractionDigits: 2});
 
-let period = "1M";
+let period = "1D";
 let series;
 let requestNumber = 0;
 let lastStarted = 0;
+let mode = "latest";
+let enabled = true;
 
 function setStatus(message, stale = false) {
   status.textContent = message;
   status.dataset.stale = String(stale);
 }
+
+const emptyStatus = {
+  empty: "Upstox returned no candles for the selected period.",
+  disabled: "Live prices are disabled for this workspace.",
+  unavailable: "Upstox prices are currently unavailable.",
+};
 
 function draw() {
   if (!series || output.hidden) return;
@@ -109,7 +119,7 @@ function render(data) {
   source.textContent = data.source + (data.period === "1D" ? " · 5-minute candles" : " · Daily candles");
   output.hidden = !series;
   if (!series) {
-    setStatus(data.state === "empty" ? "No candles are available for this period." : "Market data is temporarily unavailable.", true);
+    setStatus((emptyStatus[data.state] || emptyStatus.unavailable) + " Open the Recorded Infosys case to see a historical chart.", true);
     return;
   }
   const first = series.candles[0];
@@ -121,21 +131,28 @@ function render(data) {
     : "One candle";
   change.dataset.trend = difference > 0 ? "up" : difference < 0 ? "down" : "flat";
   const time = new Date(latest.time);
-  caption.textContent = "Latest candle · " + sessionDate.format(time)
+  caption.textContent = (data.state === "recorded" ? "Last recorded close · " : "Latest candle · ") + sessionDate.format(time)
     + (data.period === "1D" ? ", " + shortTime.format(time) : "") + " IST";
   canvas.setAttribute("aria-label", data.name + " closing price. " + caption.textContent + ". " + price.textContent + ". " + change.textContent);
-  const checked = shortTime.format(new Date(data.checked_at)) + " IST";
-  setStatus(
-    data.state === "cached"
+  if (data.state === "recorded") {
+    setStatus("Recorded data from July 2024. Refresh prices to return to the selected instrument.");
+  } else {
+    const checked = shortTime.format(new Date(data.checked_at)) + " IST";
+    setStatus(data.state === "cached"
       ? "Showing cached candles. Last successful fetch " + checked + "."
-      : "Checked " + checked + " · Refreshes every minute while this tab is visible.",
-    data.state === "cached",
-  );
+      : "Checked " + checked + " · Refreshes every minute while this tab is visible.", data.state === "cached");
+  }
   draw();
 }
 
 async function load(clear = false) {
-  if (panel.hidden) return;
+  const firstCheck = requestNumber === 0;
+  clear = clear || mode === "recorded";
+  mode = "latest";
+  recorded.hidden = true;
+  exampleButton.setAttribute("aria-pressed", "false");
+  exampleButton.disabled = false;
+  buttons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.marketPeriod === period)));
   const sequence = ++requestNumber;
   lastStarted = Date.now();
   refresh.disabled = true;
@@ -148,35 +165,115 @@ async function load(clear = false) {
   try {
     const response = await fetch("/api/market/" + encodeURIComponent(select.value) + "?period=" + period);
     if (sequence !== requestNumber) return;
-    if (response.status === 404) {
-      panel.hidden = true;
-      return;
-    }
     if (!response.ok) throw new Error("Cannot fetch market data");
     const data = await response.json();
-    if (sequence === requestNumber) render(data);
+    if (sequence === requestNumber) {
+      enabled = data.state !== "disabled";
+      render(data);
+      if (firstCheck && !series) await showExample(emptyStatus[data.state] || emptyStatus.unavailable);
+    }
   } catch {
-    if (sequence === requestNumber) setStatus(
-      series ? "Refresh failed. Showing the last chart." : "Market data is temporarily unavailable.",
-      true,
-    );
+    if (sequence === requestNumber) {
+      if (firstCheck && !series) await showExample(emptyStatus.unavailable);
+      else setStatus(series ? "Refresh failed. Showing the last chart." :
+        "Market data is unavailable. Open the Recorded Infosys case for a historical chart.", true);
+    }
   } finally {
     if (sequence === requestNumber) refresh.disabled = false;
   }
 }
 
+function renderComparison(data) {
+  const title = document.createElement("h3");
+  title.id = "recorded-heading";
+  title.textContent = "Infosys earnings vs Nifty 50";
+  const dates = document.createElement("p");
+  const day = (value) => sessionDate.format(new Date(value));
+  dates.textContent = data.title + " · " + day(data.filing_date) + " · Compared with the " + day(data.baseline_date) + " close.";
+  dates.className = "small muted";
+
+  const table = document.createElement("table");
+  const head = table.createTHead().insertRow();
+  for (const label of ["Session", "Infosys", "Nifty 50", "Difference"]) {
+    const heading = document.createElement("th");
+    heading.scope = "col";
+    heading.textContent = label;
+    head.append(heading);
+  }
+  const signed = (value, unit) => (value > 0 ? "+" : "") + number.format(value) + unit;
+  const body = table.createTBody();
+  for (const item of data.comparisons.filter((entry) => entry.session === 1 || entry.session === 5)) {
+    const row = body.insertRow();
+    const name = document.createElement("th");
+    name.scope = "row";
+    name.textContent = "Day " + item.session + " · " + day(item.date);
+    row.append(name);
+    row.insertCell().textContent = signed(item.stock_pct, "%");
+    row.insertCell().textContent = signed(item.index_pct, "%");
+    row.insertCell().textContent = signed(item.difference_pp, " pp");
+  }
+  const wrap = document.createElement("div");
+  wrap.className = "table-wrap";
+  wrap.tabIndex = 0;
+  wrap.setAttribute("aria-label", "Recorded market comparison");
+  wrap.append(table);
+  const note = document.createElement("p");
+  note.className = "small muted";
+  note.textContent = "The release date is excluded. Other news and market moves may also affect these returns.";
+  const links = document.createElement("div");
+  links.className = "actions small";
+  for (const [label, url] of Object.entries(data.source_links)) {
+    const link = document.createElement("a");
+    link.textContent = label;
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    links.append(link);
+  }
+  recorded.replaceChildren(title, dates, wrap, note, links);
+  recorded.hidden = false;
+}
+
+async function showExample(reason = "") {
+  const sequence = ++requestNumber;
+  mode = "recorded";
+  series = undefined;
+  output.hidden = true;
+  recorded.hidden = true;
+  refresh.disabled = false;
+  exampleButton.disabled = true;
+  exampleButton.setAttribute("aria-pressed", "true");
+  buttons.forEach((button) => button.setAttribute("aria-pressed", "false"));
+  source.textContent = "Recorded Infosys example";
+  setStatus("Loading the recorded chart…");
+  try {
+    const response = await fetch("/api/market-example");
+    if (!response.ok) throw new Error("Recorded example unavailable");
+    const data = await response.json();
+    if (sequence !== requestNumber) return;
+    render(data);
+    renderComparison(data);
+    if (reason) setStatus(reason + " Showing the recorded Infosys chart from July 2024.", true);
+  } catch {
+    if (sequence === requestNumber) setStatus("Could not load the recorded chart. Try again.", true);
+  } finally {
+    if (sequence === requestNumber) exampleButton.disabled = false;
+  }
+}
+
 function refreshVisible() {
-  if (!document.hidden && !panel.closest("[hidden]") && Date.now() - lastStarted >= 60_000) load();
+  if (mode === "latest" && enabled && !document.hidden && !panel.closest("[hidden]") && Date.now() - lastStarted >= 60_000) load();
 }
 
 buttons.forEach((button) => button.addEventListener("click", () => {
-  if (button.dataset.marketPeriod === period) return;
+  if (button.dataset.marketPeriod === period && mode === "latest") return;
   period = button.dataset.marketPeriod;
   buttons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
   load(true);
 }));
 select.addEventListener("change", () => load(true));
 refresh.addEventListener("click", () => load());
+exampleButton.addEventListener("click", () => showExample());
 new ResizeObserver(draw).observe(canvas);
 window.addEventListener("hashchange", refreshVisible);
 document.addEventListener("visibilitychange", refreshVisible);

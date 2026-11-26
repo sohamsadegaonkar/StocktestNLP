@@ -179,7 +179,7 @@ class LiveFeed:
                 return {**self.last, "throttled": True, "imported": 0}
             result = {"state": "available", "checked_at": datetime.now(timezone.utc).isoformat(),
                       "last_success": self.last_success, "imported": 0, "duplicates": 0,
-                      "pending": 0, "unmatched": 0, "rejected": 0, "rss_only": 0, "pdf": 0,
+                      "pending": 0, "matching": 0, "unmatched": 0, "rejected": 0, "rss_only": 0, "pdf": 0,
                       "errors": 0, "retry_seconds": POLL_SECONDS, "attachment_access": self.attachments}
             try:
                 rows, result["unmatched"], result["rejected"] = parse_rss(self.fetch(RSS_URL, MAX_FEED))
@@ -188,12 +188,15 @@ class LiveFeed:
             else:
                 self.last_success = result["checked_at"]
                 result["last_success"] = self.last_success
+                result["matching"] = len(rows)
+                if not rows:
+                    result["state"] = "no_matches"
                 result["latest_supported_at"] = rows[0].published.isoformat() if rows else None
                 result["outside_window"] = max(0, len(rows) - WINDOW)
                 counts = self.edge.enqueue(rows[:WINDOW])
                 result.update(counts)
             # Previously received jobs can still be analyzed when the feed is unavailable.
-            processed = self.edge.drain(lambda row: self.prepare(row, allow_network=result["state"] == "available"))
+            processed = self.edge.drain(lambda row: self.prepare(row, allow_network=result["state"] != "unavailable"))
             for key in ("imported", "duplicates", "errors", "rss_only", "pdf"):
                 result[key] += processed[key]
             result["pending"] = processed["pending"]

@@ -17,12 +17,14 @@ from .edge import benchmark
 from .edge_simulation import experiment
 from .evaluation import evaluate, host_metrics
 from .fixtures import Document
+from .headlines import Headlines, ISSUERS as HEADLINE_ISSUERS
 from .hosted import COOKIE_AGE, COOKIE_NAME, HostedWorkspaces, WorkspaceLimit, public_https_origin, workspace_session
 from .inputs import MAX_UPLOAD, make_document, read_upload
 from .live_feed import LiveFeed, fetch_bytes
 from .market import INSTRUMENTS, MarketData
 from .intelligence import build_intelligence
 from .market_context import disclosure_context
+from .market_example import recorded_example
 from .semantic import load_semantic, model_directory
 from .store import Inbox
 
@@ -95,6 +97,7 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
 
     live = LiveFeed(local_inbox, attachments=os.getenv("STOCKBRIEF_NSE_ATTACHMENTS") == "1",
                     fetch=live_fetch or fetch_bytes) if workspaces is None else None
+    headlines = Headlines() if live is not None else None
 
     def get_inbox(request: Request):
         if workspaces is None:
@@ -146,6 +149,7 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
             **inbox.state(), "labels": labels,
             "tickers": TICKERS, "transformer": transformer.name if transformer else None,
             "live_feed_available": live is not None,
+            "market_tickers": [symbol for symbol in INSTRUMENTS if symbol != "NIFTY50"] if market is not None else [],
             "mode": mode, "storage": storage,
         }
 
@@ -154,6 +158,14 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
         if live is None:
             raise HTTPException(404, "Live feed is available only in local mode.")
         return live.refresh()
+
+    @app.get("/api/headlines/{symbol}")
+    def recent_headlines(symbol: str, request: Request):
+        if headlines is None or symbol not in HEADLINE_ISSUERS:
+            raise HTTPException(404, "Headlines are available for supported issuers in local mode.")
+        if request.headers.get("sec-fetch-site") == "cross-site":
+            raise HTTPException(403, "Open the inbox to view headlines.")
+        return headlines.latest(symbol)
 
     def local_edge():
         if live is None:
@@ -283,11 +295,17 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
 
     @app.get("/api/market/{symbol}")
     def market_chart(symbol: str, request: Request, period: Literal["1D", "1M"] = "1M"):
-        if market is None or symbol not in INSTRUMENTS:
+        if symbol not in INSTRUMENTS:
             raise HTTPException(404, "Market chart unavailable.")
         if request.headers.get("sec-fetch-site") == "cross-site":
             raise HTTPException(403, "Open the dashboard to view market charts.")
+        if market is None:
+            return {"symbol": symbol, "state": "disabled", "period": period, "source": "Upstox", "candles": []}
         return market.chart(symbol, period)
+
+    @app.get("/api/market-example")
+    def market_example():
+        return recorded_example()
 
     @app.get("/api/market-context/{symbol}")
     def market_context(symbol: str, filing_date: date, request: Request):
@@ -295,7 +313,8 @@ def create_app(path: Path | None = None, transformer=None, *, public_origin=None
             raise HTTPException(404, "Disclosure market context unavailable.")
         if request.headers.get("sec-fetch-site") == "cross-site":
             raise HTTPException(403, "Open the dashboard to view market context.")
-        return disclosure_context(market.chart(symbol, "1M"), market.chart("NIFTY50", "1M"), filing_date)
+        return disclosure_context(market.daily_for_filing(symbol, filing_date),
+                                  market.daily_for_filing("NIFTY50", filing_date), filing_date)
 
     @app.get("/api/health")
     def health():

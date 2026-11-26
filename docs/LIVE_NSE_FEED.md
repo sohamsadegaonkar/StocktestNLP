@@ -14,7 +14,11 @@ job is installed. Hosted mode cannot refresh the feed. The RSS parser matches
 five known issuer names exactly; other issuers, invalid times, and unsupported
 attachments are not guessed. The latest 50 matching feed rows are considered,
 five new records per poll. This is a bounded watchlist reader, not an exhaustive
-exchange archive. The feed can be delayed and may roll over.
+exchange archive. The feed can be delayed and may roll over. A successful
+snapshot with zero supported issuers is shown separately from a connection
+failure. An optional company-level Google News RSS lookup shows recent
+publisher headlines with attribution and source links. It does not add to the
+NSE inference queue or download article bodies.
 
 RSS excerpts are the default. Only where automated retrieval and analysis of
 the linked filing are permitted, start the server with

@@ -240,12 +240,27 @@ class APITests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(imported["date"], "2024-07-15")
             before = datetime.fromisoformat("2024-07-12T09:15:00+05:30")
             after = datetime.fromisoformat("2024-07-16T09:15:00+05:30")
-            def candles(_self, instrument, period):
-                self.assertEqual(period, "1M")
-                return [(before, 100), (after, 102 if instrument.unit == "points" else 105)]
-            with patch("stockbrief.market.MarketData._load", candles):
+            def candles(path):
+                self.assertTrue(path.endswith("/days/1/2024-07-22/2024-07-08"))
+                return [(before, 100), (after, 102 if path.startswith("NSE_INDEX") else 105)]
+            with patch("stockbrief.market.MarketData._get", side_effect=candles):
                 context = (await client.get("/api/market-context/INFY?filing_date=" + imported["date"])).json()
             self.assertEqual(context["relative_return_pp"], 3)
+
+    async def test_offline_market_panel_has_a_recorded_chart(self):
+        from unittest.mock import patch
+
+        with patch.dict("os.environ", {"STOCKBRIEF_DISABLE_MARKET": "1"}):
+            app = await asyncio.to_thread(create_app, self.path)
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as client:
+            disabled = (await client.get("/api/market/NIFTY50")).json()
+            self.assertEqual((disabled["state"], disabled["candles"]), ("disabled", []))
+            example = (await client.get("/api/market-example")).json()
+            self.assertEqual((example["state"], example["symbol"], example["filing_date"]), ("recorded", "INFY", "2024-07-18"))
+            self.assertEqual(len(example["candles"]), 6)
+            self.assertAlmostEqual(example["comparisons"][0]["difference_pp"], 4.21, places=2)
+            self.assertAlmostEqual(example["comparisons"][4]["difference_pp"], 6.56, places=2)
+            self.assertEqual(len(example["source_links"]), 3)
 
     async def test_cooperative_simulation_is_bounded_and_does_not_modify_inbox(self):
         before = (await self.client.get("/api/inbox")).json()

@@ -19,6 +19,7 @@
     </a>
     <nav aria-label="Workspace">
       <a href="#inbox" data-view="inbox"><span aria-hidden="true">≡</span>Inbox</a>
+      <a href="#market-panel" data-view="market-panel"><span aria-hidden="true">⌁</span>Charts</a>
       <a href="#analyze" data-view="analyze"><span aria-hidden="true">＋</span>Analyze</a>
       <a href="#lab" data-view="lab"><span aria-hidden="true">◫</span>Edge lab</a>
       <a href="#evaluation" data-view="evaluation"><span aria-hidden="true">▥</span>Evaluation</a>
@@ -33,7 +34,7 @@
         <p id="view-description">Find the event, its stage, and the source passage behind each company announcement.</p>
         <div id="hero-actions" class="actions hero-actions">
           <a id="analyze-shortcut" href="#analyze" class="button primary">Analyze a disclosure <span aria-hidden="true">→</span></a>
-          <a href="#lab" class="button hero-secondary">Open edge lab</a>
+          <a href="#market-panel" class="button hero-secondary">View NSE chart</a>
         </div>
       </div>
       <div id="hero-process" class="hero-process" aria-hidden="true">
@@ -50,6 +51,45 @@
     <p id="storage-note" class="storage-note" hidden>Temporary hosting can clear saved disclosures. Download any briefs you need to keep.</p>
 
     <section id="view-inbox" aria-label="Inbox view">
+      <section class="card market-card" id="market-panel" aria-labelledby="market-heading">
+        <div class="market-header">
+          <div>
+            <h2 id="market-heading" tabindex="-1">NSE market chart</h2>
+            <p class="market-source" id="market-source">Upstox · 5-minute candles</p>
+          </div>
+          <div class="market-controls">
+            <label>Instrument
+              <select id="market-symbol">
+                <option value="NIFTY50">Nifty 50</option>
+                <option value="TMPV">Tata Motors PV</option>
+                <option value="INFY">Infosys</option>
+                <option value="RELIANCE">Reliance Industries</option>
+                <option value="TCS">TCS</option>
+                <option value="HDFCBANK">HDFC Bank</option>
+              </select>
+            </label>
+            <fieldset class="market-period">
+              <legend>Period</legend>
+              <button type="button" data-market-period="1D" aria-pressed="true">1D</button>
+              <button type="button" data-market-period="1M" aria-pressed="false">1M</button>
+            </fieldset>
+            <button type="button" class="button" id="market-refresh">Refresh prices</button>
+            <button type="button" class="button" id="market-example" aria-pressed="false">Recorded Infosys case</button>
+          </div>
+        </div>
+        <div id="market-display" hidden>
+          <div class="market-quote">
+            <strong id="market-price"></strong>
+            <span id="market-change" class="market-change"></span>
+          </div>
+          <p id="market-time" class="market-time"></p>
+          <div class="market-plot">
+            <canvas id="market-chart" role="img" aria-label="Closing price chart"></canvas>
+          </div>
+        </div>
+        <p id="market-status" class="market-status" role="status">Loading candles…</p>
+        <section id="market-recorded" aria-labelledby="recorded-heading" hidden></section>
+      </section>
       <div class="stats">
         <article><p class="eyebrow">Saved disclosures</p><strong data-stat="count">—</strong><span>In your workspace</span></article>
         <article><p class="eyebrow">Source link · simulated</p><strong data-stat="link">—</strong><a href="#lab">View edge lab <span aria-hidden="true">→</span></a></article>
@@ -65,43 +105,24 @@
           </div>
         </div>
         <p class="market-status" id="live-status" role="status">Not checked yet. Refreshes every two minutes while the inbox is visible when enabled.</p>
-      </section>
-      <section class="card market-card" id="market-panel" aria-labelledby="market-heading">
-        <div class="market-header">
-          <div>
-            <h2 id="market-heading">NSE market chart</h2>
-            <p class="market-source" id="market-source">Upstox · Daily candles</p>
-          </div>
-          <div class="market-controls">
-            <label>Instrument
-              <select id="market-symbol">
-                <option value="NIFTY50">Nifty 50</option>
+        <details id="headline-panel" class="headlines">
+          <summary>Find recent publisher headlines</summary>
+          <p class="market-source">Google News RSS · Headlines link to publishers and stay separate from NSE filings.</p>
+          <div class="actions headline-controls">
+            <label>Company
+              <select id="headline-symbol">
                 <option value="TMPV">Tata Motors PV</option>
                 <option value="INFY">Infosys</option>
-                <option value="RELIANCE">Reliance Industries</option>
                 <option value="TCS">TCS</option>
+                <option value="RELIANCE">Reliance Industries</option>
                 <option value="HDFCBANK">HDFC Bank</option>
               </select>
             </label>
-            <fieldset class="market-period">
-              <legend>Period</legend>
-              <button type="button" data-market-period="1D" aria-pressed="false">1D</button>
-              <button type="button" data-market-period="1M" aria-pressed="true">1M</button>
-            </fieldset>
-            <button type="button" class="button" id="market-refresh">Refresh</button>
+            <button type="button" class="button" id="headline-load">Load headlines</button>
           </div>
-        </div>
-        <div id="market-display" hidden>
-          <div class="market-quote">
-            <strong id="market-price"></strong>
-            <span id="market-change" class="market-change"></span>
-          </div>
-          <p id="market-time" class="market-time"></p>
-          <div class="market-plot">
-            <canvas id="market-chart" role="img" aria-label="Closing price chart"></canvas>
-          </div>
-        </div>
-        <p id="market-status" class="market-status" role="status">Loading candles…</p>
+          <p id="headline-status" class="market-status" role="status"></p>
+          <ul id="headline-list" class="headline-list" aria-label="Publisher headlines"></ul>
+        </details>
       </section>
       <div class="inbox-grid">
         <section class="list-pane" aria-labelledby="list-heading">
@@ -125,7 +146,7 @@
           <form id="analysis-form">
             <div class="field-grid">
               <label>Ticker <select name="ticker" id="form-ticker" required><option value="">Select ticker</option></select></label>
-              <label>Disclosure date <input type="date" name="disclosure_date"></label>
+              <label>Disclosure date <input type="date" name="disclosure_date"><span class="small muted">Add the publication date for a market comparison.</span></label>
             </div>
             <label>Title <input name="title" maxlength="140" placeholder="e.g. Outcome of board meeting"></label>
             <details>

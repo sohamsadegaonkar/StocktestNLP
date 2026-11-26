@@ -101,3 +101,10 @@ class LiveFeedTests(unittest.TestCase):
         self.assertTrue(live.refresh()["throttled"])
         provider.assert_called_once()
         self.assertFalse(any(x["origin"].startswith("nse-") for x in self.inbox.state()["disclosures"]))
+
+    def test_successful_snapshot_can_have_no_watchlist_filings(self):
+        live = LiveFeed(self.inbox, fetch=Mock(return_value=feed(title="Untracked Listed Company Limited")))
+        result = live.refresh()
+        self.assertEqual((result["state"], result["matching"], result["unmatched"]), ("no_matches", 0, 1))
+        self.assertTrue(result["last_success"])
+        self.assertEqual(result["imported"], 0)
