@@ -1,0 +1,158 @@
+{
+  "raw_announcements_scanned": 829588,
+  "material_deduplicated_total": 193784,
+  "selected_pool_events": 28000,
+  "selected_unique_symbols": 323,
+  "selected_unique_isins": 323,
+  "date_min": "2022-01-01",
+  "date_max": "2026-11-25",
+  "by_year": {
+    "2022": 4517,
+    "2023": 4880,
+    "2024": 5877,
+    "2025": 6551,
+    "2026": 6175
+  },
+  "by_event_family": {
+    "deal_ma": 4672,
+    "credit_debt": 4468,
+    "corporate_action": 4214,
+    "operations": 3227,
+    "rumor_denial": 984,
+    "earnings": 7085,
+    "regulatory": 1694,
+    "governance": 1529,
+    "pricing_product": 127
+  },
+  "by_timing_bucket": {
+    "intraday": 9831,
+    "post_market": 17491,
+    "pre_market": 678
+  },
+  "raw_slices_provenance": [
+    {
+      "slice": "2022Q1",
+      "from": "01-01-2022",
+      "to": "31-03-2022",
+      "url": "https://www.nseindia.com/api/corporate-announcements?index=equities&from_date=01-01-2022&to_date=31-03-2022",
+      "count": 27613,
+      "sha256": "1bcf010d58a335800e66bded15452078acd6f72239f09317b0c66ae5ee03cf98"
+    },
+    {
+      "slice": "2022Q2",
+      "from": "01-04-2022",
+      "to": "30-06-2022",
+      "url": "https://www.nseindia.com/api/corporate-announcements?index=equities&from_date=01-04-2022&to_date=30-06-2022",
+      "count": 38667,
+      "sha256": "4ff0cc9247f038025aaef2923c8cc9a92a523bd9f23d0450baf4a043ddac9397"
+    },
+    {
+      "slice": "2022Q3",
+      "from": "01-07-2022",
+      "to": "30-09-2022",
+      "url": "https://www.nseindia.com/api/corporate-announcements?index=equities&from_date=01-07-2022&to_date=30-09-2022",
+      "count": 38876,
+      "sha256": "6bfc5812c894c4b7b80d88349c8bf8ca43d5641978f262d6d10fa32ea0a977e2"
+    },
+    {
+      "slice": "2022Q4",
+      "from": "01-10-2022",
+      "to": "31-12-2022",
+      "url": "https://www.nseindia.com/api/corporate-announcements?index=equities&from_date=01-10-2022&to_date=31-12-2022",
+      "count": 31739,
+      "sha256": "192653c58cc53d9576e7c3a1a8462dd10644cc03d8da4c9b323150a1094869d5"
+    },
+    {
+      "slice": "2023Q1",
+      "from": "01-01-2023",
+      "to": "31-03-2023",
+      "url": "https://www.nseindia.com/api/corporate-announcements?index=equities&from_date=01-01-2023&to_date=31-03-2023",
+      "count": 32919,
+      "sha256": "81e8fe5bb4495495be5e0e67521e0e532ab7bbb786ccd7e68f505152f3e3a4ab"
+    },
+    {
+      "slice": "2023Q2",
+      "from": "01-04-2023",
+      "to": "30-06-2023",
+      "url": "https://www.nseindia.com/api/corporate-announcements?index=equities&from_date=01-04-2023&to_date=30-06-2023",
+      "count": 43455,
+      "sha256": "d94a1a27e2037f5fdb8e0c9dee2ad4fe885dbdd97bd299e1852f2afbe2f6523e"
+    },
+    {
+      "slice": "2023Q3",
+      "from": "01-07-2023",
+      "to": "30-09-2023",
+      "url": "https://www.nseindia.com/api/corporate-announcements?index=equities&from_date=01-07-2023&to_date=30-09-2023",
+      "count": 47368,
+      "sha256": "102e65a3575edca5cd0517ddca7198417a48ffff08d675ad07072891220e14bb"
+    },
+    {
+      "slice": "2023Q4",
+      "from": "01-10-2023",
+      "to": "31-12-2023",
+      "url": "https://www.nseindia.com/api/corporate-announcements?index=equities&from_date=01-10-2023&to_date=31-12-2023",
+      "count": 37891,
+      "sha256": "5dcab153ec6c9b8d72c92874844a1a5a69687dd0bfa5670801dfe2396999789b"
+    },
+    {
+      "slice": "2024Q1",
+      "from": "01-01-2024",
+      "to": "31-03-2024",
+      "url": "https://www.nseindia.com/api/corporate-announcements?index=equities&from_date=01-01-2024&to_date=31-03-2024",
+      "count": 41191,
+      "sha256": "1e40c9d600082eb6c40d7f91da7c26fe82ed8cdb345eeefec682eff2c9ea9759"
+    },
+    {
+      "slice": "2024Q2",
+      "from": "01-04-2024",
+      "to": "30-06-2024",
+      "url": "https://www.nseindia.com/api/corporate-announcements?index=equities&from_date=01-04-2024&to_date=30-06-2024",
+      "count": 47288,
+      "sha256": "797aac75f97f8fcdb8c727142d73f06acc74b875640bb74d12e75fd15ac79ba5"
+    },
+    {
+      "slice": "2024Q3",
+      "from": "01-07-2024",
+      "to": "30-09-2024",
+      "url": "https://www.nseindia.com/api/corporate-announcements?index=equities&from_date=01-07-2024&to_date=30-09-2024",
+      "count": 54283,
+      "sha256": "7368d581f6d3481d4688008c2984158acc0578354b41d55718e9124fc4c00625"
+    },
+    {
+      "slice": "2024Q4",
+      "from": "01-10-2024",
+      "to": "31-12-2024",
+      "url": "https://www.nseindia.com/api/corporate-announcements?index=equities&from_date=01-10-2024&to_date=31-12-2024",
+      "count": 40646,
+      "sha256": "456e728933d64219d06cb8e467896e6de52b5d9c787ff6e6c752e6d9b1911516"
+    },
+    {
+      "slice": "2025Q1",
+      "from": "01-01-2025",
+      "to": "31-03-2025",
+      "url": "https://www.nseindia.com/api/corporate-announcements?index=equities&from_date=01-01-2025&to_date=31-03-2025",
+      "count": 41153,
+      "sha256": "8ca25a99a3e1563e139166aa955fb2f2f686446bd8cc99c0373037448dd80a52"
+    },
+    {
+      "slice": "2025Q2",
+      "from": "01-04-2025",
+      "to": "30-06-2025",
+      "url": "https://www.nseindia.com/api/corporate-announcements?index=equities&from_date=01-04-2025&to_date=30-06-2025",
+      "count": 43599,
+      "sha256": "ac5b1bdccc64e4b3e59fc02e9779513fd718c394e1316d16ee3a4ac765a2a779"
+    },
+    {
+      "slice": "2025H2",
+      "path": "training\\.cache\\nse_2025h2_raw.json",
+      "count": 91250,
+      "sha256": "963dfe3c98b0a5c3859a8df6600076465fa0fbdd6c52c5bcdf0d46dfee44aedc"
+    },
+    {
+      "slice": "2026",
+      "path": "training\\.cache\\nse_2026_raw.json",
+      "count": 171650,
+      "sha256": "6b754e5719d5ae1b3e809f253e6523d34777b27003de483975f2e5e4929f1ee3"
+    }
+  ]
+}

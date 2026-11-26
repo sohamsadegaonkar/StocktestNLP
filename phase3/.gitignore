@@ -1,0 +1,7 @@
+.cache/
+__pycache__/
+*.pyc
+data/*.parquet
+data/*.pkl
+data/events_raw_pool.jsonl
+data/market_*.parquet

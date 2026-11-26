@@ -1,0 +1,10 @@
+{
+  "runtime": ".venv pure ONNX Runtime (zero PyTorch/CatBoost/Pandas)",
+  "cold_load_sec": 1.372,
+  "rss_init_mb": 133.2,
+  "rss_after_load_mb": 391.5,
+  "rss_peak_mb": 393.9,
+  "warm_p50_ms": 55.05,
+  "warm_p95_ms": 82.35,
+  "throughput_docs_per_sec": 17.33
+}

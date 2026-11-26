@@ -1,0 +1,14 @@
+{
+  "input_events": 28000,
+  "aligned_events": 26186,
+  "unique_symbols": 310,
+  "t0_min": "2022-01-03",
+  "t0_max": "2026-10-23",
+  "non_overlapping_10d_count": 10636,
+  "corp_action_verified_count": 22842,
+  "skipped": {
+    "unresolved_symbol": 1153,
+    "missing_stock_bar_at_boundary": 1,
+    "insufficient_history_or_tail": 660
+  }
+}

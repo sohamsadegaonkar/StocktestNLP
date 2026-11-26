@@ -1,0 +1,3601 @@
+{
+  "note": "All figures measure observed historical association around IST disclosure timestamps using pre-event OLS market models [-120, -11]. Observed CAR/volume/volatility patterns do not prove causal price effects.",
+  "overall": {
+    "count": 26186,
+    "unique_issuers": 310,
+    "mean_t0_volume_ratio": 2.129,
+    "median_t0_volume_ratio": 1.129,
+    "vol_expansion_gt_1_25_rate": 0.2662,
+    "horizons": {
+      "1d": {
+        "car": {
+          "n": 26186,
+          "clusters": 310,
+          "mean": 0.000377,
+          "median": -0.00123,
+          "se_cluster": 0.000313,
+          "t_cluster": 1.204,
+          "p_cluster": 0.22962,
+          "ci95_low": -0.000237,
+          "ci95_high": 0.000991
+        },
+        "bhar": {
+          "n": 26186,
+          "clusters": 310,
+          "mean": 0.000879,
+          "median": -0.000967,
+          "se_cluster": 0.000327,
+          "t_cluster": 2.686,
+          "p_cluster": 0.00762,
+          "ci95_low": 0.000238,
+          "ci95_high": 0.001521
+        },
+        "raw_mean": 0.001241,
+        "pos_bhar_rate": 0.4812,
+        "abs_bhar_mean": 0.022877,
+        "mean_max_dd": -0.011342
+      },
+      "3d": {
+        "car": {
+          "n": 26186,
+          "clusters": 310,
+          "mean": 8.3e-05,
+          "median": -0.002018,
+          "se_cluster": 0.000484,
+          "t_cluster": 0.171,
+          "p_cluster": 0.86395,
+          "ci95_low": -0.000865,
+          "ci95_high": 0.001031
+        },
+        "bhar": {
+          "n": 26186,
+          "clusters": 310,
+          "mean": 0.001642,
+          "median": -0.001399,
+          "se_cluster": 0.000538,
+          "t_cluster": 3.053,
+          "p_cluster": 0.00246,
+          "ci95_low": 0.000588,
+          "ci95_high": 0.002697
+        },
+        "raw_mean": 0.00277,
+        "pos_bhar_rate": 0.4845,
+        "abs_bhar_mean": 0.035369,
+        "mean_max_dd": -0.027784
+      },
+      "5d": {
+        "car": {
+          "n": 26186,
+          "clusters": 310,
+          "mean": -7.3e-05,
+          "median": -0.002546,
+          "se_cluster": 0.000595,
+          "t_cluster": -0.122,
+          "p_cluster": 0.90299,
+          "ci95_low": -0.001239,
+          "ci95_high": 0.001094
+        },
+        "bhar": {
+          "n": 26186,
+          "clusters": 310,
+          "mean": 0.00242,
+          "median": -0.00185,
+          "se_cluster": 0.000699,
+          "t_cluster": 3.461,
+          "p_cluster": 0.00061,
+          "ci95_low": 0.001049,
+          "ci95_high": 0.003791
+        },
+        "raw_mean": 0.00418,
+        "pos_bhar_rate": 0.4808,
+        "abs_bhar_mean": 0.042964,
+        "mean_max_dd": -0.039732
+      },
+      "10d": {
+        "car": {
+          "n": 26186,
+          "clusters": 310,
+          "mean": -0.001522,
+          "median": -0.003583,
+          "se_cluster": 0.000735,
+          "t_cluster": -2.071,
+          "p_cluster": 0.03923,
+          "ci95_low": -0.002963,
+          "ci95_high": -8.1e-05
+        },
+        "bhar": {
+          "n": 26186,
+          "clusters": 310,
+          "mean": 0.003427,
+          "median": -0.002892,
+          "se_cluster": 0.000925,
+          "t_cluster": 3.706,
+          "p_cluster": 0.00025,
+          "ci95_low": 0.001614,
+          "ci95_high": 0.005239
+        },
+        "raw_mean": 0.006353,
+        "pos_bhar_rate": 0.4796,
+        "abs_bhar_mean": 0.056714,
+        "mean_max_dd": -0.061922
+      },
+      "20d": {
+        "car": {
+          "n": 26186,
+          "clusters": 310,
+          "mean": -0.002585,
+          "median": -0.004643,
+          "se_cluster": 0.00103,
+          "t_cluster": -2.509,
+          "p_cluster": 0.01262,
+          "ci95_low": -0.004604,
+          "ci95_high": -0.000566
+        },
+        "bhar": {
+          "n": 26186,
+          "clusters": 310,
+          "mean": 0.007466,
+          "median": -0.00272,
+          "se_cluster": 0.001426,
+          "t_cluster": 5.235,
+          "p_cluster": 0.0,
+          "ci95_low": 0.004671,
+          "ci95_high": 0.010262
+        },
+        "raw_mean": 0.012795,
+        "pos_bhar_rate": 0.4858,
+        "abs_bhar_mean": 0.079101,
+        "mean_max_dd": -0.092149
+      }
+    }
+  },
+  "non_overlapping_10d_overall": {
+    "count": 10636,
+    "unique_issuers": 310,
+    "mean_t0_volume_ratio": 2.059,
+    "median_t0_volume_ratio": 1.094,
+    "vol_expansion_gt_1_25_rate": 0.276,
+    "horizons": {
+      "1d": {
+        "car": {
+          "n": 10636,
+          "clusters": 310,
+          "mean": 0.000781,
+          "median": -0.000809,
+          "se_cluster": 0.000325,
+          "t_cluster": 2.405,
+          "p_cluster": 0.01678,
+          "ci95_low": 0.000144,
+          "ci95_high": 0.001417
+        },
+        "bhar": {
+          "n": 10636,
+          "clusters": 310,
+          "mean": 0.001328,
+          "median": -0.00061,
+          "se_cluster": 0.000341,
+          "t_cluster": 3.893,
+          "p_cluster": 0.00012,
+          "ci95_low": 0.000659,
+          "ci95_high": 0.001996
+        },
+        "raw_mean": 0.001614,
+        "pos_bhar_rate": 0.4869,
+        "abs_bhar_mean": 0.02247,
+        "mean_max_dd": -0.010966
+      },
+      "3d": {
+        "car": {
+          "n": 10636,
+          "clusters": 310,
+          "mean": 0.000611,
+          "median": -0.001766,
+          "se_cluster": 0.000483,
+          "t_cluster": 1.265,
+          "p_cluster": 0.2067,
+          "ci95_low": -0.000336,
+          "ci95_high": 0.001558
+        },
+        "bhar": {
+          "n": 10636,
+          "clusters": 310,
+          "mean": 0.002316,
+          "median": -0.001005,
+          "se_cluster": 0.000542,
+          "t_cluster": 4.271,
+          "p_cluster": 3e-05,
+          "ci95_low": 0.001253,
+          "ci95_high": 0.003378
+        },
+        "raw_mean": 0.003504,
+        "pos_bhar_rate": 0.4887,
+        "abs_bhar_mean": 0.035177,
+        "mean_max_dd": -0.027358
+      },
+      "5d": {
+        "car": {
+          "n": 10636,
+          "clusters": 310,
+          "mean": 0.000618,
+          "median": -0.002336,
+          "se_cluster": 0.000566,
+          "t_cluster": 1.092,
+          "p_cluster": 0.27554,
+          "ci95_low": -0.000491,
+          "ci95_high": 0.001728
+        },
+        "bhar": {
+          "n": 10636,
+          "clusters": 310,
+          "mean": 0.003344,
+          "median": -0.001722,
+          "se_cluster": 0.000674,
+          "t_cluster": 4.962,
+          "p_cluster": 0.0,
+          "ci95_low": 0.002023,
+          "ci95_high": 0.004664
+        },
+        "raw_mean": 0.0051,
+        "pos_bhar_rate": 0.4817,
+        "abs_bhar_mean": 0.042966,
+        "mean_max_dd": -0.039504
+      },
+      "10d": {
+        "car": {
+          "n": 10636,
+          "clusters": 310,
+          "mean": -0.001044,
+          "median": -0.003445,
+          "se_cluster": 0.000688,
+          "t_cluster": -1.519,
+          "p_cluster": 0.12983,
+          "ci95_low": -0.002392,
+          "ci95_high": 0.000303
+        },
+        "bhar": {
+          "n": 10636,
+          "clusters": 310,
+          "mean": 0.004294,
+          "median": -0.002219,
+          "se_cluster": 0.000864,
+          "t_cluster": 4.97,
+          "p_cluster": 0.0,
+          "ci95_low": 0.0026,
+          "ci95_high": 0.005987
+        },
+        "raw_mean": 0.007421,
+        "pos_bhar_rate": 0.4838,
+        "abs_bhar_mean": 0.056283,
+        "mean_max_dd": -0.061868
+      },
+      "20d": {
+        "car": {
+          "n": 10636,
+          "clusters": 310,
+          "mean": -0.001844,
+          "median": -0.005016,
+          "se_cluster": 0.000901,
+          "t_cluster": -2.046,
+          "p_cluster": 0.04161,
+          "ci95_low": -0.003611,
+          "ci95_high": -7.7e-05
+        },
+        "bhar": {
+          "n": 10636,
+          "clusters": 310,
+          "mean": 0.009062,
+          "median": -0.002312,
+          "se_cluster": 0.001372,
+          "t_cluster": 6.603,
+          "p_cluster": 0.0,
+          "ci95_low": 0.006372,
+          "ci95_high": 0.011753
+        },
+        "raw_mean": 0.01487,
+        "pos_bhar_rate": 0.4873,
+        "abs_bhar_mean": 0.079273,
+        "mean_max_dd": -0.09206
+      }
+    }
+  },
+  "corp_action_verified_overall": {
+    "count": 22842,
+    "unique_issuers": 274,
+    "mean_t0_volume_ratio": 2.134,
+    "median_t0_volume_ratio": 1.135,
+    "vol_expansion_gt_1_25_rate": 0.2644,
+    "horizons": {
+      "1d": {
+        "car": {
+          "n": 22842,
+          "clusters": 274,
+          "mean": 0.000293,
+          "median": -0.00135,
+          "se_cluster": 0.000329,
+          "t_cluster": 0.89,
+          "p_cluster": 0.37404,
+          "ci95_low": -0.000352,
+          "ci95_high": 0.000939
+        },
+        "bhar": {
+          "n": 22842,
+          "clusters": 274,
+          "mean": 0.000823,
+          "median": -0.00106,
+          "se_cluster": 0.000343,
+          "t_cluster": 2.395,
+          "p_cluster": 0.01728,
+          "ci95_low": 0.00015,
+          "ci95_high": 0.001496
+        },
+        "raw_mean": 0.001183,
+        "pos_bhar_rate": 0.4793,
+        "abs_bhar_mean": 0.022908,
+        "mean_max_dd": -0.011395
+      },
+      "3d": {
+        "car": {
+          "n": 22842,
+          "clusters": 274,
+          "mean": -0.000117,
+          "median": -0.002338,
+          "se_cluster": 0.000515,
+          "t_cluster": -0.227,
+          "p_cluster": 0.82025,
+          "ci95_low": -0.001127,
+          "ci95_high": 0.000892
+        },
+        "bhar": {
+          "n": 22842,
+          "clusters": 274,
+          "mean": 0.001529,
+          "median": -0.001617,
+          "se_cluster": 0.000575,
+          "t_cluster": 2.66,
+          "p_cluster": 0.00827,
+          "ci95_low": 0.000403,
+          "ci95_high": 0.002656
+        },
+        "raw_mean": 0.002664,
+        "pos_bhar_rate": 0.482,
+        "abs_bhar_mean": 0.035329,
+        "mean_max_dd": -0.027797
+      },
+      "5d": {
+        "car": {
+          "n": 22842,
+          "clusters": 274,
+          "mean": -0.000215,
+          "median": -0.002777,
+          "se_cluster": 0.000638,
+          "t_cluster": -0.337,
+          "p_cluster": 0.7362,
+          "ci95_low": -0.001466,
+          "ci95_high": 0.001035
+        },
+        "bhar": {
+          "n": 22842,
+          "clusters": 274,
+          "mean": 0.002401,
+          "median": -0.002107,
+          "se_cluster": 0.000749,
+          "t_cluster": 3.207,
+          "p_cluster": 0.0015,
+          "ci95_low": 0.000934,
+          "ci95_high": 0.003869
+        },
+        "raw_mean": 0.00415,
+        "pos_bhar_rate": 0.4783,
+        "abs_bhar_mean": 0.042962,
+        "mean_max_dd": -0.039703
+      },
+      "10d": {
+        "car": {
+          "n": 22842,
+          "clusters": 274,
+          "mean": -0.001593,
+          "median": -0.003898,
+          "se_cluster": 0.000789,
+          "t_cluster": -2.02,
+          "p_cluster": 0.04438,
+          "ci95_low": -0.003139,
+          "ci95_high": -4.7e-05
+        },
+        "bhar": {
+          "n": 22842,
+          "clusters": 274,
+          "mean": 0.003626,
+          "median": -0.002834,
+          "se_cluster": 0.000991,
+          "t_cluster": 3.659,
+          "p_cluster": 0.0003,
+          "ci95_low": 0.001683,
+          "ci95_high": 0.005568
+        },
+        "raw_mean": 0.00652,
+        "pos_bhar_rate": 0.4794,
+        "abs_bhar_mean": 0.056702,
+        "mean_max_dd": -0.061668
+      },
+      "20d": {
+        "car": {
+          "n": 22842,
+          "clusters": 274,
+          "mean": -0.002853,
+          "median": -0.005173,
+          "se_cluster": 0.00108,
+          "t_cluster": -2.642,
+          "p_cluster": 0.00871,
+          "ci95_low": -0.004969,
+          "ci95_high": -0.000736
+        },
+        "bhar": {
+          "n": 22842,
+          "clusters": 274,
+          "mean": 0.007771,
+          "median": -0.002815,
+          "se_cluster": 0.001497,
+          "t_cluster": 5.192,
+          "p_cluster": 0.0,
+          "ci95_low": 0.004837,
+          "ci95_high": 0.010704
+        },
+        "raw_mean": 0.013154,
+        "pos_bhar_rate": 0.4857,
+        "abs_bhar_mean": 0.078872,
+        "mean_max_dd": -0.091744
+      }
+    }
+  },
+  "by_event_family": {
+    "corporate_action": {
+      "all_events": {
+        "count": 3958,
+        "unique_issuers": 295,
+        "mean_t0_volume_ratio": 2.64,
+        "median_t0_volume_ratio": 1.459,
+        "vol_expansion_gt_1_25_rate": 0.2895,
+        "horizons": {
+          "1d": {
+            "car": {
+              "n": 3958,
+              "clusters": 295,
+              "mean": -0.000655,
+              "median": -0.002247,
+              "se_cluster": 0.000792,
+              "t_cluster": -0.827,
+              "p_cluster": 0.40905,
+              "ci95_low": -0.002207,
+              "ci95_high": 0.000898
+            },
+            "bhar": {
+              "n": 3958,
+              "clusters": 295,
+              "mean": -0.000218,
+              "median": -0.002072,
+              "se_cluster": 0.000788,
+              "t_cluster": -0.276,
+              "p_cluster": 0.78253,
+              "ci95_low": -0.001763,
+              "ci95_high": 0.001328
+            },
+            "raw_mean": 0.000554,
+            "pos_bhar_rate": 0.4654,
+            "abs_bhar_mean": 0.025693,
+            "mean_max_dd": -0.012968
+          },
+          "3d": {
+            "car": {
+              "n": 3958,
+              "clusters": 295,
+              "mean": -9e-06,
+              "median": -0.002222,
+              "se_cluster": 0.00114,
+              "t_cluster": -0.008,
+              "p_cluster": 0.99349,
+              "ci95_low": -0.002244,
+              "ci95_high": 0.002226
+            },
+            "bhar": {
+              "n": 3958,
+              "clusters": 295,
+              "mean": 0.001463,
+              "median": -0.001531,
+              "se_cluster": 0.001156,
+              "t_cluster": 1.265,
+              "p_cluster": 0.20677,
+              "ci95_low": -0.000803,
+              "ci95_high": 0.003729
+            },
+            "raw_mean": 0.003032,
+            "pos_bhar_rate": 0.4843,
+            "abs_bhar_mean": 0.03794,
+            "mean_max_dd": -0.028643
+          },
+          "5d": {
+            "car": {
+              "n": 3958,
+              "clusters": 295,
+              "mean": 0.000732,
+              "median": -0.002264,
+              "se_cluster": 0.001299,
+              "t_cluster": 0.564,
+              "p_cluster": 0.5734,
+              "ci95_low": -0.001814,
+              "ci95_high": 0.003279
+            },
+            "bhar": {
+              "n": 3958,
+              "clusters": 295,
+              "mean": 0.002965,
+              "median": -0.001996,
+              "se_cluster": 0.001339,
+              "t_cluster": 2.214,
+              "p_cluster": 0.02759,
+              "ci95_low": 0.00034,
+              "ci95_high": 0.005589
+            },
+            "raw_mean": 0.005347,
+            "pos_bhar_rate": 0.4808,
+            "abs_bhar_mean": 0.045085,
+            "mean_max_dd": -0.039573
+          },
+          "10d": {
+            "car": {
+              "n": 3958,
+              "clusters": 295,
+              "mean": -0.001612,
+              "median": -0.00343,
+              "se_cluster": 0.001754,
+              "t_cluster": -0.919,
+              "p_cluster": 0.35874,
+              "ci95_low": -0.005049,
+              "ci95_high": 0.001825
+            },
+            "bhar": {
+              "n": 3958,
+              "clusters": 295,
+              "mean": 0.003081,
+              "median": -0.003861,
+              "se_cluster": 0.001832,
+              "t_cluster": 1.682,
+              "p_cluster": 0.09362,
+              "ci95_low": -0.000509,
+              "ci95_high": 0.006671
+            },
+            "raw_mean": 0.007155,
+            "pos_bhar_rate": 0.4747,
+            "abs_bhar_mean": 0.057731,
+            "mean_max_dd": -0.06115
+          },
+          "20d": {
+            "car": {
+              "n": 3958,
+              "clusters": 295,
+              "mean": -0.002925,
+              "median": -0.00551,
+              "se_cluster": 0.002425,
+              "t_cluster": -1.206,
+              "p_cluster": 0.22867,
+              "ci95_low": -0.007678,
+              "ci95_high": 0.001828
+            },
+            "bhar": {
+              "n": 3958,
+              "clusters": 295,
+              "mean": 0.006989,
+              "median": -0.003587,
+              "se_cluster": 0.002675,
+              "t_cluster": 2.613,
+              "p_cluster": 0.00944,
+              "ci95_low": 0.001746,
+              "ci95_high": 0.012232
+            },
+            "raw_mean": 0.01422,
+            "pos_bhar_rate": 0.4811,
+            "abs_bhar_mean": 0.077901,
+            "mean_max_dd": -0.090281
+          }
+        }
+      },
+      "non_overlapping_10d_clean": {
+        "count": 1476,
+        "unique_issuers": 284,
+        "mean_t0_volume_ratio": 2.373,
+        "median_t0_volume_ratio": 1.254,
+        "vol_expansion_gt_1_25_rate": 0.2724,
+        "horizons": {
+          "1d": {
+            "car": {
+              "n": 1476,
+              "clusters": 284,
+              "mean": -0.0003,
+              "median": -0.001916,
+              "se_cluster": 0.00101,
+              "t_cluster": -0.297,
+              "p_cluster": 0.76694,
+              "ci95_low": -0.00228,
+              "ci95_high": 0.00168
+            },
+            "bhar": {
+              "n": 1476,
+              "clusters": 284,
+              "mean": 9.6e-05,
+              "median": -0.001965,
+              "se_cluster": 0.001003,
+              "t_cluster": 0.096,
+              "p_cluster": 0.92381,
+              "ci95_low": -0.00187,
+              "ci95_high": 0.002061
+            },
+            "raw_mean": 0.001162,
+            "pos_bhar_rate": 0.4661,
+            "abs_bhar_mean": 0.023739,
+            "mean_max_dd": -0.011677
+          },
+          "3d": {
+            "car": {
+              "n": 1476,
+              "clusters": 284,
+              "mean": 0.000491,
+              "median": -0.001936,
+              "se_cluster": 0.001429,
+              "t_cluster": 0.344,
+              "p_cluster": 0.7314,
+              "ci95_low": -0.00231,
+              "ci95_high": 0.003292
+            },
+            "bhar": {
+              "n": 1476,
+              "clusters": 284,
+              "mean": 0.001972,
+              "median": -0.001078,
+              "se_cluster": 0.001445,
+              "t_cluster": 1.364,
+              "p_cluster": 0.1736,
+              "ci95_low": -0.000861,
+              "ci95_high": 0.004805
+            },
+            "raw_mean": 0.003607,
+            "pos_bhar_rate": 0.4885,
+            "abs_bhar_mean": 0.03594,
+            "mean_max_dd": -0.027244
+          },
+          "5d": {
+            "car": {
+              "n": 1476,
+              "clusters": 284,
+              "mean": 0.000601,
+              "median": -0.002692,
+              "se_cluster": 0.001665,
+              "t_cluster": 0.361,
+              "p_cluster": 0.71839,
+              "ci95_low": -0.002662,
+              "ci95_high": 0.003863
+            },
+            "bhar": {
+              "n": 1476,
+              "clusters": 284,
+              "mean": 0.002879,
+              "median": -0.003005,
+              "se_cluster": 0.001716,
+              "t_cluster": 1.678,
+              "p_cluster": 0.09454,
+              "ci95_low": -0.000485,
+              "ci95_high": 0.006243
+            },
+            "raw_mean": 0.005075,
+            "pos_bhar_rate": 0.4695,
+            "abs_bhar_mean": 0.043502,
+            "mean_max_dd": -0.039018
+          },
+          "10d": {
+            "car": {
+              "n": 1476,
+              "clusters": 284,
+              "mean": -0.002656,
+              "median": -0.004331,
+              "se_cluster": 0.002155,
+              "t_cluster": -1.233,
+              "p_cluster": 0.21862,
+              "ci95_low": -0.006879,
+              "ci95_high": 0.001566
+            },
+            "bhar": {
+              "n": 1476,
+              "clusters": 284,
+              "mean": 0.002378,
+              "median": -0.005827,
+              "se_cluster": 0.002202,
+              "t_cluster": 1.08,
+              "p_cluster": 0.28113,
+              "ci95_low": -0.001938,
+              "ci95_high": 0.006694
+            },
+            "raw_mean": 0.006675,
+            "pos_bhar_rate": 0.4675,
+            "abs_bhar_mean": 0.056306,
+            "mean_max_dd": -0.061662
+          },
+          "20d": {
+            "car": {
+              "n": 1476,
+              "clusters": 284,
+              "mean": -0.004064,
+              "median": -0.00705,
+              "se_cluster": 0.003025,
+              "t_cluster": -1.343,
+              "p_cluster": 0.18021,
+              "ci95_low": -0.009994,
+              "ci95_high": 0.001865
+            },
+            "bhar": {
+              "n": 1476,
+              "clusters": 284,
+              "mean": 0.006909,
+              "median": -0.005671,
+              "se_cluster": 0.00309,
+              "t_cluster": 2.236,
+              "p_cluster": 0.02615,
+              "ci95_low": 0.000852,
+              "ci95_high": 0.012967
+            },
+            "raw_mean": 0.014482,
+            "pos_bhar_rate": 0.4715,
+            "abs_bhar_mean": 0.077012,
+            "mean_max_dd": -0.090381
+          }
+        }
+      }
+    },
+    "credit_debt": {
+      "all_events": {
+        "count": 4245,
+        "unique_issuers": 278,
+        "mean_t0_volume_ratio": 1.673,
+        "median_t0_volume_ratio": 0.868,
+        "vol_expansion_gt_1_25_rate": 0.2386,
+        "horizons": {
+          "1d": {
+            "car": {
+              "n": 4245,
+              "clusters": 278,
+              "mean": 0.000445,
+              "median": -0.001524,
+              "se_cluster": 0.000606,
+              "t_cluster": 0.734,
+              "p_cluster": 0.46385,
+              "ci95_low": -0.000743,
+              "ci95_high": 0.001633
+            },
+            "bhar": {
+              "n": 4245,
+              "clusters": 278,
+              "mean": 0.001196,
+              "median": -0.000887,
+              "se_cluster": 0.000644,
+              "t_cluster": 1.858,
+              "p_cluster": 0.06423,
+              "ci95_low": -6.6e-05,
+              "ci95_high": 0.002458
+            },
+            "raw_mean": 0.001468,
+            "pos_bhar_rate": 0.4747,
+            "abs_bhar_mean": 0.019496,
+            "mean_max_dd": -0.00939
+          },
+          "3d": {
+            "car": {
+              "n": 4245,
+              "clusters": 278,
+              "mean": 2.8e-05,
+              "median": -0.00287,
+              "se_cluster": 0.00103,
+              "t_cluster": 0.027,
+              "p_cluster": 0.97813,
+              "ci95_low": -0.00199,
+              "ci95_high": 0.002046
+            },
+            "bhar": {
+              "n": 4245,
+              "clusters": 278,
+              "mean": 0.002178,
+              "median": -0.001317,
+              "se_cluster": 0.001174,
+              "t_cluster": 1.855,
+              "p_cluster": 0.06459,
+              "ci95_low": -0.000123,
+              "ci95_high": 0.00448
+            },
+            "raw_mean": 0.003279,
+            "pos_bhar_rate": 0.4848,
+            "abs_bhar_mean": 0.03262,
+            "mean_max_dd": -0.025587
+          },
+          "5d": {
+            "car": {
+              "n": 4245,
+              "clusters": 278,
+              "mean": -0.000202,
+              "median": -0.003432,
+              "se_cluster": 0.001358,
+              "t_cluster": -0.148,
+              "p_cluster": 0.88212,
+              "ci95_low": -0.002863,
+              "ci95_high": 0.00246
+            },
+            "bhar": {
+              "n": 4245,
+              "clusters": 278,
+              "mean": 0.003449,
+              "median": -0.001434,
+              "se_cluster": 0.001659,
+              "t_cluster": 2.079,
+              "p_cluster": 0.03852,
+              "ci95_low": 0.000198,
+              "ci95_high": 0.006701
+            },
+            "raw_mean": 0.005099,
+            "pos_bhar_rate": 0.4862,
+            "abs_bhar_mean": 0.040824,
+            "mean_max_dd": -0.03748
+          },
+          "10d": {
+            "car": {
+              "n": 4245,
+              "clusters": 278,
+              "mean": -0.002067,
+              "median": -0.004352,
+              "se_cluster": 0.00135,
+              "t_cluster": -1.531,
+              "p_cluster": 0.12695,
+              "ci95_low": -0.004714,
+              "ci95_high": 0.00058
+            },
+            "bhar": {
+              "n": 4245,
+              "clusters": 278,
+              "mean": 0.004955,
+              "median": -0.000533,
+              "se_cluster": 0.001941,
+              "t_cluster": 2.553,
+              "p_cluster": 0.01123,
+              "ci95_low": 0.00115,
+              "ci95_high": 0.00876
+            },
+            "raw_mean": 0.007807,
+            "pos_bhar_rate": 0.4961,
+            "abs_bhar_mean": 0.054115,
+            "mean_max_dd": -0.059456
+          },
+          "20d": {
+            "car": {
+              "n": 4245,
+              "clusters": 278,
+              "mean": -0.00745,
+              "median": -0.011065,
+              "se_cluster": 0.002008,
+              "t_cluster": -3.71,
+              "p_cluster": 0.00025,
+              "ci95_low": -0.011387,
+              "ci95_high": -0.003514
+            },
+            "bhar": {
+              "n": 4245,
+              "clusters": 278,
+              "mean": 0.006412,
+              "median": -0.005966,
+              "se_cluster": 0.003269,
+              "t_cluster": 1.962,
+              "p_cluster": 0.0508,
+              "ci95_low": 5e-06,
+              "ci95_high": 0.012819
+            },
+            "raw_mean": 0.012419,
+            "pos_bhar_rate": 0.4697,
+            "abs_bhar_mean": 0.077141,
+            "mean_max_dd": -0.089833
+          }
+        }
+      },
+      "non_overlapping_10d_clean": {
+        "count": 1638,
+        "unique_issuers": 252,
+        "mean_t0_volume_ratio": 1.461,
+        "median_t0_volume_ratio": 0.819,
+        "vol_expansion_gt_1_25_rate": 0.2418,
+        "horizons": {
+          "1d": {
+            "car": {
+              "n": 1638,
+              "clusters": 252,
+              "mean": 0.000798,
+              "median": -0.000999,
+              "se_cluster": 0.000592,
+              "t_cluster": 1.348,
+              "p_cluster": 0.17892,
+              "ci95_low": -0.000363,
+              "ci95_high": 0.001959
+            },
+            "bhar": {
+              "n": 1638,
+              "clusters": 252,
+              "mean": 0.001561,
+              "median": -0.000693,
+              "se_cluster": 0.000605,
+              "t_cluster": 2.58,
+              "p_cluster": 0.01045,
+              "ci95_low": 0.000375,
+              "ci95_high": 0.002747
+            },
+            "raw_mean": 0.001985,
+            "pos_bhar_rate": 0.4823,
+            "abs_bhar_mean": 0.017602,
+            "mean_max_dd": -0.008287
+          },
+          "3d": {
+            "car": {
+              "n": 1638,
+              "clusters": 252,
+              "mean": 0.000921,
+              "median": -0.003233,
+              "se_cluster": 0.001169,
+              "t_cluster": 0.788,
+              "p_cluster": 0.43123,
+              "ci95_low": -0.001369,
+              "ci95_high": 0.003212
+            },
+            "bhar": {
+              "n": 1638,
+              "clusters": 252,
+              "mean": 0.002899,
+              "median": -0.001668,
+              "se_cluster": 0.001238,
+              "t_cluster": 2.342,
+              "p_cluster": 0.01998,
+              "ci95_low": 0.000472,
+              "ci95_high": 0.005325
+            },
+            "raw_mean": 0.004374,
+            "pos_bhar_rate": 0.4811,
+            "abs_bhar_mean": 0.030176,
+            "mean_max_dd": -0.02347
+          },
+          "5d": {
+            "car": {
+              "n": 1638,
+              "clusters": 252,
+              "mean": 0.001365,
+              "median": -0.003274,
+              "se_cluster": 0.001411,
+              "t_cluster": 0.967,
+              "p_cluster": 0.33458,
+              "ci95_low": -0.001402,
+              "ci95_high": 0.004131
+            },
+            "bhar": {
+              "n": 1638,
+              "clusters": 252,
+              "mean": 0.004577,
+              "median": -0.001661,
+              "se_cluster": 0.001582,
+              "t_cluster": 2.893,
+              "p_cluster": 0.00415,
+              "ci95_low": 0.001476,
+              "ci95_high": 0.007678
+            },
+            "raw_mean": 0.006537,
+            "pos_bhar_rate": 0.4811,
+            "abs_bhar_mean": 0.038441,
+            "mean_max_dd": -0.035241
+          },
+          "10d": {
+            "car": {
+              "n": 1638,
+              "clusters": 252,
+              "mean": -0.0006,
+              "median": -0.004485,
+              "se_cluster": 0.001803,
+              "t_cluster": -0.333,
+              "p_cluster": 0.73977,
+              "ci95_low": -0.004134,
+              "ci95_high": 0.002935
+            },
+            "bhar": {
+              "n": 1638,
+              "clusters": 252,
+              "mean": 0.005604,
+              "median": 9e-06,
+              "se_cluster": 0.001937,
+              "t_cluster": 2.893,
+              "p_cluster": 0.00415,
+              "ci95_low": 0.001808,
+              "ci95_high": 0.0094
+            },
+            "raw_mean": 0.009014,
+            "pos_bhar_rate": 0.5,
+            "abs_bhar_mean": 0.050758,
+            "mean_max_dd": -0.057885
+          },
+          "20d": {
+            "car": {
+              "n": 1638,
+              "clusters": 252,
+              "mean": -0.003305,
+              "median": -0.010514,
+              "se_cluster": 0.002441,
+              "t_cluster": -1.354,
+              "p_cluster": 0.17708,
+              "ci95_low": -0.00809,
+              "ci95_high": 0.00148
+            },
+            "bhar": {
+              "n": 1638,
+              "clusters": 252,
+              "mean": 0.009377,
+              "median": -0.004961,
+              "se_cluster": 0.003385,
+              "t_cluster": 2.77,
+              "p_cluster": 0.00603,
+              "ci95_low": 0.002742,
+              "ci95_high": 0.016013
+            },
+            "raw_mean": 0.01612,
+            "pos_bhar_rate": 0.4737,
+            "abs_bhar_mean": 0.074361,
+            "mean_max_dd": -0.088054
+          }
+        }
+      }
+    },
+    "deal_ma": {
+      "all_events": {
+        "count": 4421,
+        "unique_issuers": 305,
+        "mean_t0_volume_ratio": 1.396,
+        "median_t0_volume_ratio": 0.85,
+        "vol_expansion_gt_1_25_rate": 0.2119,
+        "horizons": {
+          "1d": {
+            "car": {
+              "n": 4421,
+              "clusters": 305,
+              "mean": 0.001257,
+              "median": -0.00067,
+              "se_cluster": 0.000493,
+              "t_cluster": 2.549,
+              "p_cluster": 0.01129,
+              "ci95_low": 0.00029,
+              "ci95_high": 0.002223
+            },
+            "bhar": {
+              "n": 4421,
+              "clusters": 305,
+              "mean": 0.001911,
+              "median": -0.000246,
+              "se_cluster": 0.0005,
+              "t_cluster": 3.826,
+              "p_cluster": 0.00016,
+              "ci95_low": 0.000932,
+              "ci95_high": 0.002891
+            },
+            "raw_mean": 0.002785,
+            "pos_bhar_rate": 0.494,
+            "abs_bhar_mean": 0.017713,
+            "mean_max_dd": -0.00813
+          },
+          "3d": {
+            "car": {
+              "n": 4421,
+              "clusters": 305,
+              "mean": 0.00255,
+              "median": -0.000645,
+              "se_cluster": 0.000856,
+              "t_cluster": 2.977,
+              "p_cluster": 0.00314,
+              "ci95_low": 0.000871,
+              "ci95_high": 0.004228
+            },
+            "bhar": {
+              "n": 4421,
+              "clusters": 305,
+              "mean": 0.004148,
+              "median": 0.000309,
+              "se_cluster": 0.0009,
+              "t_cluster": 4.609,
+              "p_cluster": 1e-05,
+              "ci95_low": 0.002384,
+              "ci95_high": 0.005912
+            },
+            "raw_mean": 0.006204,
+            "pos_bhar_rate": 0.5078,
+            "abs_bhar_mean": 0.029776,
+            "mean_max_dd": -0.022581
+          },
+          "5d": {
+            "car": {
+              "n": 4421,
+              "clusters": 305,
+              "mean": 0.002729,
+              "median": -0.000679,
+              "se_cluster": 0.001235,
+              "t_cluster": 2.211,
+              "p_cluster": 0.02781,
+              "ci95_low": 0.000309,
+              "ci95_high": 0.005149
+            },
+            "bhar": {
+              "n": 4421,
+              "clusters": 305,
+              "mean": 0.005212,
+              "median": 0.000295,
+              "se_cluster": 0.001312,
+              "t_cluster": 3.974,
+              "p_cluster": 9e-05,
+              "ci95_low": 0.002642,
+              "ci95_high": 0.007783
+            },
+            "raw_mean": 0.008473,
+            "pos_bhar_rate": 0.5042,
+            "abs_bhar_mean": 0.037528,
+            "mean_max_dd": -0.034233
+          },
+          "10d": {
+            "car": {
+              "n": 4421,
+              "clusters": 305,
+              "mean": 0.001051,
+              "median": -0.00091,
+              "se_cluster": 0.001695,
+              "t_cluster": 0.62,
+              "p_cluster": 0.53561,
+              "ci95_low": -0.002271,
+              "ci95_high": 0.004373
+            },
+            "bhar": {
+              "n": 4421,
+              "clusters": 305,
+              "mean": 0.00584,
+              "median": -0.000746,
+              "se_cluster": 0.001782,
+              "t_cluster": 3.278,
+              "p_cluster": 0.00117,
+              "ci95_low": 0.002347,
+              "ci95_high": 0.009332
+            },
+            "raw_mean": 0.011143,
+            "pos_bhar_rate": 0.4929,
+            "abs_bhar_mean": 0.052205,
+            "mean_max_dd": -0.057504
+          },
+          "20d": {
+            "car": {
+              "n": 4421,
+              "clusters": 305,
+              "mean": -0.000225,
+              "median": 0.001047,
+              "se_cluster": 0.002855,
+              "t_cluster": -0.079,
+              "p_cluster": 0.93736,
+              "ci95_low": -0.00582,
+              "ci95_high": 0.005371
+            },
+            "bhar": {
+              "n": 4421,
+              "clusters": 305,
+              "mean": 0.009417,
+              "median": 0.003391,
+              "se_cluster": 0.002995,
+              "t_cluster": 3.144,
+              "p_cluster": 0.00183,
+              "ci95_low": 0.003546,
+              "ci95_high": 0.015288
+            },
+            "raw_mean": 0.017021,
+            "pos_bhar_rate": 0.5155,
+            "abs_bhar_mean": 0.076846,
+            "mean_max_dd": -0.089989
+          }
+        }
+      },
+      "non_overlapping_10d_clean": {
+        "count": 1827,
+        "unique_issuers": 296,
+        "mean_t0_volume_ratio": 1.363,
+        "median_t0_volume_ratio": 0.879,
+        "vol_expansion_gt_1_25_rate": 0.2337,
+        "horizons": {
+          "1d": {
+            "car": {
+              "n": 1827,
+              "clusters": 296,
+              "mean": 0.001596,
+              "median": -0.000351,
+              "se_cluster": 0.000649,
+              "t_cluster": 2.459,
+              "p_cluster": 0.01451,
+              "ci95_low": 0.000324,
+              "ci95_high": 0.002869
+            },
+            "bhar": {
+              "n": 1827,
+              "clusters": 296,
+              "mean": 0.00228,
+              "median": -0.000144,
+              "se_cluster": 0.000627,
+              "t_cluster": 3.635,
+              "p_cluster": 0.00033,
+              "ci95_low": 0.001051,
+              "ci95_high": 0.00351
+            },
+            "raw_mean": 0.002655,
+            "pos_bhar_rate": 0.4964,
+            "abs_bhar_mean": 0.017802,
+            "mean_max_dd": -0.008186
+          },
+          "3d": {
+            "car": {
+              "n": 1827,
+              "clusters": 296,
+              "mean": 0.004303,
+              "median": 0.00051,
+              "se_cluster": 0.001048,
+              "t_cluster": 4.107,
+              "p_cluster": 5e-05,
+              "ci95_low": 0.002249,
+              "ci95_high": 0.006357
+            },
+            "bhar": {
+              "n": 1827,
+              "clusters": 296,
+              "mean": 0.006165,
+              "median": 0.000965,
+              "se_cluster": 0.001024,
+              "t_cluster": 6.019,
+              "p_cluster": 0.0,
+              "ci95_low": 0.004157,
+              "ci95_high": 0.008172
+            },
+            "raw_mean": 0.007565,
+            "pos_bhar_rate": 0.5183,
+            "abs_bhar_mean": 0.029762,
+            "mean_max_dd": -0.022049
+          },
+          "5d": {
+            "car": {
+              "n": 1827,
+              "clusters": 296,
+              "mean": 0.005221,
+              "median": 0.000931,
+              "se_cluster": 0.00123,
+              "t_cluster": 4.243,
+              "p_cluster": 3e-05,
+              "ci95_low": 0.002809,
+              "ci95_high": 0.007632
+            },
+            "bhar": {
+              "n": 1827,
+              "clusters": 296,
+              "mean": 0.008152,
+              "median": 0.001577,
+              "se_cluster": 0.001207,
+              "t_cluster": 6.753,
+              "p_cluster": 0.0,
+              "ci95_low": 0.005786,
+              "ci95_high": 0.010518
+            },
+            "raw_mean": 0.010391,
+            "pos_bhar_rate": 0.5118,
+            "abs_bhar_mean": 0.037926,
+            "mean_max_dd": -0.03365
+          },
+          "10d": {
+            "car": {
+              "n": 1827,
+              "clusters": 296,
+              "mean": 0.006083,
+              "median": 0.002815,
+              "se_cluster": 0.001697,
+              "t_cluster": 3.585,
+              "p_cluster": 0.00039,
+              "ci95_low": 0.002758,
+              "ci95_high": 0.009409
+            },
+            "bhar": {
+              "n": 1827,
+              "clusters": 296,
+              "mean": 0.011857,
+              "median": 0.002937,
+              "se_cluster": 0.001785,
+              "t_cluster": 6.642,
+              "p_cluster": 0.0,
+              "ci95_low": 0.008358,
+              "ci95_high": 0.015357
+            },
+            "raw_mean": 0.015849,
+            "pos_bhar_rate": 0.5205,
+            "abs_bhar_mean": 0.053786,
+            "mean_max_dd": -0.056072
+          },
+          "20d": {
+            "car": {
+              "n": 1827,
+              "clusters": 296,
+              "mean": 0.003845,
+              "median": 0.004367,
+              "se_cluster": 0.002319,
+              "t_cluster": 1.658,
+              "p_cluster": 0.09831,
+              "ci95_low": -0.0007,
+              "ci95_high": 0.00839
+            },
+            "bhar": {
+              "n": 1827,
+              "clusters": 296,
+              "mean": 0.0151,
+              "median": 0.006668,
+              "se_cluster": 0.002635,
+              "t_cluster": 5.73,
+              "p_cluster": 0.0,
+              "ci95_low": 0.009934,
+              "ci95_high": 0.020265
+            },
+            "raw_mean": 0.020499,
+            "pos_bhar_rate": 0.532,
+            "abs_bhar_mean": 0.078567,
+            "mean_max_dd": -0.088856
+          }
+        }
+      }
+    },
+    "earnings": {
+      "all_events": {
+        "count": 6510,
+        "unique_issuers": 310,
+        "mean_t0_volume_ratio": 3.032,
+        "median_t0_volume_ratio": 1.817,
+        "vol_expansion_gt_1_25_rate": 0.3467,
+        "horizons": {
+          "1d": {
+            "car": {
+              "n": 6510,
+              "clusters": 310,
+              "mean": -0.001646,
+              "median": -0.00372,
+              "se_cluster": 0.000673,
+              "t_cluster": -2.447,
+              "p_cluster": 0.01498,
+              "ci95_low": -0.002964,
+              "ci95_high": -0.000327
+            },
+            "bhar": {
+              "n": 6510,
+              "clusters": 310,
+              "mean": -0.001251,
+              "median": -0.003593,
+              "se_cluster": 0.000686,
+              "t_cluster": -1.823,
+              "p_cluster": 0.06931,
+              "ci95_low": -0.002596,
+              "ci95_high": 9.4e-05
+            },
+            "raw_mean": -0.001188,
+            "pos_bhar_rate": 0.4538,
+            "abs_bhar_mean": 0.030538,
+            "mean_max_dd": -0.016301
+          },
+          "3d": {
+            "car": {
+              "n": 6510,
+              "clusters": 310,
+              "mean": -0.003978,
+              "median": -0.005933,
+              "se_cluster": 0.001009,
+              "t_cluster": -3.942,
+              "p_cluster": 0.0001,
+              "ci95_low": -0.005956,
+              "ci95_high": -0.002001
+            },
+            "bhar": {
+              "n": 6510,
+              "clusters": 310,
+              "mean": -0.002293,
+              "median": -0.006144,
+              "se_cluster": 0.001058,
+              "t_cluster": -2.167,
+              "p_cluster": 0.03101,
+              "ci95_low": -0.004367,
+              "ci95_high": -0.000219
+            },
+            "raw_mean": -0.00145,
+            "pos_bhar_rate": 0.4416,
+            "abs_bhar_mean": 0.043957,
+            "mean_max_dd": -0.035121
+          },
+          "5d": {
+            "car": {
+              "n": 6510,
+              "clusters": 310,
+              "mean": -0.005438,
+              "median": -0.007556,
+              "se_cluster": 0.001192,
+              "t_cluster": -4.561,
+              "p_cluster": 1e-05,
+              "ci95_low": -0.007774,
+              "ci95_high": -0.003101
+            },
+            "bhar": {
+              "n": 6510,
+              "clusters": 310,
+              "mean": -0.002913,
+              "median": -0.00768,
+              "se_cluster": 0.001265,
+              "t_cluster": -2.302,
+              "p_cluster": 0.022,
+              "ci95_low": -0.005392,
+              "ci95_high": -0.000433
+            },
+            "raw_mean": -0.001331,
+            "pos_bhar_rate": 0.4384,
+            "abs_bhar_mean": 0.050639,
+            "mean_max_dd": -0.047416
+          },
+          "10d": {
+            "car": {
+              "n": 6510,
+              "clusters": 310,
+              "mean": -0.007168,
+              "median": -0.009312,
+              "se_cluster": 0.0015,
+              "t_cluster": -4.779,
+              "p_cluster": 0.0,
+              "ci95_low": -0.010108,
+              "ci95_high": -0.004228
+            },
+            "bhar": {
+              "n": 6510,
+              "clusters": 310,
+              "mean": -0.002286,
+              "median": -0.009289,
+              "se_cluster": 0.001629,
+              "t_cluster": -1.404,
+              "p_cluster": 0.16134,
+              "ci95_low": -0.005478,
+              "ci95_high": 0.000906
+            },
+            "raw_mean": -0.000512,
+            "pos_bhar_rate": 0.4476,
+            "abs_bhar_mean": 0.063298,
+            "mean_max_dd": -0.068719
+          },
+          "20d": {
+            "car": {
+              "n": 6510,
+              "clusters": 310,
+              "mean": -0.007614,
+              "median": -0.009819,
+              "se_cluster": 0.001961,
+              "t_cluster": -3.883,
+              "p_cluster": 0.00013,
+              "ci95_low": -0.011457,
+              "ci95_high": -0.00377
+            },
+            "bhar": {
+              "n": 6510,
+              "clusters": 310,
+              "mean": 0.00207,
+              "median": -0.009572,
+              "se_cluster": 0.002116,
+              "t_cluster": 0.978,
+              "p_cluster": 0.32867,
+              "ci95_low": -0.002077,
+              "ci95_high": 0.006218
+            },
+            "raw_mean": 0.005553,
+            "pos_bhar_rate": 0.4558,
+            "abs_bhar_mean": 0.083164,
+            "mean_max_dd": -0.097351
+          }
+        }
+      },
+      "non_overlapping_10d_clean": {
+        "count": 2732,
+        "unique_issuers": 310,
+        "mean_t0_volume_ratio": 3.136,
+        "median_t0_volume_ratio": 1.924,
+        "vol_expansion_gt_1_25_rate": 0.3774,
+        "horizons": {
+          "1d": {
+            "car": {
+              "n": 2732,
+              "clusters": 310,
+              "mean": -0.001426,
+              "median": -0.003529,
+              "se_cluster": 0.000834,
+              "t_cluster": -1.71,
+              "p_cluster": 0.08829,
+              "ci95_low": -0.003061,
+              "ci95_high": 0.000209
+            },
+            "bhar": {
+              "n": 2732,
+              "clusters": 310,
+              "mean": -0.001024,
+              "median": -0.003095,
+              "se_cluster": 0.000853,
+              "t_cluster": -1.199,
+              "p_cluster": 0.23126,
+              "ci95_low": -0.002696,
+              "ci95_high": 0.000649
+            },
+            "raw_mean": -0.000974,
+            "pos_bhar_rate": 0.4539,
+            "abs_bhar_mean": 0.031361,
+            "mean_max_dd": -0.016612
+          },
+          "3d": {
+            "car": {
+              "n": 2732,
+              "clusters": 310,
+              "mean": -0.00403,
+              "median": -0.006436,
+              "se_cluster": 0.001248,
+              "t_cluster": -3.23,
+              "p_cluster": 0.00137,
+              "ci95_low": -0.006476,
+              "ci95_high": -0.001584
+            },
+            "bhar": {
+              "n": 2732,
+              "clusters": 310,
+              "mean": -0.002085,
+              "median": -0.007121,
+              "se_cluster": 0.00129,
+              "t_cluster": -1.616,
+              "p_cluster": 0.10707,
+              "ci95_low": -0.004613,
+              "ci95_high": 0.000443
+            },
+            "raw_mean": -0.000768,
+            "pos_bhar_rate": 0.4414,
+            "abs_bhar_mean": 0.046218,
+            "mean_max_dd": -0.035936
+          },
+          "5d": {
+            "car": {
+              "n": 2732,
+              "clusters": 310,
+              "mean": -0.005619,
+              "median": -0.007828,
+              "se_cluster": 0.001418,
+              "t_cluster": -3.962,
+              "p_cluster": 9e-05,
+              "ci95_low": -0.0084,
+              "ci95_high": -0.002839
+            },
+            "bhar": {
+              "n": 2732,
+              "clusters": 310,
+              "mean": -0.002664,
+              "median": -0.008063,
+              "se_cluster": 0.001484,
+              "t_cluster": -1.795,
+              "p_cluster": 0.07357,
+              "ci95_low": -0.005571,
+              "ci95_high": 0.000244
+            },
+            "raw_mean": -0.000478,
+            "pos_bhar_rate": 0.4418,
+            "abs_bhar_mean": 0.052984,
+            "mean_max_dd": -0.048353
+          },
+          "10d": {
+            "car": {
+              "n": 2732,
+              "clusters": 310,
+              "mean": -0.008051,
+              "median": -0.009667,
+              "se_cluster": 0.001673,
+              "t_cluster": -4.812,
+              "p_cluster": 0.0,
+              "ci95_low": -0.01133,
+              "ci95_high": -0.004772
+            },
+            "bhar": {
+              "n": 2732,
+              "clusters": 310,
+              "mean": -0.002649,
+              "median": -0.009438,
+              "se_cluster": 0.001785,
+              "t_cluster": -1.484,
+              "p_cluster": 0.13882,
+              "ci95_low": -0.006147,
+              "ci95_high": 0.000849
+            },
+            "raw_mean": -7.5e-05,
+            "pos_bhar_rate": 0.4524,
+            "abs_bhar_mean": 0.064338,
+            "mean_max_dd": -0.069503
+          },
+          "20d": {
+            "car": {
+              "n": 2732,
+              "clusters": 310,
+              "mean": -0.006212,
+              "median": -0.008885,
+              "se_cluster": 0.002161,
+              "t_cluster": -2.874,
+              "p_cluster": 0.00433,
+              "ci95_low": -0.010447,
+              "ci95_high": -0.001976
+            },
+            "bhar": {
+              "n": 2732,
+              "clusters": 310,
+              "mean": 0.00422,
+              "median": -0.008445,
+              "se_cluster": 0.002354,
+              "t_cluster": 1.793,
+              "p_cluster": 0.07396,
+              "ci95_low": -0.000393,
+              "ci95_high": 0.008834
+            },
+            "raw_mean": 0.009379,
+            "pos_bhar_rate": 0.4605,
+            "abs_bhar_mean": 0.084504,
+            "mean_max_dd": -0.09726
+          }
+        }
+      }
+    },
+    "governance": {
+      "all_events": {
+        "count": 1426,
+        "unique_issuers": 257,
+        "mean_t0_volume_ratio": 1.704,
+        "median_t0_volume_ratio": 0.922,
+        "vol_expansion_gt_1_25_rate": 0.2426,
+        "horizons": {
+          "1d": {
+            "car": {
+              "n": 1426,
+              "clusters": 257,
+              "mean": -0.000521,
+              "median": -0.001339,
+              "se_cluster": 0.00085,
+              "t_cluster": -0.613,
+              "p_cluster": 0.54052,
+              "ci95_low": -0.002187,
+              "ci95_high": 0.001145
+            },
+            "bhar": {
+              "n": 1426,
+              "clusters": 257,
+              "mean": 6.3e-05,
+              "median": -0.001105,
+              "se_cluster": 0.000854,
+              "t_cluster": 0.074,
+              "p_cluster": 0.94133,
+              "ci95_low": -0.00161,
+              "ci95_high": 0.001736
+            },
+            "raw_mean": 0.000451,
+            "pos_bhar_rate": 0.4769,
+            "abs_bhar_mean": 0.01984,
+            "mean_max_dd": -0.01038
+          },
+          "3d": {
+            "car": {
+              "n": 1426,
+              "clusters": 257,
+              "mean": -0.000798,
+              "median": -0.000846,
+              "se_cluster": 0.001356,
+              "t_cluster": -0.589,
+              "p_cluster": 0.55652,
+              "ci95_low": -0.003456,
+              "ci95_high": 0.001859
+            },
+            "bhar": {
+              "n": 1426,
+              "clusters": 257,
+              "mean": 0.000105,
+              "median": -0.001476,
+              "se_cluster": 0.001407,
+              "t_cluster": 0.075,
+              "p_cluster": 0.94045,
+              "ci95_low": -0.002652,
+              "ci95_high": 0.002863
+            },
+            "raw_mean": 0.00044,
+            "pos_bhar_rate": 0.4867,
+            "abs_bhar_mean": 0.030251,
+            "mean_max_dd": -0.026365
+          },
+          "5d": {
+            "car": {
+              "n": 1426,
+              "clusters": 257,
+              "mean": -0.000984,
+              "median": -0.002044,
+              "se_cluster": 0.001536,
+              "t_cluster": -0.641,
+              "p_cluster": 0.52208,
+              "ci95_low": -0.003994,
+              "ci95_high": 0.002025
+            },
+            "bhar": {
+              "n": 1426,
+              "clusters": 257,
+              "mean": 0.000782,
+              "median": -0.002136,
+              "se_cluster": 0.001574,
+              "t_cluster": 0.497,
+              "p_cluster": 0.61976,
+              "ci95_low": -0.002304,
+              "ci95_high": 0.003868
+            },
+            "raw_mean": 0.001733,
+            "pos_bhar_rate": 0.4769,
+            "abs_bhar_mean": 0.03639,
+            "mean_max_dd": -0.037795
+          },
+          "10d": {
+            "car": {
+              "n": 1426,
+              "clusters": 257,
+              "mean": -0.001117,
+              "median": -0.004745,
+              "se_cluster": 0.002144,
+              "t_cluster": -0.521,
+              "p_cluster": 0.60283,
+              "ci95_low": -0.00532,
+              "ci95_high": 0.003086
+            },
+            "bhar": {
+              "n": 1426,
+              "clusters": 257,
+              "mean": 0.003247,
+              "median": -0.002968,
+              "se_cluster": 0.002171,
+              "t_cluster": 1.496,
+              "p_cluster": 0.13593,
+              "ci95_low": -0.001008,
+              "ci95_high": 0.007502
+            },
+            "raw_mean": 0.006007,
+            "pos_bhar_rate": 0.4748,
+            "abs_bhar_mean": 0.050718,
+            "mean_max_dd": -0.058962
+          },
+          "20d": {
+            "car": {
+              "n": 1426,
+              "clusters": 257,
+              "mean": -0.00016,
+              "median": -0.005442,
+              "se_cluster": 0.003014,
+              "t_cluster": -0.053,
+              "p_cluster": 0.95762,
+              "ci95_low": -0.006068,
+              "ci95_high": 0.005747
+            },
+            "bhar": {
+              "n": 1426,
+              "clusters": 257,
+              "mean": 0.009808,
+              "median": -0.000485,
+              "se_cluster": 0.00309,
+              "t_cluster": 3.174,
+              "p_cluster": 0.00169,
+              "ci95_low": 0.003752,
+              "ci95_high": 0.015864
+            },
+            "raw_mean": 0.015859,
+            "pos_bhar_rate": 0.4972,
+            "abs_bhar_mean": 0.072266,
+            "mean_max_dd": -0.086282
+          }
+        }
+      },
+      "non_overlapping_10d_clean": {
+        "count": 669,
+        "unique_issuers": 213,
+        "mean_t0_volume_ratio": 1.34,
+        "median_t0_volume_ratio": 0.801,
+        "vol_expansion_gt_1_25_rate": 0.2123,
+        "horizons": {
+          "1d": {
+            "car": {
+              "n": 669,
+              "clusters": 213,
+              "mean": 0.000946,
+              "median": -0.000888,
+              "se_cluster": 0.000932,
+              "t_cluster": 1.015,
+              "p_cluster": 0.31108,
+              "ci95_low": -0.00088,
+              "ci95_high": 0.002773
+            },
+            "bhar": {
+              "n": 669,
+              "clusters": 213,
+              "mean": 0.001784,
+              "median": -0.000769,
+              "se_cluster": 0.000916,
+              "t_cluster": 1.949,
+              "p_cluster": 0.05266,
+              "ci95_low": -1e-05,
+              "ci95_high": 0.003579
+            },
+            "raw_mean": 0.002573,
+            "pos_bhar_rate": 0.4843,
+            "abs_bhar_mean": 0.017274,
+            "mean_max_dd": -0.008062
+          },
+          "3d": {
+            "car": {
+              "n": 669,
+              "clusters": 213,
+              "mean": -0.000293,
+              "median": 0.000553,
+              "se_cluster": 0.001625,
+              "t_cluster": -0.181,
+              "p_cluster": 0.85686,
+              "ci95_low": -0.003479,
+              "ci95_high": 0.002892
+            },
+            "bhar": {
+              "n": 669,
+              "clusters": 213,
+              "mean": 0.000994,
+              "median": 0.000177,
+              "se_cluster": 0.00169,
+              "t_cluster": 0.588,
+              "p_cluster": 0.55692,
+              "ci95_low": -0.002318,
+              "ci95_high": 0.004307
+            },
+            "raw_mean": 0.001943,
+            "pos_bhar_rate": 0.5007,
+            "abs_bhar_mean": 0.028356,
+            "mean_max_dd": -0.024534
+          },
+          "5d": {
+            "car": {
+              "n": 669,
+              "clusters": 213,
+              "mean": -0.000679,
+              "median": -0.001023,
+              "se_cluster": 0.001866,
+              "t_cluster": -0.364,
+              "p_cluster": 0.71636,
+              "ci95_low": -0.004335,
+              "ci95_high": 0.002978
+            },
+            "bhar": {
+              "n": 669,
+              "clusters": 213,
+              "mean": 0.001556,
+              "median": -0.002161,
+              "se_cluster": 0.001905,
+              "t_cluster": 0.817,
+              "p_cluster": 0.41481,
+              "ci95_low": -0.002177,
+              "ci95_high": 0.00529
+            },
+            "raw_mean": 0.002925,
+            "pos_bhar_rate": 0.4783,
+            "abs_bhar_mean": 0.03475,
+            "mean_max_dd": -0.036483
+          },
+          "10d": {
+            "car": {
+              "n": 669,
+              "clusters": 213,
+              "mean": -0.000427,
+              "median": -0.003954,
+              "se_cluster": 0.003072,
+              "t_cluster": -0.139,
+              "p_cluster": 0.88969,
+              "ci95_low": -0.006448,
+              "ci95_high": 0.005595
+            },
+            "bhar": {
+              "n": 669,
+              "clusters": 213,
+              "mean": 0.005051,
+              "median": -0.002039,
+              "se_cluster": 0.002989,
+              "t_cluster": 1.69,
+              "p_cluster": 0.09247,
+              "ci95_low": -0.000806,
+              "ci95_high": 0.010909
+            },
+            "raw_mean": 0.007747,
+            "pos_bhar_rate": 0.4828,
+            "abs_bhar_mean": 0.049518,
+            "mean_max_dd": -0.058644
+          },
+          "20d": {
+            "car": {
+              "n": 669,
+              "clusters": 213,
+              "mean": -0.001074,
+              "median": -0.006438,
+              "se_cluster": 0.004311,
+              "t_cluster": -0.249,
+              "p_cluster": 0.80357,
+              "ci95_low": -0.009523,
+              "ci95_high": 0.007376
+            },
+            "bhar": {
+              "n": 669,
+              "clusters": 213,
+              "mean": 0.011482,
+              "median": -0.000141,
+              "se_cluster": 0.004418,
+              "t_cluster": 2.599,
+              "p_cluster": 0.01002,
+              "ci95_low": 0.002822,
+              "ci95_high": 0.020142
+            },
+            "raw_mean": 0.016278,
+            "pos_bhar_rate": 0.4993,
+            "abs_bhar_mean": 0.073186,
+            "mean_max_dd": -0.087295
+          }
+        }
+      }
+    },
+    "operations": {
+      "all_events": {
+        "count": 2985,
+        "unique_issuers": 243,
+        "mean_t0_volume_ratio": 1.889,
+        "median_t0_volume_ratio": 1.065,
+        "vol_expansion_gt_1_25_rate": 0.2325,
+        "horizons": {
+          "1d": {
+            "car": {
+              "n": 2985,
+              "clusters": 243,
+              "mean": 0.005354,
+              "median": 0.002118,
+              "se_cluster": 0.000718,
+              "t_cluster": 7.458,
+              "p_cluster": 0.0,
+              "ci95_low": 0.003947,
+              "ci95_high": 0.006761
+            },
+            "bhar": {
+              "n": 2985,
+              "clusters": 243,
+              "mean": 0.00571,
+              "median": 0.002487,
+              "se_cluster": 0.000733,
+              "t_cluster": 7.793,
+              "p_cluster": 0.0,
+              "ci95_low": 0.004274,
+              "ci95_high": 0.007146
+            },
+            "raw_mean": 0.00569,
+            "pos_bhar_rate": 0.5548,
+            "abs_bhar_mean": 0.019948,
+            "mean_max_dd": -0.007854
+          },
+          "3d": {
+            "car": {
+              "n": 2985,
+              "clusters": 243,
+              "mean": 0.005919,
+              "median": 0.002759,
+              "se_cluster": 0.001082,
+              "t_cluster": 5.473,
+              "p_cluster": 0.0,
+              "ci95_low": 0.003799,
+              "ci95_high": 0.008039
+            },
+            "bhar": {
+              "n": 2985,
+              "clusters": 243,
+              "mean": 0.007261,
+              "median": 0.002678,
+              "se_cluster": 0.001139,
+              "t_cluster": 6.374,
+              "p_cluster": 0.0,
+              "ci95_low": 0.005028,
+              "ci95_high": 0.009493
+            },
+            "raw_mean": 0.007999,
+            "pos_bhar_rate": 0.536,
+            "abs_bhar_mean": 0.032164,
+            "mean_max_dd": -0.023743
+          },
+          "5d": {
+            "car": {
+              "n": 2985,
+              "clusters": 243,
+              "mean": 0.006131,
+              "median": 0.001894,
+              "se_cluster": 0.001317,
+              "t_cluster": 4.657,
+              "p_cluster": 1e-05,
+              "ci95_low": 0.003551,
+              "ci95_high": 0.008711
+            },
+            "bhar": {
+              "n": 2985,
+              "clusters": 243,
+              "mean": 0.00832,
+              "median": 0.00198,
+              "se_cluster": 0.001452,
+              "t_cluster": 5.73,
+              "p_cluster": 0.0,
+              "ci95_low": 0.005474,
+              "ci95_high": 0.011165
+            },
+            "raw_mean": 0.009174,
+            "pos_bhar_rate": 0.5206,
+            "abs_bhar_mean": 0.040619,
+            "mean_max_dd": -0.036374
+          },
+          "10d": {
+            "car": {
+              "n": 2985,
+              "clusters": 243,
+              "mean": 0.005535,
+              "median": 0.001251,
+              "se_cluster": 0.001772,
+              "t_cluster": 3.123,
+              "p_cluster": 0.00201,
+              "ci95_low": 0.002061,
+              "ci95_high": 0.009008
+            },
+            "bhar": {
+              "n": 2985,
+              "clusters": 243,
+              "mean": 0.009988,
+              "median": 0.001883,
+              "se_cluster": 0.002021,
+              "t_cluster": 4.941,
+              "p_cluster": 0.0,
+              "ci95_low": 0.006026,
+              "ci95_high": 0.01395
+            },
+            "raw_mean": 0.012077,
+            "pos_bhar_rate": 0.5139,
+            "abs_bhar_mean": 0.056682,
+            "mean_max_dd": -0.05974
+          },
+          "20d": {
+            "car": {
+              "n": 2985,
+              "clusters": 243,
+              "mean": 0.008267,
+              "median": 0.00371,
+              "se_cluster": 0.00241,
+              "t_cluster": 3.43,
+              "p_cluster": 0.00071,
+              "ci95_low": 0.003543,
+              "ci95_high": 0.012992
+            },
+            "bhar": {
+              "n": 2985,
+              "clusters": 243,
+              "mean": 0.018067,
+              "median": 0.006973,
+              "se_cluster": 0.00337,
+              "t_cluster": 5.36,
+              "p_cluster": 0.0,
+              "ci95_low": 0.011461,
+              "ci95_high": 0.024672
+            },
+            "raw_mean": 0.023192,
+            "pos_bhar_rate": 0.5313,
+            "abs_bhar_mean": 0.082515,
+            "mean_max_dd": -0.091155
+          }
+        }
+      },
+      "non_overlapping_10d_clean": {
+        "count": 1220,
+        "unique_issuers": 221,
+        "mean_t0_volume_ratio": 1.893,
+        "median_t0_volume_ratio": 1.03,
+        "vol_expansion_gt_1_25_rate": 0.2344,
+        "horizons": {
+          "1d": {
+            "car": {
+              "n": 1220,
+              "clusters": 221,
+              "mean": 0.006357,
+              "median": 0.002675,
+              "se_cluster": 0.001009,
+              "t_cluster": 6.302,
+              "p_cluster": 0.0,
+              "ci95_low": 0.00438,
+              "ci95_high": 0.008334
+            },
+            "bhar": {
+              "n": 1220,
+              "clusters": 221,
+              "mean": 0.006888,
+              "median": 0.003628,
+              "se_cluster": 0.00106,
+              "t_cluster": 6.5,
+              "p_cluster": 0.0,
+              "ci95_low": 0.004811,
+              "ci95_high": 0.008965
+            },
+            "raw_mean": 0.006582,
+            "pos_bhar_rate": 0.5811,
+            "abs_bhar_mean": 0.02002,
+            "mean_max_dd": -0.007422
+          },
+          "3d": {
+            "car": {
+              "n": 1220,
+              "clusters": 221,
+              "mean": 0.006704,
+              "median": 0.004171,
+              "se_cluster": 0.001473,
+              "t_cluster": 4.552,
+              "p_cluster": 1e-05,
+              "ci95_low": 0.003817,
+              "ci95_high": 0.009591
+            },
+            "bhar": {
+              "n": 1220,
+              "clusters": 221,
+              "mean": 0.008401,
+              "median": 0.003997,
+              "se_cluster": 0.00155,
+              "t_cluster": 5.419,
+              "p_cluster": 0.0,
+              "ci95_low": 0.005362,
+              "ci95_high": 0.011439
+            },
+            "raw_mean": 0.008793,
+            "pos_bhar_rate": 0.5549,
+            "abs_bhar_mean": 0.032437,
+            "mean_max_dd": -0.023633
+          },
+          "5d": {
+            "car": {
+              "n": 1220,
+              "clusters": 221,
+              "mean": 0.006887,
+              "median": 0.001968,
+              "se_cluster": 0.001731,
+              "t_cluster": 3.977,
+              "p_cluster": 9e-05,
+              "ci95_low": 0.003493,
+              "ci95_high": 0.01028
+            },
+            "bhar": {
+              "n": 1220,
+              "clusters": 221,
+              "mean": 0.009677,
+              "median": 0.002489,
+              "se_cluster": 0.00193,
+              "t_cluster": 5.014,
+              "p_cluster": 0.0,
+              "ci95_low": 0.005894,
+              "ci95_high": 0.013459
+            },
+            "raw_mean": 0.010524,
+            "pos_bhar_rate": 0.532,
+            "abs_bhar_mean": 0.04061,
+            "mean_max_dd": -0.036678
+          },
+          "10d": {
+            "car": {
+              "n": 1220,
+              "clusters": 221,
+              "mean": 0.003148,
+              "median": -0.001455,
+              "se_cluster": 0.002131,
+              "t_cluster": 1.478,
+              "p_cluster": 0.14094,
+              "ci95_low": -0.001028,
+              "ci95_high": 0.007324
+            },
+            "bhar": {
+              "n": 1220,
+              "clusters": 221,
+              "mean": 0.008503,
+              "median": 0.001255,
+              "se_cluster": 0.002294,
+              "t_cluster": 3.707,
+              "p_cluster": 0.00027,
+              "ci95_low": 0.004007,
+              "ci95_high": 0.012999
+            },
+            "raw_mean": 0.011385,
+            "pos_bhar_rate": 0.5123,
+            "abs_bhar_mean": 0.054406,
+            "mean_max_dd": -0.06067
+          },
+          "20d": {
+            "car": {
+              "n": 1220,
+              "clusters": 221,
+              "mean": 0.001397,
+              "median": 4.8e-05,
+              "se_cluster": 0.002907,
+              "t_cluster": 0.48,
+              "p_cluster": 0.63144,
+              "ci95_low": -0.004302,
+              "ci95_high": 0.007095
+            },
+            "bhar": {
+              "n": 1220,
+              "clusters": 221,
+              "mean": 0.012924,
+              "median": 0.004134,
+              "se_cluster": 0.003387,
+              "t_cluster": 3.816,
+              "p_cluster": 0.00018,
+              "ci95_low": 0.006285,
+              "ci95_high": 0.019562
+            },
+            "raw_mean": 0.020654,
+            "pos_bhar_rate": 0.518,
+            "abs_bhar_mean": 0.079867,
+            "mean_max_dd": -0.09337
+          }
+        }
+      }
+    },
+    "pricing_product": {
+      "all_events": {
+        "count": 123,
+        "unique_issuers": 25,
+        "mean_t0_volume_ratio": 1.288,
+        "median_t0_volume_ratio": 0.876,
+        "vol_expansion_gt_1_25_rate": 0.2033,
+        "horizons": {
+          "1d": {
+            "car": {
+              "n": 123,
+              "clusters": 25,
+              "mean": 0.004278,
+              "median": 0.002831,
+              "se_cluster": 0.002527,
+              "t_cluster": 1.693,
+              "p_cluster": 0.10347,
+              "ci95_low": -0.000676,
+              "ci95_high": 0.009231
+            },
+            "bhar": {
+              "n": 123,
+              "clusters": 25,
+              "mean": 0.004001,
+              "median": 0.002931,
+              "se_cluster": 0.00251,
+              "t_cluster": 1.594,
+              "p_cluster": 0.12406,
+              "ci95_low": -0.000919,
+              "ci95_high": 0.00892
+            },
+            "raw_mean": 0.0048,
+            "pos_bhar_rate": 0.6016,
+            "abs_bhar_mean": 0.013434,
+            "mean_max_dd": -0.004367
+          },
+          "3d": {
+            "car": {
+              "n": 123,
+              "clusters": 25,
+              "mean": 0.007112,
+              "median": 0.003093,
+              "se_cluster": 0.0036,
+              "t_cluster": 1.976,
+              "p_cluster": 0.05981,
+              "ci95_low": 5.6e-05,
+              "ci95_high": 0.014168
+            },
+            "bhar": {
+              "n": 123,
+              "clusters": 25,
+              "mean": 0.007469,
+              "median": 0.0028,
+              "se_cluster": 0.003484,
+              "t_cluster": 2.144,
+              "p_cluster": 0.04238,
+              "ci95_low": 0.000641,
+              "ci95_high": 0.014298
+            },
+            "raw_mean": 0.008318,
+            "pos_bhar_rate": 0.5366,
+            "abs_bhar_mean": 0.022694,
+            "mean_max_dd": -0.017463
+          },
+          "5d": {
+            "car": {
+              "n": 123,
+              "clusters": 25,
+              "mean": 0.013096,
+              "median": 0.002454,
+              "se_cluster": 0.004912,
+              "t_cluster": 2.666,
+              "p_cluster": 0.01351,
+              "ci95_low": 0.003469,
+              "ci95_high": 0.022724
+            },
+            "bhar": {
+              "n": 123,
+              "clusters": 25,
+              "mean": 0.013525,
+              "median": 0.001788,
+              "se_cluster": 0.004752,
+              "t_cluster": 2.846,
+              "p_cluster": 0.00891,
+              "ci95_low": 0.004212,
+              "ci95_high": 0.022838
+            },
+            "raw_mean": 0.014701,
+            "pos_bhar_rate": 0.5285,
+            "abs_bhar_mean": 0.034898,
+            "mean_max_dd": -0.028162
+          },
+          "10d": {
+            "car": {
+              "n": 123,
+              "clusters": 25,
+              "mean": 0.014227,
+              "median": 0.001004,
+              "se_cluster": 0.00697,
+              "t_cluster": 2.041,
+              "p_cluster": 0.05238,
+              "ci95_low": 0.000566,
+              "ci95_high": 0.027888
+            },
+            "bhar": {
+              "n": 123,
+              "clusters": 25,
+              "mean": 0.014157,
+              "median": -0.001329,
+              "se_cluster": 0.006588,
+              "t_cluster": 2.149,
+              "p_cluster": 0.04194,
+              "ci95_low": 0.001244,
+              "ci95_high": 0.02707
+            },
+            "raw_mean": 0.021275,
+            "pos_bhar_rate": 0.4878,
+            "abs_bhar_mean": 0.047821,
+            "mean_max_dd": -0.046814
+          },
+          "20d": {
+            "car": {
+              "n": 123,
+              "clusters": 25,
+              "mean": 0.018281,
+              "median": 0.009495,
+              "se_cluster": 0.011872,
+              "t_cluster": 1.54,
+              "p_cluster": 0.13667,
+              "ci95_low": -0.004988,
+              "ci95_high": 0.04155
+            },
+            "bhar": {
+              "n": 123,
+              "clusters": 25,
+              "mean": 0.01868,
+              "median": 0.000369,
+              "se_cluster": 0.010243,
+              "t_cluster": 1.824,
+              "p_cluster": 0.08068,
+              "ci95_low": -0.001397,
+              "ci95_high": 0.038757
+            },
+            "raw_mean": 0.030294,
+            "pos_bhar_rate": 0.5122,
+            "abs_bhar_mean": 0.073401,
+            "mean_max_dd": -0.073986
+          }
+        }
+      },
+      "non_overlapping_10d_clean": {
+        "count": 54,
+        "unique_issuers": 19,
+        "mean_t0_volume_ratio": 1.295,
+        "median_t0_volume_ratio": 0.869,
+        "vol_expansion_gt_1_25_rate": 0.2222,
+        "horizons": {
+          "1d": {
+            "car": {
+              "n": 54,
+              "clusters": 19,
+              "mean": 0.00565,
+              "median": 0.003605,
+              "se_cluster": 0.00261,
+              "t_cluster": 2.164,
+              "p_cluster": 0.04413,
+              "ci95_low": 0.000533,
+              "ci95_high": 0.010766
+            },
+            "bhar": {
+              "n": 54,
+              "clusters": 19,
+              "mean": 0.00534,
+              "median": 0.002946,
+              "se_cluster": 0.002655,
+              "t_cluster": 2.011,
+              "p_cluster": 0.05951,
+              "ci95_low": 0.000136,
+              "ci95_high": 0.010543
+            },
+            "raw_mean": 0.005342,
+            "pos_bhar_rate": 0.5926,
+            "abs_bhar_mean": 0.014649,
+            "mean_max_dd": -0.004677
+          },
+          "3d": {
+            "car": {
+              "n": 54,
+              "clusters": 19,
+              "mean": 0.010735,
+              "median": 0.00503,
+              "se_cluster": 0.005417,
+              "t_cluster": 1.982,
+              "p_cluster": 0.063,
+              "ci95_low": 0.000117,
+              "ci95_high": 0.021354
+            },
+            "bhar": {
+              "n": 54,
+              "clusters": 19,
+              "mean": 0.010972,
+              "median": 0.004629,
+              "se_cluster": 0.005356,
+              "t_cluster": 2.049,
+              "p_cluster": 0.05536,
+              "ci95_low": 0.000475,
+              "ci95_high": 0.02147
+            },
+            "raw_mean": 0.011202,
+            "pos_bhar_rate": 0.5741,
+            "abs_bhar_mean": 0.025929,
+            "mean_max_dd": -0.017868
+          },
+          "5d": {
+            "car": {
+              "n": 54,
+              "clusters": 19,
+              "mean": 0.012328,
+              "median": 0.000447,
+              "se_cluster": 0.007739,
+              "t_cluster": 1.593,
+              "p_cluster": 0.1286,
+              "ci95_low": -0.002841,
+              "ci95_high": 0.027497
+            },
+            "bhar": {
+              "n": 54,
+              "clusters": 19,
+              "mean": 0.012644,
+              "median": 0.001149,
+              "se_cluster": 0.007905,
+              "t_cluster": 1.599,
+              "p_cluster": 0.12712,
+              "ci95_low": -0.00285,
+              "ci95_high": 0.028139
+            },
+            "raw_mean": 0.014042,
+            "pos_bhar_rate": 0.5185,
+            "abs_bhar_mean": 0.040067,
+            "mean_max_dd": -0.029145
+          },
+          "10d": {
+            "car": {
+              "n": 54,
+              "clusters": 19,
+              "mean": 0.005792,
+              "median": -0.001861,
+              "se_cluster": 0.007788,
+              "t_cluster": 0.744,
+              "p_cluster": 0.4666,
+              "ci95_low": -0.009471,
+              "ci95_high": 0.021056
+            },
+            "bhar": {
+              "n": 54,
+              "clusters": 19,
+              "mean": 0.006296,
+              "median": -0.002454,
+              "se_cluster": 0.007908,
+              "t_cluster": 0.796,
+              "p_cluster": 0.43629,
+              "ci95_low": -0.009203,
+              "ci95_high": 0.021795
+            },
+            "raw_mean": 0.013459,
+            "pos_bhar_rate": 0.4815,
+            "abs_bhar_mean": 0.044678,
+            "mean_max_dd": -0.049756
+          },
+          "20d": {
+            "car": {
+              "n": 54,
+              "clusters": 19,
+              "mean": 0.008375,
+              "median": 0.004832,
+              "se_cluster": 0.010878,
+              "t_cluster": 0.77,
+              "p_cluster": 0.45137,
+              "ci95_low": -0.012947,
+              "ci95_high": 0.029696
+            },
+            "bhar": {
+              "n": 54,
+              "clusters": 19,
+              "mean": 0.009994,
+              "median": -0.012892,
+              "se_cluster": 0.010626,
+              "t_cluster": 0.94,
+              "p_cluster": 0.35942,
+              "ci95_low": -0.010833,
+              "ci95_high": 0.03082
+            },
+            "raw_mean": 0.023313,
+            "pos_bhar_rate": 0.4259,
+            "abs_bhar_mean": 0.070925,
+            "mean_max_dd": -0.073312
+          }
+        }
+      }
+    },
+    "regulatory": {
+      "all_events": {
+        "count": 1612,
+        "unique_issuers": 227,
+        "mean_t0_volume_ratio": 1.392,
+        "median_t0_volume_ratio": 0.838,
+        "vol_expansion_gt_1_25_rate": 0.2308,
+        "horizons": {
+          "1d": {
+            "car": {
+              "n": 1612,
+              "clusters": 227,
+              "mean": -0.000403,
+              "median": -0.001526,
+              "se_cluster": 0.0007,
+              "t_cluster": -0.576,
+              "p_cluster": 0.56503,
+              "ci95_low": -0.001774,
+              "ci95_high": 0.000968
+            },
+            "bhar": {
+              "n": 1612,
+              "clusters": 227,
+              "mean": 5e-05,
+              "median": -0.001436,
+              "se_cluster": 0.000695,
+              "t_cluster": 0.072,
+              "p_cluster": 0.94263,
+              "ci95_low": -0.001312,
+              "ci95_high": 0.001412
+            },
+            "raw_mean": 8.1e-05,
+            "pos_bhar_rate": 0.4659,
+            "abs_bhar_mean": 0.016748,
+            "mean_max_dd": -0.008951
+          },
+          "3d": {
+            "car": {
+              "n": 1612,
+              "clusters": 227,
+              "mean": 0.00067,
+              "median": -0.001088,
+              "se_cluster": 0.001274,
+              "t_cluster": 0.526,
+              "p_cluster": 0.59944,
+              "ci95_low": -0.001826,
+              "ci95_high": 0.003166
+            },
+            "bhar": {
+              "n": 1612,
+              "clusters": 227,
+              "mean": 0.001854,
+              "median": 0.000326,
+              "se_cluster": 0.001323,
+              "t_cluster": 1.402,
+              "p_cluster": 0.16235,
+              "ci95_low": -0.000738,
+              "ci95_high": 0.004447
+            },
+            "raw_mean": 0.002027,
+            "pos_bhar_rate": 0.5043,
+            "abs_bhar_mean": 0.028707,
+            "mean_max_dd": -0.02393
+          },
+          "5d": {
+            "car": {
+              "n": 1612,
+              "clusters": 227,
+              "mean": 0.000672,
+              "median": -0.000866,
+              "se_cluster": 0.001457,
+              "t_cluster": 0.461,
+              "p_cluster": 0.6452,
+              "ci95_low": -0.002185,
+              "ci95_high": 0.003528
+            },
+            "bhar": {
+              "n": 1612,
+              "clusters": 227,
+              "mean": 0.002622,
+              "median": 0.000689,
+              "se_cluster": 0.001509,
+              "t_cluster": 1.737,
+              "p_cluster": 0.08373,
+              "ci95_low": -0.000336,
+              "ci95_high": 0.00558
+            },
+            "raw_mean": 0.002357,
+            "pos_bhar_rate": 0.5087,
+            "abs_bhar_mean": 0.036381,
+            "mean_max_dd": -0.036818
+          },
+          "10d": {
+            "car": {
+              "n": 1612,
+              "clusters": 227,
+              "mean": 0.001213,
+              "median": -0.000813,
+              "se_cluster": 0.002104,
+              "t_cluster": 0.576,
+              "p_cluster": 0.56491,
+              "ci95_low": -0.002911,
+              "ci95_high": 0.005337
+            },
+            "bhar": {
+              "n": 1612,
+              "clusters": 227,
+              "mean": 0.00503,
+              "median": -0.000362,
+              "se_cluster": 0.002187,
+              "t_cluster": 2.3,
+              "p_cluster": 0.02234,
+              "ci95_low": 0.000744,
+              "ci95_high": 0.009316
+            },
+            "raw_mean": 0.005636,
+            "pos_bhar_rate": 0.495,
+            "abs_bhar_mean": 0.050804,
+            "mean_max_dd": -0.058464
+          },
+          "20d": {
+            "car": {
+              "n": 1612,
+              "clusters": 227,
+              "mean": 0.001034,
+              "median": -0.004452,
+              "se_cluster": 0.00266,
+              "t_cluster": 0.389,
+              "p_cluster": 0.69781,
+              "ci95_low": -0.00418,
+              "ci95_high": 0.006248
+            },
+            "bhar": {
+              "n": 1612,
+              "clusters": 227,
+              "mean": 0.008004,
+              "median": -0.001377,
+              "se_cluster": 0.003069,
+              "t_cluster": 2.608,
+              "p_cluster": 0.00972,
+              "ci95_low": 0.001988,
+              "ci95_high": 0.01402
+            },
+            "raw_mean": 0.009329,
+            "pos_bhar_rate": 0.4882,
+            "abs_bhar_mean": 0.075261,
+            "mean_max_dd": -0.090109
+          }
+        }
+      },
+      "non_overlapping_10d_clean": {
+        "count": 613,
+        "unique_issuers": 180,
+        "mean_t0_volume_ratio": 1.385,
+        "median_t0_volume_ratio": 0.831,
+        "vol_expansion_gt_1_25_rate": 0.2431,
+        "horizons": {
+          "1d": {
+            "car": {
+              "n": 613,
+              "clusters": 180,
+              "mean": -0.00096,
+              "median": -0.001606,
+              "se_cluster": 0.001039,
+              "t_cluster": -0.924,
+              "p_cluster": 0.3569,
+              "ci95_low": -0.002996,
+              "ci95_high": 0.001077
+            },
+            "bhar": {
+              "n": 613,
+              "clusters": 180,
+              "mean": -0.000411,
+              "median": -0.001472,
+              "se_cluster": 0.001026,
+              "t_cluster": -0.4,
+              "p_cluster": 0.68948,
+              "ci95_low": -0.002423,
+              "ci95_high": 0.001601
+            },
+            "raw_mean": -0.000984,
+            "pos_bhar_rate": 0.4633,
+            "abs_bhar_mean": 0.017265,
+            "mean_max_dd": -0.009687
+          },
+          "3d": {
+            "car": {
+              "n": 613,
+              "clusters": 180,
+              "mean": -0.00132,
+              "median": -0.001722,
+              "se_cluster": 0.001541,
+              "t_cluster": -0.857,
+              "p_cluster": 0.39268,
+              "ci95_low": -0.004341,
+              "ci95_high": 0.0017
+            },
+            "bhar": {
+              "n": 613,
+              "clusters": 180,
+              "mean": -0.000333,
+              "median": -0.000365,
+              "se_cluster": 0.001478,
+              "t_cluster": -0.225,
+              "p_cluster": 0.82223,
+              "ci95_low": -0.003229,
+              "ci95_high": 0.002564
+            },
+            "raw_mean": -3.2e-05,
+            "pos_bhar_rate": 0.4927,
+            "abs_bhar_mean": 0.0272,
+            "mean_max_dd": -0.024917
+          },
+          "5d": {
+            "car": {
+              "n": 613,
+              "clusters": 180,
+              "mean": -4.4e-05,
+              "median": -0.001779,
+              "se_cluster": 0.001917,
+              "t_cluster": -0.023,
+              "p_cluster": 0.98167,
+              "ci95_low": -0.003802,
+              "ci95_high": 0.003714
+            },
+            "bhar": {
+              "n": 613,
+              "clusters": 180,
+              "mean": 0.001816,
+              "median": 0.00051,
+              "se_cluster": 0.001895,
+              "t_cluster": 0.958,
+              "p_cluster": 0.33924,
+              "ci95_low": -0.001899,
+              "ci95_high": 0.005531
+            },
+            "raw_mean": 0.001354,
+            "pos_bhar_rate": 0.5041,
+            "abs_bhar_mean": 0.035692,
+            "mean_max_dd": -0.03777
+          },
+          "10d": {
+            "car": {
+              "n": 613,
+              "clusters": 180,
+              "mean": 0.001153,
+              "median": -0.002604,
+              "se_cluster": 0.002464,
+              "t_cluster": 0.468,
+              "p_cluster": 0.64035,
+              "ci95_low": -0.003676,
+              "ci95_high": 0.005982
+            },
+            "bhar": {
+              "n": 613,
+              "clusters": 180,
+              "mean": 0.004406,
+              "median": -0.003782,
+              "se_cluster": 0.002384,
+              "t_cluster": 1.848,
+              "p_cluster": 0.06621,
+              "ci95_low": -0.000266,
+              "ci95_high": 0.009079
+            },
+            "raw_mean": 0.005516,
+            "pos_bhar_rate": 0.4731,
+            "abs_bhar_mean": 0.052078,
+            "mean_max_dd": -0.059794
+          },
+          "20d": {
+            "car": {
+              "n": 613,
+              "clusters": 180,
+              "mean": 0.002746,
+              "median": -0.003395,
+              "se_cluster": 0.003814,
+              "t_cluster": 0.72,
+              "p_cluster": 0.47251,
+              "ci95_low": -0.004729,
+              "ci95_high": 0.01022
+            },
+            "bhar": {
+              "n": 613,
+              "clusters": 180,
+              "mean": 0.009978,
+              "median": -0.001202,
+              "se_cluster": 0.004024,
+              "t_cluster": 2.48,
+              "p_cluster": 0.01407,
+              "ci95_low": 0.002092,
+              "ci95_high": 0.017864
+            },
+            "raw_mean": 0.011958,
+            "pos_bhar_rate": 0.4894,
+            "abs_bhar_mean": 0.079635,
+            "mean_max_dd": -0.09063
+          }
+        }
+      }
+    },
+    "rumor_denial": {
+      "all_events": {
+        "count": 906,
+        "unique_issuers": 239,
+        "mean_t0_volume_ratio": 2.02,
+        "median_t0_volume_ratio": 1.177,
+        "vol_expansion_gt_1_25_rate": 0.1998,
+        "horizons": {
+          "1d": {
+            "car": {
+              "n": 906,
+              "clusters": 239,
+              "mean": 0.000681,
+              "median": -0.000398,
+              "se_cluster": 0.001312,
+              "t_cluster": 0.519,
+              "p_cluster": 0.60441,
+              "ci95_low": -0.001891,
+              "ci95_high": 0.003252
+            },
+            "bhar": {
+              "n": 906,
+              "clusters": 239,
+              "mean": 0.000877,
+              "median": -0.000307,
+              "se_cluster": 0.001315,
+              "t_cluster": 0.667,
+              "p_cluster": 0.50553,
+              "ci95_low": -0.001701,
+              "ci95_high": 0.003455
+            },
+            "raw_mean": 0.001275,
+            "pos_bhar_rate": 0.4923,
+            "abs_bhar_mean": 0.023192,
+            "mean_max_dd": -0.011635
+          },
+          "3d": {
+            "car": {
+              "n": 906,
+              "clusters": 239,
+              "mean": -0.001951,
+              "median": -0.002528,
+              "se_cluster": 0.001876,
+              "t_cluster": -1.04,
+              "p_cluster": 0.29931,
+              "ci95_low": -0.005627,
+              "ci95_high": 0.001725
+            },
+            "bhar": {
+              "n": 906,
+              "clusters": 239,
+              "mean": -0.00129,
+              "median": -0.003085,
+              "se_cluster": 0.001871,
+              "t_cluster": -0.689,
+              "p_cluster": 0.49144,
+              "ci95_low": -0.004958,
+              "ci95_high": 0.002378
+            },
+            "raw_mean": -0.000193,
+            "pos_bhar_rate": 0.4614,
+            "abs_bhar_mean": 0.034799,
+            "mean_max_dd": -0.030795
+          },
+          "5d": {
+            "car": {
+              "n": 906,
+              "clusters": 239,
+              "mean": -0.000222,
+              "median": -0.006078,
+              "se_cluster": 0.002466,
+              "t_cluster": -0.09,
+              "p_cluster": 0.9282,
+              "ci95_low": -0.005056,
+              "ci95_high": 0.004611
+            },
+            "bhar": {
+              "n": 906,
+              "clusters": 239,
+              "mean": 0.001187,
+              "median": -0.005345,
+              "se_cluster": 0.00258,
+              "t_cluster": 0.46,
+              "p_cluster": 0.64593,
+              "ci95_low": -0.00387,
+              "ci95_high": 0.006244
+            },
+            "raw_mean": 0.002632,
+            "pos_bhar_rate": 0.4658,
+            "abs_bhar_mean": 0.045983,
+            "mean_max_dd": -0.043474
+          },
+          "10d": {
+            "car": {
+              "n": 906,
+              "clusters": 239,
+              "mean": -0.00145,
+              "median": -0.002404,
+              "se_cluster": 0.003931,
+              "t_cluster": -0.369,
+              "p_cluster": 0.7125,
+              "ci95_low": -0.009155,
+              "ci95_high": 0.006254
+            },
+            "bhar": {
+              "n": 906,
+              "clusters": 239,
+              "mean": 0.001407,
+              "median": -0.005378,
+              "se_cluster": 0.003914,
+              "t_cluster": 0.359,
+              "p_cluster": 0.71956,
+              "ci95_low": -0.006265,
+              "ci95_high": 0.009079
+            },
+            "raw_mean": 0.002919,
+            "pos_bhar_rate": 0.4536,
+            "abs_bhar_mean": 0.060409,
+            "mean_max_dd": -0.069628
+          },
+          "20d": {
+            "car": {
+              "n": 906,
+              "clusters": 239,
+              "mean": -0.002527,
+              "median": 0.002194,
+              "se_cluster": 0.005529,
+              "t_cluster": -0.457,
+              "p_cluster": 0.64815,
+              "ci95_low": -0.013364,
+              "ci95_high": 0.008311
+            },
+            "bhar": {
+              "n": 906,
+              "clusters": 239,
+              "mean": 0.002655,
+              "median": -0.006964,
+              "se_cluster": 0.005307,
+              "t_cluster": 0.5,
+              "p_cluster": 0.61729,
+              "ci95_low": -0.007746,
+              "ci95_high": 0.013057
+            },
+            "raw_mean": 0.004467,
+            "pos_bhar_rate": 0.4779,
+            "abs_bhar_mean": 0.082451,
+            "mean_max_dd": -0.102944
+          }
+        }
+      },
+      "non_overlapping_10d_clean": {
+        "count": 407,
+        "unique_issuers": 201,
+        "mean_t0_volume_ratio": 2.034,
+        "median_t0_volume_ratio": 1.253,
+        "vol_expansion_gt_1_25_rate": 0.2236,
+        "horizons": {
+          "1d": {
+            "car": {
+              "n": 407,
+              "clusters": 201,
+              "mean": 0.000772,
+              "median": 0.000334,
+              "se_cluster": 0.001761,
+              "t_cluster": 0.438,
+              "p_cluster": 0.66151,
+              "ci95_low": -0.002679,
+              "ci95_high": 0.004223
+            },
+            "bhar": {
+              "n": 407,
+              "clusters": 201,
+              "mean": 0.001028,
+              "median": 0.00018,
+              "se_cluster": 0.001778,
+              "t_cluster": 0.578,
+              "p_cluster": 0.56374,
+              "ci95_low": -0.002456,
+              "ci95_high": 0.004512
+            },
+            "raw_mean": 0.001396,
+            "pos_bhar_rate": 0.5037,
+            "abs_bhar_mean": 0.023499,
+            "mean_max_dd": -0.011897
+          },
+          "3d": {
+            "car": {
+              "n": 407,
+              "clusters": 201,
+              "mean": -0.00083,
+              "median": -0.003286,
+              "se_cluster": 0.002555,
+              "t_cluster": -0.325,
+              "p_cluster": 0.74573,
+              "ci95_low": -0.005837,
+              "ci95_high": 0.004178
+            },
+            "bhar": {
+              "n": 407,
+              "clusters": 201,
+              "mean": 0.000246,
+              "median": -0.002971,
+              "se_cluster": 0.002652,
+              "t_cluster": 0.093,
+              "p_cluster": 0.9261,
+              "ci95_low": -0.004951,
+              "ci95_high": 0.005443
+            },
+            "raw_mean": 0.001092,
+            "pos_bhar_rate": 0.4693,
+            "abs_bhar_mean": 0.035391,
+            "mean_max_dd": -0.030403
+          },
+          "5d": {
+            "car": {
+              "n": 407,
+              "clusters": 201,
+              "mean": 0.001678,
+              "median": -0.005296,
+              "se_cluster": 0.003313,
+              "t_cluster": 0.506,
+              "p_cluster": 0.61322,
+              "ci95_low": -0.004817,
+              "ci95_high": 0.008172
+            },
+            "bhar": {
+              "n": 407,
+              "clusters": 201,
+              "mean": 0.003825,
+              "median": -0.002936,
+              "se_cluster": 0.003635,
+              "t_cluster": 1.052,
+              "p_cluster": 0.29391,
+              "ci95_low": -0.003299,
+              "ci95_high": 0.010949
+            },
+            "raw_mean": 0.004883,
+            "pos_bhar_rate": 0.4767,
+            "abs_bhar_mean": 0.046525,
+            "mean_max_dd": -0.042739
+          },
+          "10d": {
+            "car": {
+              "n": 407,
+              "clusters": 201,
+              "mean": 0.000247,
+              "median": -0.001836,
+              "se_cluster": 0.004443,
+              "t_cluster": 0.056,
+              "p_cluster": 0.95578,
+              "ci95_low": -0.008462,
+              "ci95_high": 0.008955
+            },
+            "bhar": {
+              "n": 407,
+              "clusters": 201,
+              "mean": 0.004318,
+              "median": -0.004297,
+              "se_cluster": 0.00485,
+              "t_cluster": 0.89,
+              "p_cluster": 0.37439,
+              "ci95_low": -0.005188,
+              "ci95_high": 0.013824
+            },
+            "raw_mean": 0.005848,
+            "pos_bhar_rate": 0.457,
+            "abs_bhar_mean": 0.060186,
+            "mean_max_dd": -0.067043
+          },
+          "20d": {
+            "car": {
+              "n": 407,
+              "clusters": 201,
+              "mean": -0.003386,
+              "median": 0.000875,
+              "se_cluster": 0.005533,
+              "t_cluster": -0.612,
+              "p_cluster": 0.54125,
+              "ci95_low": -0.01423,
+              "ci95_high": 0.007458
+            },
+            "bhar": {
+              "n": 407,
+              "clusters": 201,
+              "mean": 0.003952,
+              "median": -0.010183,
+              "se_cluster": 0.005852,
+              "t_cluster": 0.675,
+              "p_cluster": 0.50023,
+              "ci95_low": -0.007518,
+              "ci95_high": 0.015423
+            },
+            "raw_mean": 0.006436,
+            "pos_bhar_rate": 0.4717,
+            "abs_bhar_mean": 0.084084,
+            "mean_max_dd": -0.102307
+          }
+        }
+      }
+    }
+  },
+  "by_timing_bucket": {
+    "pre_market": {
+      "count": 602,
+      "unique_issuers": 172,
+      "mean_t0_volume_ratio": 1.763,
+      "median_t0_volume_ratio": 1.025,
+      "vol_expansion_gt_1_25_rate": 0.2425,
+      "horizons": {
+        "1d": {
+          "car": {
+            "n": 602,
+            "clusters": 172,
+            "mean": 0.003317,
+            "median": 0.001345,
+            "se_cluster": 0.001858,
+            "t_cluster": 1.785,
+            "p_cluster": 0.07603,
+            "ci95_low": -0.000325,
+            "ci95_high": 0.00696
+          },
+          "bhar": {
+            "n": 602,
+            "clusters": 172,
+            "mean": 0.003674,
+            "median": 0.001373,
+            "se_cluster": 0.001851,
+            "t_cluster": 1.984,
+            "p_cluster": 0.04881,
+            "ci95_low": 4.5e-05,
+            "ci95_high": 0.007302
+          },
+          "raw_mean": 0.003687,
+          "pos_bhar_rate": 0.5332,
+          "abs_bhar_mean": 0.020482,
+          "mean_max_dd": -0.009116
+        },
+        "3d": {
+          "car": {
+            "n": 602,
+            "clusters": 172,
+            "mean": 0.002796,
+            "median": 0.003204,
+            "se_cluster": 0.002427,
+            "t_cluster": 1.152,
+            "p_cluster": 0.25084,
+            "ci95_low": -0.00196,
+            "ci95_high": 0.007553
+          },
+          "bhar": {
+            "n": 602,
+            "clusters": 172,
+            "mean": 0.003956,
+            "median": 0.003174,
+            "se_cluster": 0.002451,
+            "t_cluster": 1.614,
+            "p_cluster": 0.10835,
+            "ci95_low": -0.000848,
+            "ci95_high": 0.00876
+          },
+          "raw_mean": 0.004284,
+          "pos_bhar_rate": 0.5266,
+          "abs_bhar_mean": 0.034669,
+          "mean_max_dd": -0.025762
+        },
+        "5d": {
+          "car": {
+            "n": 602,
+            "clusters": 172,
+            "mean": 0.001628,
+            "median": 0.003395,
+            "se_cluster": 0.003184,
+            "t_cluster": 0.511,
+            "p_cluster": 0.60983,
+            "ci95_low": -0.004612,
+            "ci95_high": 0.007868
+          },
+          "bhar": {
+            "n": 602,
+            "clusters": 172,
+            "mean": 0.003487,
+            "median": 0.002223,
+            "se_cluster": 0.003252,
+            "t_cluster": 1.072,
+            "p_cluster": 0.28511,
+            "ci95_low": -0.002887,
+            "ci95_high": 0.009862
+          },
+          "raw_mean": 0.004242,
+          "pos_bhar_rate": 0.5166,
+          "abs_bhar_mean": 0.042133,
+          "mean_max_dd": -0.038901
+        },
+        "10d": {
+          "car": {
+            "n": 602,
+            "clusters": 172,
+            "mean": 0.000623,
+            "median": 0.0007,
+            "se_cluster": 0.00354,
+            "t_cluster": 0.176,
+            "p_cluster": 0.86055,
+            "ci95_low": -0.006315,
+            "ci95_high": 0.007561
+          },
+          "bhar": {
+            "n": 602,
+            "clusters": 172,
+            "mean": 0.003627,
+            "median": -0.002014,
+            "se_cluster": 0.003576,
+            "t_cluster": 1.014,
+            "p_cluster": 0.31182,
+            "ci95_low": -0.003381,
+            "ci95_high": 0.010635
+          },
+          "raw_mean": 0.004955,
+          "pos_bhar_rate": 0.49,
+          "abs_bhar_mean": 0.055683,
+          "mean_max_dd": -0.062098
+        },
+        "20d": {
+          "car": {
+            "n": 602,
+            "clusters": 172,
+            "mean": -0.002385,
+            "median": 0.004488,
+            "se_cluster": 0.004658,
+            "t_cluster": -0.512,
+            "p_cluster": 0.6092,
+            "ci95_low": -0.011514,
+            "ci95_high": 0.006743
+          },
+          "bhar": {
+            "n": 602,
+            "clusters": 172,
+            "mean": 0.004564,
+            "median": -0.00129,
+            "se_cluster": 0.005222,
+            "t_cluster": 0.874,
+            "p_cluster": 0.38344,
+            "ci95_low": -0.005672,
+            "ci95_high": 0.0148
+          },
+          "raw_mean": 0.009016,
+          "pos_bhar_rate": 0.49,
+          "abs_bhar_mean": 0.075725,
+          "mean_max_dd": -0.094071
+        }
+      }
+    },
+    "intraday": {
+      "count": 9165,
+      "unique_issuers": 310,
+      "mean_t0_volume_ratio": 2.047,
+      "median_t0_volume_ratio": 1.14,
+      "vol_expansion_gt_1_25_rate": 0.2718,
+      "horizons": {
+        "1d": {
+          "car": {
+            "n": 9165,
+            "clusters": 310,
+            "mean": 0.000902,
+            "median": -0.000957,
+            "se_cluster": 0.00043,
+            "t_cluster": 2.096,
+            "p_cluster": 0.03687,
+            "ci95_low": 5.9e-05,
+            "ci95_high": 0.001745
+          },
+          "bhar": {
+            "n": 9165,
+            "clusters": 310,
+            "mean": 0.001476,
+            "median": -0.000515,
+            "se_cluster": 0.000439,
+            "t_cluster": 3.361,
+            "p_cluster": 0.00087,
+            "ci95_low": 0.000615,
+            "ci95_high": 0.002336
+          },
+          "raw_mean": 0.001854,
+          "pos_bhar_rate": 0.4888,
+          "abs_bhar_mean": 0.021821,
+          "mean_max_dd": -0.010508
+        },
+        "3d": {
+          "car": {
+            "n": 9165,
+            "clusters": 310,
+            "mean": -0.000129,
+            "median": -0.00234,
+            "se_cluster": 0.000675,
+            "t_cluster": -0.191,
+            "p_cluster": 0.84877,
+            "ci95_low": -0.001453,
+            "ci95_high": 0.001195
+          },
+          "bhar": {
+            "n": 9165,
+            "clusters": 310,
+            "mean": 0.001611,
+            "median": -0.001508,
+            "se_cluster": 0.000713,
+            "t_cluster": 2.259,
+            "p_cluster": 0.02457,
+            "ci95_low": 0.000213,
+            "ci95_high": 0.003008
+          },
+          "raw_mean": 0.002871,
+          "pos_bhar_rate": 0.4824,
+          "abs_bhar_mean": 0.035089,
+          "mean_max_dd": -0.028009
+        },
+        "5d": {
+          "car": {
+            "n": 9165,
+            "clusters": 310,
+            "mean": 7e-06,
+            "median": -0.002417,
+            "se_cluster": 0.000796,
+            "t_cluster": 0.009,
+            "p_cluster": 0.99315,
+            "ci95_low": -0.001553,
+            "ci95_high": 0.001567
+          },
+          "bhar": {
+            "n": 9165,
+            "clusters": 310,
+            "mean": 0.002744,
+            "median": -0.001624,
+            "se_cluster": 0.000876,
+            "t_cluster": 3.132,
+            "p_cluster": 0.0019,
+            "ci95_low": 0.001027,
+            "ci95_high": 0.00446
+          },
+          "raw_mean": 0.00466,
+          "pos_bhar_rate": 0.485,
+          "abs_bhar_mean": 0.042928,
+          "mean_max_dd": -0.040006
+        },
+        "10d": {
+          "car": {
+            "n": 9165,
+            "clusters": 310,
+            "mean": -0.001712,
+            "median": -0.003619,
+            "se_cluster": 0.000983,
+            "t_cluster": -1.741,
+            "p_cluster": 0.08261,
+            "ci95_low": -0.003639,
+            "ci95_high": 0.000215
+          },
+          "bhar": {
+            "n": 9165,
+            "clusters": 310,
+            "mean": 0.003669,
+            "median": -0.002499,
+            "se_cluster": 0.001125,
+            "t_cluster": 3.263,
+            "p_cluster": 0.00123,
+            "ci95_low": 0.001465,
+            "ci95_high": 0.005873
+          },
+          "raw_mean": 0.007163,
+          "pos_bhar_rate": 0.4819,
+          "abs_bhar_mean": 0.056593,
+          "mean_max_dd": -0.062269
+        },
+        "20d": {
+          "car": {
+            "n": 9165,
+            "clusters": 310,
+            "mean": -0.004067,
+            "median": -0.006587,
+            "se_cluster": 0.001448,
+            "t_cluster": -2.809,
+            "p_cluster": 0.00528,
+            "ci95_low": -0.006904,
+            "ci95_high": -0.00123
+          },
+          "bhar": {
+            "n": 9165,
+            "clusters": 310,
+            "mean": 0.006882,
+            "median": -0.003495,
+            "se_cluster": 0.001713,
+            "t_cluster": 4.017,
+            "p_cluster": 7e-05,
+            "ci95_low": 0.003525,
+            "ci95_high": 0.01024
+          },
+          "raw_mean": 0.012624,
+          "pos_bhar_rate": 0.4812,
+          "abs_bhar_mean": 0.078764,
+          "mean_max_dd": -0.092647
+        }
+      }
+    },
+    "post_market": {
+      "count": 16419,
+      "unique_issuers": 310,
+      "mean_t0_volume_ratio": 2.189,
+      "median_t0_volume_ratio": 1.128,
+      "vol_expansion_gt_1_25_rate": 0.264,
+      "horizons": {
+        "1d": {
+          "car": {
+            "n": 16419,
+            "clusters": 310,
+            "mean": -2.4e-05,
+            "median": -0.001526,
+            "se_cluster": 0.000395,
+            "t_cluster": -0.061,
+            "p_cluster": 0.95149,
+            "ci95_low": -0.000798,
+            "ci95_high": 0.00075
+          },
+          "bhar": {
+            "n": 16419,
+            "clusters": 310,
+            "mean": 0.000444,
+            "median": -0.001288,
+            "se_cluster": 0.000407,
+            "t_cluster": 1.09,
+            "p_cluster": 0.2766,
+            "ci95_low": -0.000354,
+            "ci95_high": 0.001242
+          },
+          "raw_mean": 0.00081,
+          "pos_bhar_rate": 0.4751,
+          "abs_bhar_mean": 0.023554,
+          "mean_max_dd": -0.01189
+        },
+        "3d": {
+          "car": {
+            "n": 16419,
+            "clusters": 310,
+            "mean": 0.000102,
+            "median": -0.002028,
+            "se_cluster": 0.000627,
+            "t_cluster": 0.162,
+            "p_cluster": 0.87113,
+            "ci95_low": -0.001127,
+            "ci95_high": 0.00133
+          },
+          "bhar": {
+            "n": 16419,
+            "clusters": 310,
+            "mean": 0.001575,
+            "median": -0.001441,
+            "se_cluster": 0.000677,
+            "t_cluster": 2.327,
+            "p_cluster": 0.02062,
+            "ci95_low": 0.000248,
+            "ci95_high": 0.002902
+          },
+          "raw_mean": 0.002658,
+          "pos_bhar_rate": 0.4841,
+          "abs_bhar_mean": 0.035551,
+          "mean_max_dd": -0.027732
+        },
+        "5d": {
+          "car": {
+            "n": 16419,
+            "clusters": 310,
+            "mean": -0.000179,
+            "median": -0.002771,
+            "se_cluster": 0.000757,
+            "t_cluster": -0.237,
+            "p_cluster": 0.81287,
+            "ci95_low": -0.001662,
+            "ci95_high": 0.001304
+          },
+          "bhar": {
+            "n": 16419,
+            "clusters": 310,
+            "mean": 0.0022,
+            "median": -0.002161,
+            "se_cluster": 0.000855,
+            "t_cluster": 2.574,
+            "p_cluster": 0.01051,
+            "ci95_low": 0.000525,
+            "ci95_high": 0.003876
+          },
+          "raw_mean": 0.00391,
+          "pos_bhar_rate": 0.4772,
+          "abs_bhar_mean": 0.043015,
+          "mean_max_dd": -0.03961
+        },
+        "10d": {
+          "car": {
+            "n": 16419,
+            "clusters": 310,
+            "mean": -0.001495,
+            "median": -0.003691,
+            "se_cluster": 0.00094,
+            "t_cluster": -1.589,
+            "p_cluster": 0.11302,
+            "ci95_low": -0.003338,
+            "ci95_high": 0.000349
+          },
+          "bhar": {
+            "n": 16419,
+            "clusters": 310,
+            "mean": 0.003284,
+            "median": -0.003126,
+            "se_cluster": 0.001112,
+            "t_cluster": 2.952,
+            "p_cluster": 0.0034,
+            "ci95_low": 0.001103,
+            "ci95_high": 0.005464
+          },
+          "raw_mean": 0.005952,
+          "pos_bhar_rate": 0.4779,
+          "abs_bhar_mean": 0.056819,
+          "mean_max_dd": -0.061722
+        },
+        "20d": {
+          "car": {
+            "n": 16419,
+            "clusters": 310,
+            "mean": -0.001765,
+            "median": -0.003786,
+            "se_cluster": 0.001287,
+            "t_cluster": -1.371,
+            "p_cluster": 0.17132,
+            "ci95_low": -0.004288,
+            "ci95_high": 0.000758
+          },
+          "bhar": {
+            "n": 16419,
+            "clusters": 310,
+            "mean": 0.007899,
+            "median": -0.002514,
+            "se_cluster": 0.001656,
+            "t_cluster": 4.769,
+            "p_cluster": 0.0,
+            "ci95_low": 0.004652,
+            "ci95_high": 0.011146
+          },
+          "raw_mean": 0.013029,
+          "pos_bhar_rate": 0.4883,
+          "abs_bhar_mean": 0.079413,
+          "mean_max_dd": -0.091801
+        }
+      }
+    }
+  }
+}

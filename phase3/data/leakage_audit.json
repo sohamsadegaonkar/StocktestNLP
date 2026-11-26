@@ -1,0 +1,14 @@
+{
+  "train_n": 17489,
+  "val_n": 3879,
+  "test_n": 4035,
+  "train_date_range": "2022-01-03..2025-05-30",
+  "val_date_range": "2025-06-30..2026-02-13",
+  "test_date_range": "2026-03-17..2026-10-23",
+  "embargo_sessions_train_to_val": 21,
+  "embargo_sessions_val_to_test": 21,
+  "event_id_overlap": 0,
+  "near_duplicate_text_overlap": 0,
+  "svd_fit_strictly_on_train_only": true,
+  "pit_fundamentals_lag_days": 60
+}
